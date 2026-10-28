@@ -2,49 +2,67 @@
 
 This repo holds the planning work for rebuilding the SKSU Admission Test (TPT) system. It has no app code yet. The old app is `tptv3`, a Laravel 9 + Livewire app that runs on sksu-tpt.com.
 
+**Status (28 Oct 2026):** the mockups and docs are ready for discussion. The polish comes later.
+
+## Start here
+
+1. `docs/PRD.html`: decisions, flows (section 8) and real-life scenarios (section 5).
+2. `docs/SCOPE-CHECK.html`: everything v4 adds beyond tptv3. Mark each one keep or cut.
+3. `mockups/ADMIN-JOURNEY-MOCKUP.html`, then the applicant, cashier and proctor journeys.
+4. `mockups/index.html` lists every page, the interaction rules, the chart choices and the old-route coverage table.
+
 ## What's here
 
 | Folder | What it is |
 |---|---|
-| `mockups/` | Page-by-page HTML mockups, light mode, SKSU branding. Open `mockups/index.html` in a browser. |
-| `mockups/*-JOURNEY-MOCKUP.html` | Journey mockups for admin (the whole season), applicant and proctor: every screen and state in device frames with captions. |
-| `tools/` | `gen_mockups.py` builds every mockup page; `base.css` holds layout and components, `theme.css` the SKSU look (deep green, mint, gold, campus photo, waves). Edit these, never the generated files. |
-| `assets/brand/` | Official SKSU seal and logo from sksu.edu.ph. `SOURCES.md` lists the links and colours. |
-| `docs/` | `csv-findings-2026.md` analyses the 2026 results CSV. It contains no names or scores. |
+| `mockups/` | 71 linked HTML pages with every state (forms, dialogs, toasts, loading, empty, errors). Generated; don't edit by hand. |
+| `mockups/*-JOURNEY-MOCKUP.html` | Journeys for admin (the whole season), applicant (phone app), cashier and proctor |
+| `docs/` | PRD, scope check, forms and payments, results import, CSV findings (each `.md` also has a readable `.html` with the diagrams drawn) |
+| `tools/` | `gen_mockups.py` builds every mockup page. `base.css`, `theme*.css` hold the styles. `render_docs.py` turns the docs into HTML. `tpt-scores-template.csv` is the score import template. |
+| `assets/brand/` | Official SKSU seal, logo and campus photo from sksu.edu.ph. `SOURCES.md` lists the links and colours. |
 
-## Docs
-
-| File | What it is |
-|---|---|
-| `docs/PRD.md` | Decisions, core modules, old process → new process, known gaps, scenarios, notifications, data model, flows and architecture (Mermaid, renders on GitHub), earlier attempts, plan, admin UI rules, usability walk-through |
-| `docs/SCOPE-CHECK.md` | Everything v4 adds beyond tptv3, to keep or cut |
-| `docs/FORMS-AND-PAYMENTS.md` | Every tptv3 form and field reviewed, records per step, payment flow (cashier, online + proof, waiver, refunds, reconciliation) |
-| `docs/RESULTS-IMPORT.md` | How tptv3 imports scores, its flaws, the v4 CSV template and import rules |
-| `docs/csv-findings-2026.md` | Analysis of the 2026 results CSV |
-| `mockups/index.html` | Every page, interaction rules, chart choices and the route coverage table |
-
-The longer audit (security findings, server details, key names) is in a Claude Doc: https://claude.ai/artifact/N75VWKWsNrpWHrLgo8ywi6
+The longer audit of the old system (security findings, server details, key names) is in a Claude Doc: https://claude.ai/artifact/N75VWKWsNrpWHrLgo8ywi6. The exploit details are kept offline, not in this repo.
 
 ## Resume on another PC
 
 ```bash
-git clone <this repo>
+git clone https://github.com/orbitsdev/sksu-tpt-v4.git
 cd sksu-tpt-v4
 python tools/gen_mockups.py      # needs Python 3.10+; nothing to install
+python tools/render_docs.py      # rebuilds docs/*.html
 start mockups/index.html         # Windows; on macOS use `open`
 ```
 
-To change a screen, edit `tools/gen_mockups.py` (or `tools/base.css` for styles), then run the generator again. Each page is built by one call: `phone(...)` for applicant screens, `admin(...)` for staff screens and `pro(...)` for proctor screens. States are `modal(...)` and `toast(...)` overlays opened by `#id` links. The yellow bar at the top of a page lists them.
+Each page is built by one call:
+
+- `phone(...)`: applicant app screens.
+- `admin(...)`: staff screens.
+- `cashier(...)`: the cashier console.
+- `pro(...)`: proctor screens.
+- `board(...)`: the journey pages.
+
+States are `modal(...)`, `toast(...)`, `drawer(...)` and `inmain(...)`, opened by `#id` links. The yellow bar at the top of a page lists them.
 
 ## Rules for this repo
 
-- Never commit student data (CSV/XLSX exports, names, scores), `.env` files or server passwords.
+- Never commit student data (CSV/XLSX exports, names, scores), `.env` files or server passwords. `private/` is git-ignored for anything sensitive.
 - Mockups use sample data only.
-- Every new screen goes in the generator with all of its states: form errors, dialogs, toasts, loading, empty and success.
+- Every new screen goes in the generator with all of its states.
+- Keep the old process. Anything new must be listed in `docs/SCOPE-CHECK.md`.
 
-## Still open
+## Open questions for the admission office
 
-1. Security findings for the old live system are kept offline (not in this repo). Ask Brian.
+1. What are the "three schedules": three exam rounds a year, or something else?
+2. Confirm date-only scheduling. What are the real report and start times?
+3. Exam fee, payment accounts, and whether cashiers will use the system.
+4. Cut-off scores per program, and the official stanine labels.
+5. Testing Center CSV columns (the template is in `tools/tpt-scores-template.csv`).
+6. SMS provider and budget.
+7. Can absent examinees move to the next round for free?
+8. Which documents are required (Form 138, valid ID), and which personal fields (tribe, religion) are needed under the Data Privacy Act?
+
+## Old system (still to do)
+
+1. Close the open test routes on the live server (the script is kept offline).
 2. Make the old `tptv3` GitHub repo private and remove the student CSVs from its history.
-3. Harden the old server (keys-only SSH, new credentials, backups).
-4. Confirm the stanine labels and the exam fee with the testing center.
+3. Harden the old server: keys-only SSH, new credentials, backups.
