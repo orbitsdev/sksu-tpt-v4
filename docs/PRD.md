@@ -312,7 +312,8 @@ flowchart TB
 - **What TPT records** is only that the applicant paid: OR number, amount, payment method, who recorded it, and when. Cash handling and remittance stay in the university's own accounting system, as today.
 - **Counter flow:** search (name, application or examinee no.; no QR scanning at the counter) → the fee is fixed → type the OR number (must be unused) → Enter → paid, print an OR copy if needed → next person.
 - **Guards:** already paid, OR already used, not found, round not open yet, fee waived.
-- **Today:** the cashier's list for the day with reprint and an Excel export to match against the OR booklet. Only an admin can void a payment, with a reason; voided payments stay on the list.
+- **Today:** the cashier's list for the day with reprint and an Excel export to match against the OR booklet. The cashier sees no seats or other figures.
+- **Void (admin only):** a reason is required. The application goes back to "waiting for payment", and any seat is released if the exam hasn't happened. The applicant gets the reason in the app, by email and by text, and can pay again as normal. The voided payment stays on the lists and in the activity log.
 - **Data:** `payments.method = cashier`, `or_no` unique per season, `recorded_by`, `counter`; voids recorded in the activity log.
 
 ## 15. Seats on the dashboard

@@ -255,7 +255,7 @@ for i, (eb, big, line) in enumerate([("SKSU Admission Test", "Your college<br>st
           f'<a class="go" href="{nxt}">{"Get started" if i == 3 else "Next"}</a>', '<div class="alt"><a href="../public/login.html">I already applied</a><a href="../public/landing.html">Look around first</a></div>' if i == 3 else "")
 
 phone("notifications", "Notifications", """<h1 class="gh">Notifications</h1>
-<div class="notes">""" + "".join(f'<a class="note{" unread" if u else ""}" href="{h}"><span class="ni {k}">{NOTE_ICON[k]}</span><span><b>{t}</b><span>{d}</span><small>{w}</small></span></a>' for t, d, w, k, u, h in [('Your TPT 2027 result is out', 'You qualify for all 3 of your choices. Tap to see your scores.', 'Apr 20 · 9:00 AM', 'ok', True, 'result.html'), ('Seat booked', 'Isulan · Sat, Mar 14 · Room 4, seat 27. Your permit is ready.', 'Jan 13 · 9:42 AM', 'ok', True, 'permit.html'), ('Payment approved', 'Your examinee number is 500214. Pick your exam seat now.', 'Jan 12 · 4:30 PM', 'ok', True, 'seat.html'), ('Receipt received', 'We’re checking it. Usually within one working day.', 'Jan 12 · 8:10 AM', 'info', False, 'payment-waiting.html'), ('Application submitted', 'Next: pay the exam fee and send your receipt.', 'Jan 11 · 7:55 PM', 'info', False, 'payment.html'), ('Welcome to the SKSU Admission Test', 'Your account is ready. Start your application any time before Feb 28.', 'Jan 11 · 7:31 PM', 'info', False, 'home.html')]) + """</div>
+<div class="notes">""" + "".join(f'<a class="note{" unread" if u else ""}" href="{h}"><span class="ni {k}">{NOTE_ICON[k]}</span><span><b>{t}</b><span>{d}</span><small>{w}</small></span></a>' for t, d, w, k, u, h in [('Payment cancelled', 'Reason: the OR number was recorded for the wrong applicant. Your seat was released; please pay again.', 'Jan 14 · 10:05 AM', 'bad', True, 'payment-rejected.html#voided'), ('Your TPT 2027 result is out', 'You qualify for all 3 of your choices. Tap to see your scores.', 'Apr 20 · 9:00 AM', 'ok', True, 'result.html'), ('Seat booked', 'Isulan · Sat, Mar 14 · Room 4, seat 27. Your permit is ready.', 'Jan 13 · 9:42 AM', 'ok', True, 'permit.html'), ('Payment approved', 'Your examinee number is 500214. Pick your exam seat now.', 'Jan 12 · 4:30 PM', 'ok', True, 'seat.html'), ('Receipt received', 'We’re checking it. Usually within one working day.', 'Jan 12 · 8:10 AM', 'info', False, 'payment-waiting.html'), ('Application submitted', 'Next: pay the exam fee and send your receipt.', 'Jan 11 · 7:55 PM', 'info', False, 'payment.html'), ('Welcome to the SKSU Admission Test', 'Your account is ready. Start your application any time before Feb 28.', 'Jan 11 · 7:31 PM', 'info', False, 'home.html')]) + """</div>
 <small class="center" style="color:#757575">You also get these by email. Texts are on for exam-day reminders.</small>""",
       cta=("#prefs", "Notification settings"), back="home.html",
       overlays=modal("prefs", "info", "", "How should we reach you?", '<label class="check"><input type="checkbox" checked disabled>Email · maria.delacruz@gmail.com (always on)</label><label class="check"><input type="checkbox" checked>Text messages to 0917 123 4567</label><div class="fld"><label class="cap" for="lang">Language</label><select id="lang"><option>English</option><option>Filipino</option></select></div><small style="color:#757575">Approval, schedule changes, exam-day reminders and results are always sent.</small>', '<a class="go" href="#prefs-ok">Save</a><a class="back" href="#">Cancel</a>')
@@ -348,7 +348,9 @@ phone("payment-rejected", "Payment rejected", """<div class="okmark" style="back
 <div class="alertbox bad"><div><b>Reason:</b> The receipt photo is blurry. We can’t read the reference number.<br><small>Checked by the cashier, Jan 13 · 4:22 PM</small></div></div>
 <div class="fld"><label class="cap" for="r2">Reference number</label><input id="r2" value="1009 284 551 203" style="font:600 17px var(--mono)"></div>
 <div class="drop">Tap to add a clearer photo of the receipt</div>""",
-      cta=("payment-waiting.html#sent", "Send again"), back="home.html")
+      cta=("payment-waiting.html#sent", "Send again"), back="home.html",
+      overlays=modal("voided", "warn", WARN, "Your payment was cancelled", '<div class="alertbox warn"><div><b>Reason:</b> The OR number was recorded for the wrong applicant.</div></div><p style="margin:0;color:#545454">Your exam seat was released. Pay again (at a cashier or online) and pick your exam day again. Your application stays as it is.</p>', '<a class="go" href="payment.html">Pay again</a><a class="back" href="#">Close</a>'),
+      states=[("voided", "Payment voided by the admission office")])
 
 phone("seat", "Pick a seat", """<h1 class="gh center">Pick your exam day</h1><p class="lead center" style="font-size:14px">Choose a campus and date. We give you a room and seat.</p>
 <div style="display:flex;gap:6px;justify-content:center"><span class="ses on" style="padding:8px 12px">Round 1 · Mar 14–15</span><span class="ses" style="padding:8px 12px">Round 2 · Apr 25</span></div>
@@ -706,7 +708,7 @@ admin("applicant", "Maria S. Dela Cruz", f"""<div class="tabsbar"><a class="on" 
 <h2 style="margin-top:8px">Uploads</h2>
 <div class="uploads"><div class="up"><div class="thumb">Photo</div><div><b>2×2 photo</b><span class="muted">photo.jpg · 248 KB · Jan 11</span>{B("ok", "Accepted")}</div>{btn("View", "#photo")}</div>
 <div class="up"><div class="thumb">Receipt</div><div><b>Payment receipt</b><span class="muted">gcash-receipt.jpg · 310 KB · Jan 12</span>{B("ok", "Approved")}</div>{btn("View", "payments.html")}</div></div>
-<div style="display:flex;gap:8px">{btn("Edit details", "#edit")}{btn("Move session", "#move")}{btn("View permit", "../docs/permit-pdf.html")}{btn("Cancel application", "#cancel", "danger")}</div></div>
+<div style="display:flex;gap:8px">{btn("Void payment", "#void", "danger")}{btn("Edit details", "#edit")}{btn("Move session", "#move")}{btn("View permit", "../docs/permit-pdf.html")}{btn("Cancel application", "#cancel", "danger")}</div></div>
 <div class="panel" style="width:360px;flex-shrink:0"><h2>History</h2><div class="tl">
 <div><i></i><span>Jan 13 9:42 AM · Maria booked Isulan, Room 4 seat 27</span></div><div><i></i><span>Jan 12 4:30 PM · Cashier 2 approved payment, issued 500214</span></div>
 <div><i></i><span>Jan 12 8:10 AM · Maria sent receipt 1009 284 551 203</span></div><div><i></i><span>Jan 11 7:55 PM · Maria submitted the application</span></div><div><i></i><span>Jan 11 7:31 PM · Maria signed up with Google</span></div></div></div></div>""",
@@ -718,9 +720,11 @@ admin("applicant", "Maria S. Dela Cruz", f"""<div class="tabsbar"><a class="on" 
       + modal("cancel", "bad", BAD, "Cancel this application?", '<p class="muted" style="margin:0">Her seat is freed and her permit stops working. She can’t take the test this season. Type CANCEL to confirm.</p><input placeholder="CANCEL">', btn("Keep it", "#") + btn("Cancel application", "#", "danger"))
       + modal("waive", "warn", WARN, "Waive Maria’s exam fee?", '<div class="fld"><label for="wv">Reason</label><select id="wv"><option>Indigent (certificate from the barangay)</option><option>Scholar (CHED or LGU)</option><option>SKSU employee dependent</option></select></div><div class="fld"><label for="wvd">Proof (optional)</label><input id="wvd" placeholder="e.g. certificate no. 2027-0193"></div>' + hint("She is approved at once and gets an examinee number. Waivers show in the Payments report."), btn("Cancel", "#") + btn("Waive fee", "#", "primary"))
       + modal("refund", "warn", WARN, "Record a refund", '<div class="fld"><label for="rf">Why</label><select id="rf"><option>Paid twice</option><option>Round cancelled</option></select></div><div class="fld"><label for="rfa">Amount</label><input id="rfa" value="[EXAM FEE]"></div>' + hint("The cashier pays it back; this keeps the books and the applicant’s status right."), btn("Cancel", "#") + btn("Record refund", "#", "primary"))
+      + modal("void", "warn", WARN, "Void Maria’s payment?", '<div class="fld"><label for="vr">Reason (required, sent to Maria)</label><select id="vr"><option>OR number recorded for the wrong applicant</option><option>Payment was reversed by the bank or GCash</option><option>Duplicate payment</option></select></div><div class="kv"><span>Then</span><span>Status goes back to “Waiting for payment”</span><span>Seat</span><span>Room 4 · seat 27 is released (the exam hasn’t happened)</span><span>Maria</span><span>Gets the reason in the app, by email and by text, and can pay again</span></div>', btn("Cancel", "#") + btn("Void payment", "#voided", "danger"))
+      + toast("voided", "ok", OK, "Payment voided", "Maria was told why and can pay again. Seat 27 is free.")
       + modal("photo", "info", "▢", "2×2 photo", '<div class="thumb" style="width:200px;height:200px;align-self:center">Photo</div><div class="fld"><label for="pr">If it’s not usable</label><select id="pr"><option>Face not clear</option><option>Not a 2×2 ID photo</option><option>Someone else</option></select></div>', btn("Close", "#") + btn("Ask for a new photo", "#asked", "danger"))
       + toast("asked", "ok", OK, "Photo request sent", "Maria gets an email and can upload a new one; her seat is kept."),
-      states=[("edit", "Edit dialog with error"), ("saved", "Saved"), ("move", "Move session"), ("moved", "Moved"), ("cancel", "Danger confirm"), ("photo", "Review a photo"), ("asked", "New photo requested")])
+      states=[("void", "Void payment"), ("voided", "Voided"), ("edit", "Edit dialog with error"), ("saved", "Saved"), ("move", "Move session"), ("moved", "Moved"), ("cancel", "Danger confirm"), ("photo", "Review a photo"), ("asked", "New photo requested")])
 
 admin("cashier", "Cashier counters", f"""<div class="head"><span class="muted">Cashiers take the exam fee in their own console. Admins can open it too.</span>{btn("Open the cashier console", "../cashier/console.html", "primary")}</div>
 <div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Recorded today</span><b>₱61,500</b><small>123 payments at 5 counters</small></div><div class="kpi"><span>Counters open</span><b>4</b><small>of 7</small></div><div class="kpi"><span>Voided today</span><b>2</b><small>by an admin, with a reason</small></div></div>
@@ -1029,6 +1033,7 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (P, "applicant/payment.html#ref-used", "8b", "Reference already used", "Caught before a cashier has to.", True),
           (P, "applicant/payment-waiting.html#sent", "9", "Waiting for approval", "What was sent, and that an email will come."),
           (P, "applicant/payment-rejected.html", "10", "Rejected", "The cashier’s reason and a way to send again."),
+          (P, "applicant/payment-rejected.html#voided", "10a", "Payment cancelled", "An admin voided it; the reason, then pay again.", True),
           (D, "docs/email-approved.html", "11", "Email: approved", "Examinee number and one button: pick a seat."),
           (D, "docs/email-rejected.html", "12", "Email: rejected", "The reason and a link straight back.")]),
        ("Seat and permit", [
@@ -1183,7 +1188,8 @@ ADMIN_CYCLE = [
         ("admin/applicant.html#move", "Move to another session", ""),
         ("admin/applicant.html#moved", "Moved, email sent", ""),
         ("admin/applicant.html#cancel", "Cancel application", "Type CANCEL; the seat is freed."),
-        ("admin/applicant.html#photo", "Review an upload", "Ask for a new photo without losing the seat.")]),
+        ("admin/applicant.html#photo", "Review an upload", "Ask for a new photo without losing the seat."),
+        ("admin/applicant.html#void", "Void a payment", "Reason required; seat released; applicant told and can pay again.")]),
     ("5 · Payments, numbers and permits", [
         ("cashier/console.html", "Cashier console", "Its own role and screen: search, fixed fee, OR no., Enter."),
         ("admin/cashier.html", "Cashier counters", "Every counter’s payments and voids."),
@@ -1267,7 +1273,7 @@ def cashier(key, title, body, tab="counter", overlays="", states=None):
     tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("list", "Applicants", "applicants.html"), ("today", "Today", "today.html")])
     doc(f"cashier/{key}.html", title, f"""<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
 <div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav>{tabs}</nav>
-<span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><span class="cshift">Today ₱18,000 · 36 paid</span></header>
+<span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span></header>
 <main class="cmain">{body}</main></div>{overlays}""", states=states)
 
 
@@ -1295,12 +1301,11 @@ cashier("console", "Counter", f"""<section class="cleft"><label for="find" class
 CROWS = [("APP-27-10422", "Lea M. Sampulna", "BSEd Mathematics", "Kalamansig", False), ("APP-27-10431", "Noel B. Guiamal", "BS Criminology", "Isulan", False), ("APP-27-10437", "Jasmine O. Kusain", "BS Information Technology", "ACCESS", False),
          ("APP-27-10440", "Rodel A. Sangki", "BS Agriculture", "Tacurong", False), ("APP-27-10398", "Ramon T. Villanueva", "BS Agriculture", "Tacurong", True), ("APP-27-10377", "Princess A. Lumabao", "BS Accountancy", "ACCESS", True)]
 cashier("applicants", "Applicants", f"""<div class="pagehead"><div><h1>Applicants · Round 2</h1><p>Everyone who submitted an application. Click a row to record their payment. Nothing else can be changed here.</p></div></div>
-<div class="filters"><input class="search" aria-label="Search applicants" placeholder="Search name or application no." style="width:320px"><span class="seg"><span class="on">Waiting for payment · 1,204</span><span>Paid · 9,471</span><span>All</span></span><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS</option></select></div>
+<div class="filters"><input class="search" aria-label="Search applicants" placeholder="Search name or application no." style="width:320px"><span class="seg"><span class="on">Waiting for payment</span><span>Paid</span><span>All</span></span><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS</option></select></div>
 {table(["Application no.", "Applicant", "1st choice", "Campus", "Payment", ""], [(f'<span class="mono">{a}</span>', n, prg, c, B("ok", "Paid") if paid else B("warn", "Waiting"), "" if paid else btn("Record payment", "console.html", "sm primary")) for a, n, prg, c, paid in CROWS])}
-<div class="head"><span class="muted">Showing 6 of 1,204 waiting</span><span style="display:flex;gap:6px">{btn("Previous")}{btn("Next")}</span></div>""", tab="list")
+<div class="head"><span class="muted">Showing 6</span><span style="display:flex;gap:6px">{btn("Previous")}{btn("Next")}</span></div>""", tab="list")
 
 cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan counter 1</h1><p>Every payment you recorded today, to match against your OR booklet. Only an admin can void a payment.</p></div><div class="pacts">{btn("Export today’s list (Excel)", "../admin/exports.html#queued")}{btn("Print list")}</div></div>
-<div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Collected</span><b>₱18,000.00</b><small>36 payments</small></div><div class="kpi"><span>Cash</span><b>₱16,500.00</b><small>33</small></div><div class="kpi"><span>GCash at counter</span><b>₱1,500.00</b><small>3</small></div></div>
 {table(["Time", "Applicant", "OR no.", "Paid with", "Amount", ""], [(f'<span class="mono muted">{t}</span>', n, f'<span class="mono">{o}</span>', m, "₱500.00", '<span class="act">' + btn("Reprint", "#") + "</span>") for t, n, o, m in RECENT] + [('<span class="mono muted">8:20</span>', "Jasmine O. Kusain", '<span class="mono">0048210</span>', "Cash", '<s>₱500.00</s> ' + B("bad", "Voided"), "")])}""",
         tab="today")
 
