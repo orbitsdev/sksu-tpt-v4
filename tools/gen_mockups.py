@@ -501,7 +501,7 @@ ICONS = {
     "search": '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
 }
 NAV = [(None, [("dashboard", "Dashboard")]),
-       ("Applicants", [("applications", "Applications"), ("cashier", "Record a payment"), ("payments", "Payment review"), ("messages", "Messages")]),
+       ("Applicants", [("applications", "Applications"), ("cashier", "Cashier counters"), ("payments", "Payment review"), ("messages", "Messages")]),
        ("Exam", [("seasons", "Seasons and rounds"), ("rooms", "Rooms"), ("sessions", "Schedule days"), ("checkin", "Check-in"), ("scores", "Scores import"), ("results", "Results")]),
        ("Insight", [("reports", "Reports"), ("exports", "Downloads")]),
        ("Setup", [("campuses", "Campuses and programs"), ("staff", "Staff and roles"), ("audit", "Audit log")])]
@@ -648,6 +648,9 @@ admin("dashboard", "Dashboard", f"""<div class="tabs"><span class="on">Round 2</
 <a class="kpi act" href="applications.html"><span>Approved, no seat yet</span><b>627</b><small>Seats auto-assigned Mar 1 · <u>Send reminder</u></small></a>
 <a class="kpi" href="sessions.html"><span>Seats left</span><b>987</b><small>of 9,200 · Isulan Sun is full</small></a>
 <a class="kpi" href="applications.html"><span>Submitted</span><b>12,287</b><small>of 16,408 signed up · 212 today</small></a></div>
+<div class="panel"><div class="head"><h2>Seats · Round 2</h2><span class="muted" style="font-size:13px">9,200 total · 8,213 taken · <b class="ink">987 left</b> · 8 exam days open</span></div>
+{table(['Exam day', 'Campus', 'Seats', 'Left', ''], [(d, c, f'<div class="meter"><div class="t"><span class="{cls}" style="width:{p}%"></span></div></div>', f'<b class="mono">{left}</b>', B('bad', 'Full') if left == 0 else (B('warn', 'Nearly full') if left < 60 else '')) for d, c, p, left, cls in [('Sat, Apr 25', 'ACCESS, Tacurong', 99, 12, 'hi'), ('Sat, Apr 25', 'Isulan', 100, 0, 'full'), ('Sat, Apr 25', 'Tacurong', 92, 48, 'hi'), ('Sun, Apr 26', 'ACCESS, Tacurong', 61, 470, ''), ('Sun, Apr 26', 'Kalamansig', 74, 104, '')]])}
+<a href="sessions.html" style="font-size:13px">All schedule days →</a></div>
 <div class="row"><div class="panel grow"><div class="head"><h2>Needs attention</h2><span class="muted" style="font-size:13px">5 items</span></div>
 {''.join(f'<div class="attn"><div><b>{t}</b><span class="muted">{d}</span></div><a class="btn" href="{h}">Open</a></div>' for t, d, h in att)}</div>
 <div class="panel" style="width:420px;flex-shrink:0"><div class="head"><h2>Sign-ups, last 14 days</h2><a href="reports.html" style="font-size:13px">Reports →</a></div>{line_chart(days, ["Jan 1", "", "", "", "", "", "Jan 7", "", "", "", "", "", "", "Today"])}</div></div>""",
@@ -717,16 +720,9 @@ admin("applicant", "Maria S. Dela Cruz", f"""<div class="tabsbar"><a class="on" 
       + toast("asked", "ok", OK, "Photo request sent", "Maria gets an email and can upload a new one; her seat is kept."),
       states=[("edit", "Edit dialog with error"), ("saved", "Saved"), ("move", "Move session"), ("moved", "Moved"), ("cancel", "Danger confirm"), ("photo", "Review a photo"), ("asked", "New photo requested")])
 
-admin("cashier", "Record a payment", f"""{hint("For applicants who pay at a campus cashier. Recording it here approves the payment at once; no receipt photo or second review needed.")}
-<div class="panel" style="max-width:760px"><div class="fld"><label for="cs">Find the applicant</label><input id="cs" class="search" style="width:100%" value="Lea Sampulna" placeholder="Name, email or application no."></div>
-<div class="up"><div class="thumb">Photo</div><div><b>Lea M. Sampulna</b><span class="muted">APP-27-10422 · BSEd Mathematics, Kalamansig · Round 2</span>{B("warn", "Waiting for payment")}</div></div>
-<div class="formgrid"><div class="fld"><label for="or">Official receipt no.</label><input id="or" placeholder="e.g. 0048213">{hint("From the printed OR you hand to the applicant.")}</div><div class="fld"><label for="amt">Amount</label><input id="amt" value="[EXAM FEE]"></div></div>
-<div class="formfoot">{btn("Clear")}<span style="margin-left:auto"></span>{btn("Record payment", "#recorded", "primary")}</div></div>
-<div class="panel" style="max-width:760px"><h2>Today at this counter</h2>{table(["Time", "Applicant", "OR no.", "By"], [('<span class="mono muted">9:12 AM</span>', "Ramon T. Villanueva", '<span class="mono">0048212</span>', "Cashier 1"), ('<span class="mono muted">8:47 AM</span>', "Princess A. Lumabao", '<span class="mono">0048211</span>', "Cashier 1")])}</div>""",
-      overlays=toast("recorded", "ok", OK, "Payment recorded · 500231 issued", "Lea can pick her exam day now; she got a text and an email.")
-      + toast("dup-or", "bad", BAD, "OR 0048212 is already used", "It was recorded for Ramon T. Villanueva at 9:12 AM.")
-      + inmain("none", empty("search", "No applicant called “Lea Sampulna” is waiting to pay", "Check the spelling, or ask for their application number on the phone.", btn("Clear", "#"))),
-      states=[("recorded", "Recorded"), ("dup-or", "OR already used"), ("none", "Not found")])
+admin("cashier", "Cashier counters", f"""<div class="head"><span class="muted">Cashiers take the exam fee in their own console. Admins can open it too.</span>{btn("Open the cashier console", "../cashier/console.html", "primary")}</div>
+<div class="kpis"><div class="kpi"><span>Collected today</span><b>₱61,500</b><small>123 payments at 5 counters</small></div><div class="kpi"><span>Counters open</span><b>4</b><small>of 7</small></div><div class="kpi"><span>Voids today</span><b>2</b><small>both with supervisor PIN</small></div><div class="kpi"><span>Not yet remitted</span><b>₱45,000</b><small>3 counters</small></div></div>
+{table(["Counter", "Cashier", "Payments", "Collected", "Status", ""], [("Isulan counter 1", "Cashier 1", "36", "₱18,000", B("ok", "Open"), btn("View", "../cashier/today.html")), ("ACCESS counter 1", "Cashier 2", "52", "₱26,000", B("ok", "Open"), btn("View", "../cashier/today.html")), ("ACCESS counter 2", "Cashier 3", "21", "₱10,500", B("ok", "Open"), btn("View", "../cashier/today.html")), ("Tacurong counter 1", "Cashier 4", "14", "₱7,000", B("gray", "Remitted 4:58 PM · ₱0 difference"), btn("View", "../cashier/close.html"))])}""")
 
 q = [("Aisah K. Mangudadatu", "1009284551203", "6 h", B("warn", "Same ref."), True), ("Lea M. Sampulna", "1009284552455", "5 h", B("gray", "Waiting"), False), ("Ramon T. Villanueva", "1009284552310", "5 h", B("gray", "Waiting"), False), ("Noel B. Guiamal", "1009284552601", "3 h", B("gray", "Waiting"), False), ("Princess A. Lumabao", "1009284552711", "2 h", B("gray", "Waiting"), False), ("Datu R. Mamalinta", "1009284552840", "40 min", B("gray", "Waiting"), False)]
 admin("payments", "Payment review", f"""<div class="row">
@@ -1187,9 +1183,8 @@ ADMIN_CYCLE = [
         ("admin/applicant.html#cancel", "Cancel application", "Type CANCEL; the seat is freed."),
         ("admin/applicant.html#photo", "Review an upload", "Ask for a new photo without losing the seat.")]),
     ("5 · Payments, numbers and permits", [
-        ("admin/cashier.html", "Record a payment at the counter", "Cashier finds the applicant, types the OR number; approved at once."),
-        ("admin/cashier.html#recorded", "Recorded", ""),
-        ("admin/cashier.html#dup-or", "OR number already used", ""),
+        ("cashier/console.html", "Cashier console", "Its own role and screen: find or scan, fixed fee, OR no., Enter."),
+        ("admin/cashier.html", "Cashier counters", "Every counter’s takings, voids and remittance."),
         ("admin/payments.html", "Payment review (uploaded receipts)", "Queue, receipt and decision side by side; A and R keys."),
         ("admin/payments.html#approve", "Reused reference warning", "Caught before a double approval."),
         ("admin/payments.html#approved", "Approved, number issued", "Examinee no. comes from the season counter; next one opens."),
@@ -1265,6 +1260,73 @@ board("PROCTOR-JOURNEY-MOCKUP.html", "Proctor: exam day",
       [("Works offline", "Lists download first; check-ins queue and send later."), ("Big targets", "60 px buttons, one hand."), ("Catch mistakes", "Wrong room and copied permits are flagged on scan.")])
 
 
+# ---------------------------------------------------------------- cashier console (its own role and screen)
+def cashier(key, title, body, tab="counter", overlays="", states=None):
+    tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("today", "Today", "today.html"), ("close", "Close the day", "close.html")])
+    doc(f"cashier/{key}.html", title, f"""<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
+<div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav>{tabs}</nav>
+<span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><span class="cshift">Today ₱18,000 · 36 paid</span><a class="btn sm" href="lock.html">Lock</a></header>
+<main class="cmain">{body}</main></div>{overlays}""", states=states)
+
+
+APPLICANT_CARD = f"""<div class="ccard"><div class="thumb cthumb">Photo</div><div class="cinfo"><b>Lea M. Sampulna</b><span class="mono">APP-27-10422</span><span>BSEd Mathematics · Kalamansig · Round 2</span>{B("warn", "Waiting for payment")}</div></div>"""
+RECENT = [("9:41", "Ramon T. Villanueva", "0048213", "Cash"), ("9:12", "Princess A. Lumabao", "0048212", "Cash"), ("8:47", "Datu R. Mamalinta", "0048211", "GCash at counter")]
+STRIP = '<div class="cstrip"><b>Last paid</b>' + "".join(f'<a href="today.html"><span class="mono">{t}</span>{n}<span class="mono">OR {o}</span></a>' for t, n, o, _ in RECENT) + '<a class="more" href="today.html">All today →</a></div>'
+
+cashier("console", "Counter", f"""<section class="cleft"><label for="find" class="clabel">Find the applicant</label>
+<div class="cfind"><input id="find" value="Lea Sampulna" placeholder="Name, application no. or examinee no." autofocus><a class="btn lg" href="#scan">Scan QR</a></div>
+<small class="hint">Press <kbd>/</kbd> to search. Ask the applicant to open their app; the QR is on the Pay screen.</small>
+{APPLICANT_CARD}</section>
+<section class="cright"><span class="clabel">Exam fee</span><div class="fee">₱500.00</div><small class="hint">Fixed for Season 2027. A fee waiver is set by the admission office, not here.</small>
+<div class="fld"><label for="or">Official receipt no.</label><input id="or" class="orno" value="0048214" autofocus>{hint("The next number on your OR booklet. It must be unused.")}</div>
+<div class="fld"><label>Paid with</label><div class="seg big"><span class="on">Cash</span><span>GCash at counter</span><span>Check</span></div></div>
+<a class="btn primary xl" href="#done">Record payment <kbd>Enter</kbd></a></section>
+{STRIP}""",
+        overlays=modal("done", "ok", OK, "Paid · Lea M. Sampulna", '<div class="kv"><span>OR no.</span><b class="mono">0048214</b><span>Amount</span><b>₱500.00 cash</b><span>Examinee no.</span><b class="mono">500231</b></div><p class="muted" style="margin:0">Lea got a text and an email and can now pick her exam day. Ready for the next person in 5 s…</p><div class="progress"><span style="width:40%"></span></div>', btn("Print OR copy") + btn("Next person", "console.html", "primary"))
+        + modal("paid", "warn", WARN, "Already paid", '<p class="muted" style="margin:0">Jomar P. Abdullah paid on Jan 12 (OR 0048190, Isulan counter 2). Don’t take another payment.</p>', btn("Reprint that OR") + btn("OK", "#", "primary"))
+        + modal("orused", "bad", BAD, "OR 0048213 is already used", '<p class="muted" style="margin:0">It was recorded at 9:41 for Ramon T. Villanueva. Check your booklet and type the next number.</p>', btn("OK", "#", "primary"))
+        + modal("notfound", "info", "", "No applicant found for “Lea Sampolna”", '<p class="muted" style="margin:0">Check the spelling, or ask for the application number on their phone (Home screen). Walk-ins must apply online first.</p>', btn("OK", "#", "primary"))
+        + modal("round", "warn", WARN, "Applied for Round 3, not open yet", '<p class="muted" style="margin:0">Round 3 payments start Apr 11. Ask the applicant to come back then, or move to Round 2 in their app.</p>', btn("OK", "#", "primary"))
+        + modal("waived", "info", "", "Fee waived", '<p class="muted" style="margin:0">Aisah K. Mangudadatu’s fee was waived by the admission office (indigent). Nothing to collect.</p>', btn("OK", "#", "primary"))
+        + modal("scan", "info", "", "Scan the applicant’s QR", '<div class="cam" style="height:220px"><span></span><small>Hold the phone up to the camera</small></div>', btn("Type instead", "#", "primary")),
+        states=[("done", "Recorded"), ("paid", "Already paid"), ("orused", "OR already used"), ("notfound", "Not found"), ("round", "Wrong round"), ("waived", "Fee waived"), ("scan", "Scan QR")])
+
+cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan counter 1</h1><p>Every payment you recorded today. Voiding needs a supervisor PIN and a reason.</p></div><div class="pacts">{btn("Print list")}</div></div>
+<div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Collected</span><b>₱18,000.00</b><small>36 payments</small></div><div class="kpi"><span>Cash</span><b>₱16,500.00</b><small>33</small></div><div class="kpi"><span>GCash at counter</span><b>₱1,500.00</b><small>3</small></div></div>
+{table(["Time", "Applicant", "OR no.", "Paid with", "Amount", ""], [(f'<span class="mono muted">{t}</span>', n, f'<span class="mono">{o}</span>', m, "₱500.00", '<span class="act">' + btn("Reprint", "#") + " " + btn("Void", "#void") + "</span>") for t, n, o, m in RECENT] + [('<span class="mono muted">8:20</span>', "Jasmine O. Kusain", '<span class="mono">0048210</span>', "Cash", '<s>₱500.00</s> ' + B("bad", "Voided"), "")])}""",
+        tab="today",
+        overlays=modal("void", "warn", WARN, "Void OR 0048213?", '<div class="fld"><label for="vr">Reason</label><select id="vr"><option>Wrong applicant</option><option>Wrong amount</option><option>Duplicate</option></select></div><div class="fld"><label for="vp">Supervisor PIN</label><input id="vp" type="password" value="••••"></div>' + hint("Ramon goes back to “Waiting for payment” and gets a text. The voided OR stays on the list."), btn("Cancel", "#") + btn("Void payment", "#", "danger")),
+        states=[("void", "Void with supervisor PIN")])
+
+cashier("close", "Close the day", f"""<div class="pagehead"><div><h1>Close the day</h1><p>Count the cash in the drawer. The difference is shown before you submit to the accounting office.</p></div></div>
+<div class="row"><div class="panel grow"><h2>Count the cash</h2>
+{table(["Bill or coin", "Count", "Amount"], [(d, f'<input value="{c}" style="width:90px;height:34px">', a) for d, c, a in [("₱1,000", "12", "₱12,000"), ("₱500", "8", "₱4,000"), ("₱200", "2", "₱400"), ("₱100", "1", "₱100"), ("Coins", "—", "₱0")]])}</div>
+<div class="panel" style="width:380px;flex-shrink:0"><h2>Remittance</h2><div class="kv"><span>Expected cash</span><b>₱16,500.00</b><span>Counted</span><b>₱16,500.00</b><span>Difference</span><b style="color:var(--ok)">₱0.00</b><span>GCash at counter</span><span>₱1,500.00 (not in drawer)</span><span>OR numbers used</span><span class="mono">0048178 – 0048214</span></div>
+{btn("Submit remittance", "#submitted", "primary lg")}{btn("Export (Excel)", "../admin/exports.html#queued")}</div></div>""",
+        tab="close",
+        overlays=modal("short", "warn", WARN, "₱100 short", '<p class="muted" style="margin:0">Counted ₱16,400.00 but expected ₱16,500.00. Recount, or submit with a note; the supervisor sees it.</p><div class="fld"><label for="sn">Note</label><input id="sn" placeholder="e.g. change given twice to one applicant"></div>', btn("Recount", "#") + btn("Submit with note", "#submitted", "primary"))
+        + toast("submitted", "ok", OK, "Remittance submitted", "₱16,500.00 cash, OR 0048178–0048214. The counter is closed for today."),
+        states=[("short", "Cash short"), ("submitted", "Submitted")])
+
+doc("cashier/lock.html", "Cashier locked", """<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><a class="sp" href="../index.html">All pages</a></div>
+<div class="clock"><div class="authcard" style="align-items:center;text-align:center;width:360px"><img src="../assets/sksu-seal.png" alt="" style="width:56px;height:56px"><h1 style="font-size:20px">Isulan counter 1</h1><span class="muted">Cashier 1 stepped away. Enter your PIN.</span>
+<div class="pins"><i class="on"></i><i class="on"></i><i></i><i></i></div>
+<div class="pad">""" + "".join(f'<a href="#">{k}</a>' for k in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "⌫"]) + """</div><a class="btn primary lg" style="width:100%" href="console.html">Unlock</a><small class="muted">Wrong PIN clears the dots so you can type again.</small></div></div>""")
+
+board("CASHIER-JOURNEY-MOCKUP.html", "Cashier: one counter, one fee",
+      "A cashier records the exam fee at a campus counter. It has its own role and screen: nothing else in the admin is open to it. Click any screen to open it.",
+      [("Start", [(D, "cashier/lock.html", "1", "Unlock with PIN", "")]),
+       ("Take a payment", [(D, "cashier/console.html", "2", "Counter", "Find or scan, fixed fee, OR no., Enter."),
+                           (D, "cashier/console.html#scan", "2a", "Scan the QR", "", True), (D, "cashier/console.html#done", "2b", "Paid", "Print OR copy, next person.", True),
+                           (D, "cashier/console.html#paid", "2c", "Already paid", "", True), (D, "cashier/console.html#orused", "2d", "OR already used", "", True),
+                           (D, "cashier/console.html#notfound", "2e", "Not found", "", True), (D, "cashier/console.html#round", "2f", "Wrong round", "", True),
+                           (D, "cashier/console.html#waived", "2g", "Fee waived", "", True)]),
+       ("During the day", [(D, "cashier/today.html", "3", "Today", "Reprint or void."), (D, "cashier/today.html#void", "3a", "Void with supervisor PIN", "", True)]),
+       ("End of day", [(D, "cashier/close.html", "4", "Close the day", "Count, compare, remit."), (D, "cashier/close.html#short", "4a", "Cash short", "", True),
+                       (D, "cashier/close.html#submitted", "4b", "Remitted", "", True), (D, "admin/cashier.html", "5", "Admin sees every counter", "")])],
+      [("One fee, no typing amounts", "The fee is fixed; waivers come from the admission office."), ("Keyboard first", "/ to search, Enter to record, Esc to clear."), ("Nothing is deleted", "Voids need a supervisor PIN and stay on the list.")])
+
+
 # ---------------------------------------------------------------- index with coverage checklist
 MAP = [
     ("/", "welcome", "public/landing.html"), ("/auth/google, /auth/google/callback", "auth/login", "public/login.html"),
@@ -1299,7 +1361,8 @@ MAP = [
     ("Test and debug routes (list kept offline)", "test views", "Removed on purpose"),
 ]
 groups = [
-    ("Journey mockups (start here)", ["ADMIN-JOURNEY-MOCKUP.html", "APPLICANT-JOURNEY-MOCKUP.html", "PROCTOR-JOURNEY-MOCKUP.html"]),
+    ("Journey mockups (start here)", ["ADMIN-JOURNEY-MOCKUP.html", "APPLICANT-JOURNEY-MOCKUP.html", "CASHIER-JOURNEY-MOCKUP.html", "PROCTOR-JOURNEY-MOCKUP.html"]),
+    ("Cashier", ["cashier/lock.html", "cashier/console.html", "cashier/today.html", "cashier/close.html"]),
     ("Public", ["public/landing.html", "public/login.html", "public/staff-login.html", "public/verify.html", "public/privacy.html", "public/error.html"]),
     ("Applicant (phone)", ["applicant/splash.html", "applicant/welcome-1.html", "applicant/welcome-2.html", "applicant/welcome-3.html"] + [f"applicant/{k}.html" for k, _ in FLOW]),
     ("Emails and printouts", ["docs/sms.html", "docs/email-approved.html", "docs/email-rejected.html", "docs/email-results.html", "docs/permit-pdf.html", "docs/result-pdf.html", "docs/seat-plan.html"]),

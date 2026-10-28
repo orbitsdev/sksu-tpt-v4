@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Close the day · SKSU TPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&family=Lexend:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add("framed");</script>
+</head>
+<body>
+<div class="states"><b>States on this page:</b><a href="#short">Cash short</a><a href="#submitted">Submitted</a><a href="#">Reset</a></div>
+<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
+<div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav><a href="console.html" class="">Counter</a><a href="today.html" class="">Today</a><a href="close.html" class="on">Close the day</a></nav>
+<span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><span class="cshift">Today ₱18,000 · 36 paid</span><a class="btn sm" href="lock.html">Lock</a></header>
+<main class="cmain"><div class="pagehead"><div><h1>Close the day</h1><p>Count the cash in the drawer. The difference is shown before you submit to the accounting office.</p></div></div>
+<div class="row"><div class="panel grow"><h2>Count the cash</h2>
+<table><thead><tr><th>Bill or coin</th><th>Count</th><th>Amount</th></tr></thead><tbody><tr><td>₱1,000</td><td><input value="12" style="width:90px;height:34px"></td><td>₱12,000</td></tr><tr><td>₱500</td><td><input value="8" style="width:90px;height:34px"></td><td>₱4,000</td></tr><tr><td>₱200</td><td><input value="2" style="width:90px;height:34px"></td><td>₱400</td></tr><tr><td>₱100</td><td><input value="1" style="width:90px;height:34px"></td><td>₱100</td></tr><tr><td>Coins</td><td><input value="—" style="width:90px;height:34px"></td><td>₱0</td></tr></tbody></table></div>
+<div class="panel" style="width:380px;flex-shrink:0"><h2>Remittance</h2><div class="kv"><span>Expected cash</span><b>₱16,500.00</b><span>Counted</span><b>₱16,500.00</b><span>Difference</span><b style="color:var(--ok)">₱0.00</b><span>GCash at counter</span><span>₱1,500.00 (not in drawer)</span><span>OR numbers used</span><span class="mono">0048178 – 0048214</span></div>
+<a class="btn primary lg" href="#submitted">Submit remittance</a><a class="btn " href="../admin/exports.html#queued">Export (Excel)</a></div></div></main></div><div class="modal" id="short"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="short-t"><div class="ico warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17.5v.01"/></svg></div><h3 id="short-t">₱100 short</h3><p class="muted" style="margin:0">Counted ₱16,400.00 but expected ₱16,500.00. Recount, or submit with a note; the supervisor sees it.</p><div class="fld"><label for="sn">Note</label><input id="sn" placeholder="e.g. change given twice to one applicant"></div><div class="acts"><a class="btn " href="#">Recount</a><a class="btn primary" href="#submitted">Submit with note</a></div></div></div><div class="toast" id="submitted" role="status"><div class="ico ok" style="width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg></div><div><b>Remittance submitted</b><span class="muted">₱16,500.00 cash, OR 0048178–0048214. The counter is closed for today.</span></div><a class="x" href="#" aria-label="Dismiss">×</a></div>
+</body>
+</html>
