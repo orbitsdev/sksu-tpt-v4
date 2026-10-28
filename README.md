@@ -18,6 +18,7 @@ This repo holds the planning work for rebuilding the SKSU Admission Test (TPT) s
 |---|---|
 | `docs/PRD.md` | Decisions, core modules, old process → new process, known gaps, scenarios, notifications, data model, flows and architecture (Mermaid, renders on GitHub), earlier attempts, plan, admin UI rules, usability walk-through |
 | `docs/FORMS-AND-PAYMENTS.md` | Every tptv3 form and field reviewed, records per step, payment flow (cashier, online + proof, waiver, refunds, reconciliation) |
+| `docs/RESULTS-IMPORT.md` | How tptv3 imports scores, its flaws, the v4 CSV template and import rules |
 | `docs/csv-findings-2026.md` | Analysis of the 2026 results CSV |
 | `mockups/index.html` | Every page, interaction rules, chart choices and the route coverage table |
 

@@ -26,7 +26,7 @@ code{{font:13px "Geist Mono",monospace;background:#f1f5f2;padding:1px 5px;border
 </style>
 </head>
 <body>
-<header><div><img src="../assets/brand/sksu_seal.png" alt="SKSU seal"><div><b>SKSU TPT v4 · {title}</b><br><a href="PRD.html">PRD and flows</a> · <a href="FORMS-AND-PAYMENTS.html">Forms and payments</a> · <a href="../mockups/index.html">Mockups</a></div></div></header>
+<header><div><img src="../assets/brand/sksu_seal.png" alt="SKSU seal"><div><b>SKSU TPT v4 · {title}</b><br><a href="PRD.html">PRD and flows</a> · <a href="FORMS-AND-PAYMENTS.html">Forms and payments</a> · <a href="RESULTS-IMPORT.html">Results import</a> · <a href="../mockups/index.html">Mockups</a></div></div></header>
 <nav class="toc" id="toc"></nav>
 <main id="doc"></main>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
@@ -46,7 +46,7 @@ await mermaid.run({{ querySelector: ".mermaid" }});
 </html>
 """
 
-for name, title in [("PRD", "PRD and flows"), ("FORMS-AND-PAYMENTS", "Forms and payments")]:
+for name, title in [("PRD", "PRD and flows"), ("FORMS-AND-PAYMENTS", "Forms and payments"), ("RESULTS-IMPORT", "Results import")]:
     md = (DOCS / f"{name}.md").read_text(encoding="utf-8")
     (DOCS / f"{name}.html").write_text(PAGE.format(title=title, md=json.dumps(md).replace("</", "<\\/")), encoding="utf-8")
 print("rendered")

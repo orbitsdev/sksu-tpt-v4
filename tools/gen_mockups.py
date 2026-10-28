@@ -253,7 +253,7 @@ for i, (eb, big, line) in enumerate([("SKSU Admission Test", "Your college<br>st
           f'<a class="go" href="{nxt}">{"Get started" if i == 3 else "Next"}</a>', '<div class="alt"><a href="../public/login.html">I already applied</a><a href="../public/landing.html">Look around first</a></div>' if i == 3 else "")
 
 phone("notifications", "Notifications", """<h1 class="gh">Notifications</h1>
-<div class="notes">""" + "".join(f'<a class="note{" unread" if u else ""}" href="{h}"><span class="ni {k}">{NOTE_ICON[k]}</span><span><b>{t}</b><span>{d}</span><small>{w}</small></span></a>' for t, d, w, k, u, h in [('Seat booked', 'Isulan · Sat, Mar 14 · Room 4, seat 27. Your permit is ready.', 'Jan 13 · 9:42 AM', 'ok', True, 'permit.html'), ('Payment approved', 'Your examinee number is 500214. Pick your exam seat now.', 'Jan 12 · 4:30 PM', 'ok', True, 'seat.html'), ('Receipt received', 'We’re checking it. Usually within one working day.', 'Jan 12 · 8:10 AM', 'info', False, 'payment-waiting.html'), ('Application submitted', 'Next: pay the exam fee and send your receipt.', 'Jan 11 · 7:55 PM', 'info', False, 'payment.html'), ('Welcome to the SKSU Admission Test', 'Your account is ready. Start your application any time before Feb 28.', 'Jan 11 · 7:31 PM', 'info', False, 'home.html')]) + """</div>
+<div class="notes">""" + "".join(f'<a class="note{" unread" if u else ""}" href="{h}"><span class="ni {k}">{NOTE_ICON[k]}</span><span><b>{t}</b><span>{d}</span><small>{w}</small></span></a>' for t, d, w, k, u, h in [('Your TPT 2027 result is out', 'You qualify for all 3 of your choices. Tap to see your scores.', 'Apr 20 · 9:00 AM', 'ok', True, 'result.html'), ('Seat booked', 'Isulan · Sat, Mar 14 · Room 4, seat 27. Your permit is ready.', 'Jan 13 · 9:42 AM', 'ok', True, 'permit.html'), ('Payment approved', 'Your examinee number is 500214. Pick your exam seat now.', 'Jan 12 · 4:30 PM', 'ok', True, 'seat.html'), ('Receipt received', 'We’re checking it. Usually within one working day.', 'Jan 12 · 8:10 AM', 'info', False, 'payment-waiting.html'), ('Application submitted', 'Next: pay the exam fee and send your receipt.', 'Jan 11 · 7:55 PM', 'info', False, 'payment.html'), ('Welcome to the SKSU Admission Test', 'Your account is ready. Start your application any time before Feb 28.', 'Jan 11 · 7:31 PM', 'info', False, 'home.html')]) + """</div>
 <small class="center" style="color:#757575">You also get these by email. Texts are on for exam-day reminders.</small>""",
       cta=("#prefs", "Notification settings"), back="home.html",
       overlays=modal("prefs", "info", "", "How should we reach you?", '<label class="check"><input type="checkbox" checked disabled>Email · maria.delacruz@gmail.com (always on)</label><label class="check"><input type="checkbox" checked>Text messages to 0917 123 4567</label><div class="fld"><label class="cap" for="lang">LANGUAGE</label><select id="lang"><option>English</option><option>Filipino</option></select></div><small style="color:#757575">Approval, schedule changes, exam-day reminders and results are always sent.</small>', '<a class="go" href="#prefs-ok">Save</a><a class="back" href="#">Cancel</a>')
@@ -423,7 +423,7 @@ doc("docs/result-pdf.html", "Result PDF", f"""<div class="crumbs" style="text-al
 <div class="paper">{LETTERHEAD}<h1 style="text-align:center">TPT 2027 · RESULT</h1>
 <div class="kv"><span>Examinee no.</span><b class="mono">500214</b><span>Name</span><b>DELA CRUZ, Maria Santos</b><span>Tested</span><span>March 14, 2027 · Isulan, Room 4</span></div>
 {table(["Subject", "Standard score", "Stanine", "Meaning"], [(n, f'<span class="mono">{s}</span>', t, ["", "Very low", "Low", "Below average", "Low average", "Average", "High average", "Above average", "Very high", "Outstanding"][t]) for n, s, t in subj] + [("<b>Overall</b>", '<b class="mono">584</b>', "<b>7</b>", "<b>Above average</b>")])}
-<small class="muted">Standard score = 500 + 100 × z, kept to 200–800. Stanine bands are 50 points wide. Labels shown as [CONFIRM WITH TESTING CENTER].</small>
+<small class="muted">Scores as provided by the SKSU Testing Center.</small>
 <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end"><span class="muted">Verify: sksu-tpt.com/v/…</span><div style="text-align:center"><div style="border-top:1px solid #18181b;width:220px;padding-top:4px">[DIRECTOR, TESTING CENTER]</div></div></div></div>""")
 doc("docs/sms.html", "Text messages", """<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a> | <a href="../admin/messages.html">Messages admin</a></div>
 <div class="smsgrid">""" + "".join(f'<div class="smsw"><b>{t}</b><div class="sms">{m}</div><small class="muted">{len(m)} of 160 characters</small></div>' for t, m in [('Payment approved', 'SKSU TPT: Payment approved. Exam no. 500214. Pick your seat by Mar 1: sksu-tpt.com/seat'), ('Payment rejected', 'SKSU TPT: We couldn’t read your receipt. Please send it again: sksu-tpt.com/pay'), ('Seat booked', 'SKSU TPT: Isulan, Sat Mar 14, Room 4 seat 27. Report by 7:30AM. Permit: sksu-tpt.com/permit'), ('Schedule changed', 'SKSU TPT: Your exam moved to ACCESS, Sun Mar 15, Room 18 seat 6. New permit: sksu-tpt.com/permit'), ('Exam tomorrow', 'SKSU TPT: Exam tomorrow, Isulan Room 4. Report by 7:30AM, exam 8:00AM. Bring your permit and an ID. Be there by 7:30.'), ('Results out', 'SKSU TPT: Your TPT 2027 result is ready: sksu-tpt.com/result')]) + """</div>""")
@@ -739,7 +739,7 @@ admin("payments", "Payment review", f"""<div class="row">
 <label for="rej" class="muted" style="font-size:13px">Reject reason</label><select id="rej"><option>Reference already used</option><option>Receipt is blurry</option><option>Amount is short</option><option>Reference does not match</option></select>
 {btn("Reject and email the reason", "#reject", "danger lg")}<small class="muted">Each decision goes in the audit log and opens the next one.</small></div></div>""",
       overlays=modal("approve", "warn", WARN, "Approve a reused reference?", '<p class="muted" style="margin:0">This reference was already approved for Maria S. Dela Cruz. Approve only if you checked the GCash records.</p>', btn("Cancel", "#") + btn("Approve anyway", "#approved", "primary"))
-      + toast("approved", "ok", OK, "Approved · 500216 issued", "Email sent. Next: Lea M. Sampulna.")
+      + toast("approved", "ok", OK, "Approved · 500216 issued", "Aisah was notified in the app, by email and by text. Next: Lea M. Sampulna.")
       + modal("reject", "bad", BAD, "Reject and email Aisah?", '<p class="muted" style="margin:0">Reason sent: “Reference already used”. She can send a new receipt.</p>', btn("Cancel", "#") + btn("Reject", "#rejected", "danger"))
       + toast("rejected", "ok", OK, "Rejected · email sent", "Next: Lea M. Sampulna.")
       + toast("conflict", "bad", BAD, "Cashier 2 already decided this one", "It was approved 10 s ago. Showing the next one.")
@@ -824,21 +824,26 @@ admin("checkin", "Check-in monitor · Sat, Mar 14", f"""{rounds_bar(1)}<div clas
       overlays=modal("call", "warn", WARN, "Tacurong Room 2 hasn’t synced", '<div class="kv"><span>Proctor</span><span>E. Mangelen</span><span>Mobile</span><span>0918 555 0142</span><span>Last seen</span><span>7:21 AM</span></div>', btn("Close", "#") + btn("Assign another proctor", "#", "primary")),
       states=[("call", "Offline proctor dialog")])
 
-norms = [("English", 60, "34.2", "9.8"), ("Science", 50, "24.9", "8.1"), ("Mathematics", 50, "21.7", "8.9"), ("Filipino", 50, "31.0", "7.4"), ("Social Studies", 50, "27.3", "7.9"), ("ESM Competency", 40, "19.6", "6.8")]
-admin("scores", "Scores import", f"""{rounds_bar(1)}{stepper([("Upload", "#uploading"), ("Check", "#"), ("Commit", "#commit"), ("Release", "results.html")], 2)}<div class="steps">
-<div class="step"><small style="color:var(--ok)">1 · UPLOADED</small><b class="ink">raw-scores-2027.xlsx</b><span class="muted">9,104 rows · raw score per subject</span></div>
-<div class="step on"><small style="color:var(--green-btn)">2 · CHECK</small><b class="ink">9,098 match · 6 need a look</b><span class="muted">4 unknown examinee nos. · 2 were marked absent</span></div>
-<div class="step"><small class="muted">3 · COMMIT</small><b class="ink">Not yet</b><span class="muted">Scores freeze into a snapshot on commit</span></div></div>
-<div class="drop">Drop a new .xlsx or .csv here, or <a href="#uploading">choose a file</a>. Columns: examinee_no, english, science, math, filipino, social_studies, esm.</div>
-<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 14px"><h2>6 rows need a look</h2>{btn("Download them", "#")}</div>
-{table(["Row", "Examinee no.", "Problem"], [("212", '<span class="mono">500912</span>', B("bad", "No such examinee")), ("1,044", '<span class="mono">50O233</span>', B("bad", "Letter O instead of zero")), ("3,310", '<span class="mono">501877</span>', B("warn", "Marked absent on Mar 14")), ("5,002", '<span class="mono">502460</span>', B("bad", "Math 71 is over 50 items"))])}</div>
-<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 14px"><h2>Norms from this file</h2><span class="mono muted" style="font-size:13px">SS = 500 + 100 × (raw − mean) ÷ SD, kept to 200–800</span></div>
-{table(["Subject", "Items", "Mean raw", "SD", "Examinees"], [(f'<span class="ink">{n[0]}</span>', f'<span class="mono">{n[1]}</span>', f'<span class="mono">{n[2]}</span>', f'<span class="mono">{n[3]}</span>', '<span class="mono">9,098</span>') for n in norms])}</div>
-<div class="head"><span class="muted">Commit keeps the 6 rows aside; you can fix and re-import them later.</span>{btn("Commit 9,098 scores", "#commit", "primary")}</div>""",
-      overlays=modal("uploading", "info", '<span class="spin"></span>', "Reading raw-scores-2027.xlsx… 41%", '<div class="progress"><span style="width:41%"></span></div><p class="muted" style="margin:0">3,732 of 9,104 rows checked.</p>', btn("Cancel", "#"))
-      + modal("badfile", "bad", BAD, "This file can’t be read", '<p class="muted" style="margin:0">Column “examinee_no” is missing. Row 1 must have the column names listed above.</p>', btn("OK", "#"))
-      + modal("commit", "warn", WARN, "Commit 9,098 scores?", '<p class="muted" style="margin:0">Standard scores and stanines are computed and frozen. Nobody sees them until you release results.</p>', btn("Cancel", "#") + btn("Commit", "results.html#committed", "primary")),
-      states=[("uploading", "Uploading"), ("badfile", "Bad file error"), ("commit", "Commit confirm")])
+SUBJECTS = ["english", "science", "math", "filipino", "social_studies", "esm", "overall"]
+TEMPLATE_COLS = ["examinee_no", "name"] + [f"{x}_{k}" for x in SUBJECTS for k in ("ss", "stanine")]
+admin("scores", "Scores import", f"""{rounds_bar(1)}{stepper([("Upload CSV", "#uploading"), ("Match columns", "#map"), ("Check", "#"), ("Approve", "#commit"), ("Publish", "results.html")], 3)}
+<div class="panel"><div class="head"><h2>tpt-2027-round1.csv</h2><span class="muted" style="font-size:13px">From the Testing Center · uploaded Apr 18, 3:40 PM · original kept unchanged</span></div>
+<span class="hint">The Testing Center computes the scores; this screen never changes them. It checks the file against who registered and who was present, and shows what will change. Need the format? {btn("Download the CSV template", "../docs/tpt-scores-template.csv", "sm")}</span>
+<div class="kpis" style="grid-template-columns:repeat(5,1fr)"><div class="kpi"><span>Rows in file</span><b>9,104</b></div><div class="kpi"><span>Ready</span><b>9,088</b></div><div class="kpi"><span>Not registered</span><b style="color:var(--bad)">4</b></div><div class="kpi"><span>Duplicate or out of range</span><b style="color:var(--bad)">10</b></div><div class="kpi"><span>Present, no score</span><b style="color:var(--warn)">2</b></div></div></div>
+<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>Needs a look · 16</h2>{btn("Download these rows (CSV)", "#")}</div>
+{table(["Row", "Examinee no.", "Problem", "What to do"], [("212", '<span class="mono">500912</span>', B("bad", "Not registered this round"), "Check the number with the Testing Center"), ("1,044", '<span class="mono">50O233</span>', B("bad", "Letter O instead of zero"), "Fix in the file and upload again"), ("2,871", '<span class="mono">500655</span>', B("bad", "Appears twice"), "Keep one row"), ("5,002", '<span class="mono">502460</span>', B("bad", "Overall 910 is above 800"), "Ask the Testing Center"), ("6,310", '<span class="mono">501990</span>', B("warn", "Stanine 9 but score 512"), "Ask the Testing Center"), ("—", '<span class="mono">501877</span>', B("warn", "Checked in, no score in file"), "Missing answer sheet?")])}</div>
+<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>What changes if you approve</h2><span class="muted" style="font-size:13px">compared with what is in the system now</span></div>
+{table(["", "Examinees", "Example"], [(B("ok", "New"), '<span class="mono">9,080</span>', "500214 · Overall 584 · stanine 7"), (B("warn", "Changed"), '<span class="mono">8</span>', "500176 · Overall 498 → 512"), (B("gray", "Unchanged"), '<span class="mono">0</span>', "—")])}</div>
+<div class="panel"><h2>Files for this round</h2>{table(["File", "Uploaded", "By", "Status", ""], [("tpt-2027-round1.csv", "Apr 18, 3:40 PM", "Testing Center", B("warn", "Checking"), ""), ("tpt-2027-round1-draft.csv", "Apr 17, 10:12 AM", "Testing Center", B("gray", "Replaced"), btn("Download original"))])}</div>
+<div class="formfoot" style="max-width:none">{btn("Upload a fixed file", "#uploading")}<span style="margin-left:auto" class="muted">The 16 rows stay out until fixed; the rest can be approved now.</span>{btn("Approve 9,088 scores", "#commit", "primary")}</div>""",
+      overlays=modal("uploading", "info", '<span class="spin"></span>', "Reading tpt-2027-round1.csv… 41%", '<div class="progress"><span style="width:41%"></span></div><p class="muted" style="margin:0">3,732 of 9,104 rows checked.</p>', btn("Cancel", "#"))
+      + modal("checking", "info", '<span class="spin"></span>', "Checking rows… 6,410 of 9,104", '<div class="progress"><span style="width:70%"></span></div><p class="muted" style="margin:0">Matching examinee numbers with registrations and check-ins. 12 problems so far.</p>', btn("Run in background", "#bg", "primary"))
+      + toast("bg", "info", INFO, "Import runs in the background", "You can leave this page. We’ll notify you when it’s done (bell, top right).")
+      + modal("summary", "info", "", "Import finished", '<div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Ready to approve</span><b>9,088</b></div><div class="kpi"><span>Skipped</span><b>0</b></div><div class="kpi"><span>Problems</span><b style="color:var(--bad)">16</b></div></div>' + hint("Took 38 seconds. Nothing is visible to students yet."), btn("Download problem rows (CSV)") + btn("Review and approve", "#", "primary"))
+      + modal("map", "info", "", "Match the columns", '<p class="muted" style="margin:0">Guessed from the header row. Fix any that are wrong; it is remembered for next time.</p>' + table(["In the file", "Means"], [("Examinee Number", "<select><option>Examinee no.</option></select>"), ("Name of Examinee", "<select><option>Name (only to double-check)</option></select>"), ("English · Standard Score", "<select><option>English · standard score</option></select>"), ("English · Stanine", "<select><option>English · stanine</option></select>"), ("Qualitative Interpretation", "<select><option>Ignore (worked out from stanine)</option></select>")]), btn("Cancel", "#") + btn("Use these columns", "#", "primary"))
+      + modal("badfile", "bad", BAD, "This file has two tables side by side", '<p class="muted" style="margin:0">Columns 32–33 hold a second list (examinee number + program) next to the scores. Save only the scores table as its own CSV, with one header row, and upload again.</p>', btn("Download the template", "../docs/tpt-scores-template.csv") + btn("OK", "#", "primary"))
+      + modal("commit", "warn", WARN, "Approve 9,088 scores?", '<p class="muted" style="margin:0">They are saved exactly as in the file. Students cannot see them until you publish. The file and your approval go in the audit log.</p>', btn("Cancel", "#") + btn("Approve", "results.html#committed", "primary")),
+      states=[("uploading", "Uploading"), ("checking", "Checking rows"), ("bg", "Running in background"), ("summary", "Import summary"), ("map", "Match columns"), ("badfile", "Two tables in one file"), ("commit", "Approve confirm")])
 
 admin("results", "Results", f"""{rounds_bar(1)}<div class="stats"><div><small>Scored</small><b>9,098</b></div><div><small>Absent</small><b>635</b></div><div><small>Not in file</small><b>6</b></div><div><small>Release</small><b>Apr 20 · 9:00 AM</b></div></div>
 <div class="panel" style="flex-direction:row;align-items:center"><label for="rel" class="ink" style="font-weight:600">Release on</label><input id="rel" type="datetime-local" value="2027-04-20T09:00"><span class="muted grow">Pages and PDFs are pre-built before this time, so release day stays fast.</span>{btn("Release now", "#release", "primary")}</div>
@@ -848,12 +853,13 @@ admin("results", "Results", f"""{rounds_bar(1)}<div class="stats"><div><small>Sc
       + toast("committed", "ok", OK, "9,098 scores committed", "Release is scheduled for Apr 20, 9:00 AM.")
       + modal("release", "warn", WARN, "Release results to 9,098 examinees now?", '<p class="muted" style="margin:0">They get an email and can see scores at once. You can’t take this back.</p>', btn("Cancel", "#") + btn("Release now", "#releasing", "primary"))
       + modal("releasing", "info", '<span class="spin"></span>', "Sending 9,098 emails… 2,310 sent", '<div class="progress"><span style="width:25%"></span></div><p class="muted" style="margin:0">Safe to close. This keeps going in the background.</p>', btn("Close", "#released"))
-      + toast("released", "ok", OK, "Results released", "Emails are going out in the background."),
-      states=[("none", "Empty: no scores yet"), ("committed", "After commit"), ("release", "Release confirm"), ("releasing", "Sending progress"), ("released", "Released")])
+      + toast("released", "ok", OK, "Results released", "Emails and texts are going out. See the delivery report.")
+      + modal("report", "info", "", "Results released · delivery", '<div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>In app</span><b>9,098</b></div><div class="kpi"><span>Email delivered</span><b>9,061</b></div><div class="kpi"><span>Text delivered</span><b>8,977</b></div></div><div class="kv"><span>Email bounced</span><span>37 · mailbox full or wrong address</span><span>Text failed</span><span>121 · number not in service</span></div>' + hint("Failed ones can be fixed and resent from Messages."), btn("Open send log", "messages.html") + btn("Done", "#", "primary")),
+      states=[("none", "Empty: no scores yet"), ("report", "Delivery report"), ("committed", "After commit"), ("release", "Release confirm"), ("releasing", "Sending progress"), ("released", "Released")])
 
-admin("result-detail", "Result · 500214 Maria S. Dela Cruz", table(["Subject", "Raw", "Standard score", "Stanine"], [(n, '<span class="mono">' + str(r) + "</span>", f'<span class="mono">{s}</span>', t) for (n, s, t), r in zip(subj, [44, 29, 28, 43, 29, 26])]) + f'<div style="display:flex;gap:8px">{btn("Result PDF", "../docs/result-pdf.html")}{btn("Correct a raw score", "#fix")}</div>',
+admin("result-detail", "Result · 500214 Maria S. Dela Cruz", table(["Subject", "Raw", "Standard score", "Stanine"], [(n, '<span class="mono">' + str(r) + "</span>", f'<span class="mono">{s}</span>', t) for (n, s, t), r in zip(subj, [44, 29, 28, 43, 29, 26])]) + f'<div style="display:flex;gap:8px">{btn("Result PDF", "../docs/result-pdf.html")}{btn("Correct a score", "#fix")}</div>',
       active="results", crumb='<a href="results.html" class="muted">← Results</a>',
-      overlays=modal("fix", "warn", WARN, "Correct a raw score", '<div class="fld"><label for="f1">Science raw</label><input id="f1" value="31"></div><div class="fld"><label for="f2">Reason</label><input id="f2" value="Answer sheet re-checked by testing center"></div><p class="muted" style="margin:0">The standard score is recomputed. Old and new values stay in the history.</p>', btn("Cancel", "#") + btn("Save", "#", "primary")),
+      overlays=modal("fix", "warn", WARN, "Correct a score", '<div class="fld"><label for="f1">Science raw</label><input id="f1" value="31"></div><div class="fld"><label for="f2">Reason</label><input id="f2" value="Answer sheet re-checked by testing center"></div><p class="muted" style="margin:0">The standard score is recomputed. Old and new values stay in the history.</p>', btn("Cancel", "#") + btn("Save", "#", "primary")),
       states=[("fix", "Correction dialog")])
 
 EVENTS = [("Account created", "✓", "", "", "Welcome"), ("Application submitted", "✓", "✓", "", "Next: pay"), ("Upload needs redoing", "✓", "✓", "✓", "Photo or receipt problem"), ("Receipt received", "✓", "✓", "", "We’re checking"),
@@ -1067,7 +1073,7 @@ admin_pages = [("dashboard", "", "Dashboard", "Today’s numbers, sign-ups, dema
                ("scores", "badfile", "Bad file", ""), ("scores", "commit", "Commit confirm", ""),
                ("results", "", "Results", "Schedule or release; search results."), ("results", "release", "Release confirm", "Can’t be taken back."),
                ("results", "releasing", "Sending emails", ""), ("result-detail", "", "One result", "Raw and standard scores per subject."),
-               ("result-detail", "fix", "Correct a raw score", ""), ("reports", "", "Reports", "Every old report, plus attendance and survey."),
+               ("result-detail", "fix", "Correct a score", ""), ("reports", "", "Reports", "Every old report, plus attendance and survey."),
                ("report-view", "", "Ranking report", ""), ("exports", "", "Downloads", "Big files build in the background."),
                ("exports", "queued", "Export queued", ""), ("campuses", "", "Campuses and programs", ""), ("campuses", "program", "Add program form", ""),
                ("campuses", "off", "Stop offering", ""), ("staff", "", "Staff and roles", "Invite only."), ("staff", "invite", "Invite form", ""),
@@ -1190,17 +1196,22 @@ ADMIN_CYCLE = [
         ("proctor/checkin.html", "What the proctor sees", "Their phone at the door, scanning permits."),
         ("proctor/summary.html#closed", "Room closed", "Counts arrive on the monitor.")]),
     ("7 · Scores", [
-        ("admin/scores.html", "Scores import", "Upload raw scores, see problem rows and the norms, then commit."),
-        ("admin/scores.html#uploading", "Reading the file", "Progress by rows."),
-        ("admin/scores.html#badfile", "File can’t be read", "Says which column is missing."),
+        ("admin/scores.html", "Scores import", "Upload the Testing Center CSV, match columns, see problem rows and what changes, approve."),
+        ("admin/scores.html#uploading", "Uploading the CSV", "Progress while the file goes up."),
+        ("admin/scores.html#checking", "Checking rows", "A row counter and problems found so far."),
+        ("admin/scores.html#bg", "Running in the background", "Leave the page; the bell tells you when it’s done."),
+        ("admin/scores.html#summary", "Import summary", "Ready, skipped, problems; download the problem rows."),
+        ("admin/scores.html#map", "Match columns", "Remembered for next time."),
+        ("admin/scores.html#badfile", "Two tables in one file", "The 2026 layout is caught with a clear fix."),
         ("admin/scores.html#commit", "Commit confirm", "Scores are computed and frozen, not yet visible.")]),
     ("8 · Review and publish results", [
         ("admin/results.html#committed", "Results", "Scheduled release; scored, absent and missing counted."),
         ("admin/results.html#release", "Release now?", "Can’t be taken back."),
         ("admin/results.html#releasing", "Sending emails", "Runs in the background."),
         ("admin/results.html#released", "Released", ""),
+        ("admin/results.html#report", "Delivery report", "In app, email and text delivered; failures to resend."),
         ("admin/result-detail.html", "One result", "Raw and standard score per subject."),
-        ("admin/result-detail.html#fix", "Correct a raw score", "Recomputed, with the old value kept."),
+        ("admin/result-detail.html#fix", "Correct a score", "Recomputed, with the old value kept."),
         ("docs/email-results.html", "What the applicant gets", ""),
         ("docs/result-pdf.html", "Official result PDF", "")]),
     ("9 · Reports, downloads and audit", [
@@ -1327,7 +1338,7 @@ doc("index.html", "All pages", f"""<div class="idx"><header><img src="assets/sks
     ("Auto seat assignment", "Preview, then assign; undo for 1 hour", "admin/sessions.html#auto"),
     ("Messages and blasts", "Templates, email + SMS, cost shown first", "admin/messages.html"),
     ("Season setup wizard", "Copy last season, 5 steps", "admin/setup-1.html"),
-    ("Score import checks", "Bad rows and norms before commit", "admin/scores.html"),
+    ("Score import checks", "Not registered, duplicate, out-of-range and missing rows before approval", "admin/scores.html"),
     ("Scheduled release", "Pre-built pages so release day stays fast", "admin/results.html"),
     ("Audit log with undo", "Every change, reversible for a while", "admin/audit.html#undo"),
     ("Role permissions", "Fixed roles, clear matrix", "admin/staff.html"),
@@ -1358,6 +1369,8 @@ if OUT.exists():
 (OUT / "assets").mkdir(parents=True)
 (OUT / "assets" / "style.css").write_text("".join((TOOLS / f).read_text(encoding="utf-8") for f in ("base.css", "theme.css", "theme-extra.css", "theme-app.css", "theme-admin.css")), encoding="utf-8")
 shutil.copyfile(TOOLS / "sksu-seal.png", OUT / "assets" / "sksu-seal.png")
+(OUT / "docs").mkdir(parents=True, exist_ok=True)
+shutil.copyfile(TOOLS / "tpt-scores-template.csv", OUT / "docs" / "tpt-scores-template.csv")
 for extra in ("seal-faint.png", "seal-white.png", "campus-duo.jpg"):
     shutil.copyfile(TOOLS / extra, OUT / "assets" / extra)
 for path, html in PAGES.items():

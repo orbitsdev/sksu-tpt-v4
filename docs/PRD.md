@@ -34,7 +34,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Payments | Cashier records the OR number (instant), or upload and review; duplicate-reference guard | `admin/cashier`, `admin/payments` |
 | Permits | Examinee number from a per-season counter; wallet-style permit and PDF with QR; public verify page | `applicant/permit`, `docs/permit-pdf`, `public/verify` |
 | Exam day | Offline QR check-in on the proctor's phone; live monitor | `proctor/*`, `admin/checkin` |
-| Results import | Raw scores → checks → norms → commit → scheduled release | `admin/scores`, `admin/results` |
+| Results import | Upload the Testing Center CSV → match columns → checks → preview changes → approve → publish; every file kept unchanged | `admin/scores`, `admin/results` |
 | Results and qualification | Standard score, stanine, qualified programs by cut-off; student chooses a program | `applicant/result`, `docs/result-pdf` |
 | Notifications | Event → in-app, email, SMS; templates, blasts, send log with resend; student preferences | `applicant/notifications`, `admin/messages`, `docs/sms` |
 | Reports and downloads | Funnel, demand, score histogram, every old report; background exports | `admin/reports`, `admin/exports` |
@@ -55,7 +55,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Select test center | Picks slot, computes room and seat | Count-then-insert with no lock; `slots / 2` hard-codes AM/PM; 357 "slots on null" errors [Certain] | Pick campus + date; seat assigned under a row lock with a unique key; auto-assign for stragglers |
 | Permit PDF | Headless Chrome per request | 19,209 Browsershot errors [Certain] | Built once on the queue, cached; wallet-style permit works offline |
 | Exam day | Paper lists | No attendance recorded; 635 registered with no result and no reason [Certain] | Offline QR check-in; absent is a status |
-| Results upload (Excel) | Imports standard scores | No raw scores; derived values stored as text; two tables glued in one CSV [Certain] | Raw scores in, norms computed, problem rows listed, commit, scheduled release |
+| Results upload (Excel) | Imports scores computed by the Testing Center | Columns read by position; header row saved as a result; no checks; re-upload duplicates; file not kept [Certain] | Same idea, import not compute: CSV template, column matching, checks, preview of changes, approval, original file kept |
 | Survey + select courses before result | Gate to see the result | Forces a survey; second course pick duplicates choices [Certain] | Survey optional; choice of program happens after results, limited to programs they qualify for |
 | Reports (6 Livewire pages) | Lists and exports | Slow full-table queries, missing indexes [Certain] | Same reports plus funnel, attendance and survey; exports queued |
 | Emails | Approve/reject via Gmail SMTP | Gmail daily limit, no SMS, no log [Certain] | Mail API + SMS provider; templates; send log with resend |
@@ -72,7 +72,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 - **Payments:** no cashier path, no duplicate-reference check, no record of who approved.
 - **Schedules and rooms:** rooms are a count, not real rooms; no capacity per room; no way to move someone or close a day cleanly; the seat race.
 - **Campuses and programs:** campus and program glued in one string in results; no cut-offs in the system.
-- **Results import:** no raw scores, no validation preview, no norms, no attendance link, can't correct one score.
+- **Results import:** columns read by position, header row imported as data, no check against registrations or attendance, re-upload duplicates rows, no record of the file (see RESULTS-IMPORT.md).
 - **Results:** labels and stanines stored, not computed; no qualification logic; release is a manual toggle.
 - **Notifications:** two emails only; nothing for schedule change, reminders or results.
 - **Admin:** admin by email list; no audit log; no roles beyond admin/applicant.
@@ -94,7 +94,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | A date overflows | Add rooms or another day; as a last resort, switch on AM/PM sittings for that day. |
 | Wrong room at the door | The scan says which room to send them to. |
 | Lost permit | The permit lives in the app and works offline; the proctor can also search by name. |
-| Score correction | Admin corrects a raw score with a reason; the standard score recomputes; old value kept. |
+| Score correction | Upload a fixed CSV (the screen shows what changes), or correct one score with a reason; the old value is kept. |
 | Two cashiers approve the same receipt | The second one is told and moved to the next item. |
 
 **The Civil Service exam as the model** (from general knowledge, not fetched, so confirm the details): applicants file, choose a testing venue, and later get a notice with their school, room and seat. The exam is one fixed date with a reporting time printed on the admission slip. v4 does the same: you choose campus and date, room and seat are assigned, and times are a guide.
@@ -144,7 +144,8 @@ erDiagram
     SEAT_ASSIGNMENT }o--|| SCHEDULE_DAY_ROOM : in
     APPLICATION ||--o| CHECK_IN : "marked at"
     APPLICATION ||--o{ SCORE : has
-    ROUND ||--o{ NORM : has
+    ROUND ||--o{ SCORE_IMPORT : has
+    SCORE_IMPORT ||--o{ SCORE : loads
     APPLICATION ||--o{ APPLICATION_EVENT : history
     APPLICATION ||--o{ NOTIFICATION : receives
     USER ||--o{ AUDIT_LOG : acts
@@ -155,7 +156,7 @@ Key rules:
 - `applications`: unique (user, season); `status` enum; `examinee_no` INT, unique per season, from `seasons.next_examinee_no` locked in the approval transaction.
 - `seat_assignments`: unique (schedule_day_room, seat) and unique (application). Assigned under `SELECT … FOR UPDATE`.
 - `schedule_days`: campus, date, `report_at` and `starts_at` (guide), `sitting` nullable (only when the sittings switch is on).
-- `scores`: raw INT per subject; standard score, stanine and label are computed from `norms` and frozen in a release snapshot.
+- `scores`: imported exactly as the Testing Center gives them (standard score and stanine per subject and overall). v4 never computes scores. `score_imports` keeps every uploaded file, who and when; a re-import shows what changes before approval.
 - `program_offerings`: season, program, `cutoff` INT, `is_board` bool.
 - `payments`: `method` (cashier | upload), `or_no` or `reference_no` unique per season, `recorded_by`.
 - Every FK is indexed; dates are DATE or DATETIME; no year in any table name, route or file name.
@@ -213,7 +214,7 @@ flowchart LR
     S2 --> S3[Payments: cashier + review queue]
     S3 --> S4[Seats: picked or auto-assigned]
     S4 --> S5[Exam day: offline check-in, live monitor]
-    S5 --> S6[Import raw scores, check, commit]
+    S5 --> S6[Import Testing Center CSV, check, approve]
     S6 --> S7[Schedule release, notify]
     S7 --> S8[Reports, exports, next round]
 ```
