@@ -48,6 +48,6 @@ examinee_no,name,english_ss,english_stanine,science_ss,science_stanine,math_ss,m
 | In the file but marked absent | Flagged |
 | Two tables side by side (the 2026 layout) | Rejected with a plain message and the template |
 | Re-upload | Compared with what's in the system: new, changed, unchanged. Only approved changes are saved |
-| Approval | One transaction. The original file, uploader, time, counts and approver go in `score_imports` and the audit log |
+| Approval | One transaction. The original file, uploader, time, counts and approver go in `score_imports` and the activity log |
 | Publish | A separate step with a scheduled time; students and SMS notified |
 | Correct one score | Edit with a reason; the old value is kept in the history |

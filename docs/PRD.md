@@ -38,7 +38,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Results and qualification | Standard score, stanine, qualified programs by cut-off; student chooses a program | `applicant/result`, `docs/result-pdf` |
 | Notifications | Event → in-app, email, SMS; templates, blasts, send log with resend; student preferences | `applicant/notifications`, `admin/messages`, `docs/sms` |
 | Reports and downloads | Funnel, demand, score histogram, every old report; background exports | `admin/reports`, `admin/exports` |
-| Staff, roles, audit | Invite-only staff, fixed roles, permission matrix; audit log with undo | `admin/staff`, `admin/audit` |
+| Staff, roles, audit | Invite-only staff, fixed roles, permission matrix; activity log with undo | `admin/staff`, `admin/audit` |
 
 ---
 
@@ -75,7 +75,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 - **Results import:** columns read by position, header row imported as data, no check against registrations or attendance, re-upload duplicates rows, no record of the file (see RESULTS-IMPORT.md).
 - **Results:** labels and stanines stored, not computed; no qualification logic; release is a manual toggle.
 - **Notifications:** two emails only; nothing for schedule change, reminders or results.
-- **Admin:** admin by email list; no audit log; no roles beyond admin/applicant.
+- **Admin:** admin by email list; no activity log; no roles beyond admin/applicant.
 - **Operations:** no backups, 535 MB log, Ubuntu 20.04, root SSH with a password, test routes live.
 
 ---

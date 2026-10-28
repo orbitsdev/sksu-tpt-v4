@@ -504,7 +504,7 @@ NAV = [(None, [("dashboard", "Dashboard")]),
        ("Applicants", [("applications", "Applications"), ("cashier", "Cashier counters"), ("payments", "Payment review"), ("messages", "Messages")]),
        ("Exam", [("seasons", "Seasons and rounds"), ("rooms", "Rooms"), ("sessions", "Schedule days"), ("checkin", "Check-in"), ("scores", "Scores import"), ("results", "Results")]),
        ("Insight", [("reports", "Reports"), ("exports", "Downloads")]),
-       ("Setup", [("campuses", "Campuses and programs"), ("staff", "Staff and roles"), ("audit", "Audit log")])]
+       ("Setup", [("campuses", "Campuses and programs"), ("staff", "Staff and roles"), ("audit", "Activity logs")])]
 
 
 ROUNDS_RE = re.compile(r'^\s*(<div class="tabsbar rounds">.*?Manage rounds</a></div>)', re.S)
@@ -670,7 +670,7 @@ VIEW_DRAWER = drawer("view", "Maria S. Dela Cruz", "500214 · Season 2027 · Rou
 <span>Payment</span><span>Approved Jan 12 by Cashier 2 · ref <span class="mono">1009284551203</span></span><span>Seat</span><span>Isulan · Sat, Mar 14 · Room 4 · seat 27</span></div>
 <h4>Latest</h4><div class="tl"><div><i></i><span>Jan 13 · booked Room 4 seat 27</span></div><div><i></i><span>Jan 12 · payment approved, 500214 issued</span></div><div><i></i><span>Jan 11 · submitted the application</span></div></div>""",
                      btn("Resend permit", "#resent") + btn("Move session", "applicant.html#move") + btn("Open full record", "applicant.html", "primary"))
-DUPES = drawer("dupes", "3 possible duplicates", "Same name and birth date, or same mobile number", f"""{hint("Merging keeps the older account and moves its payment and seat. Nothing is deleted; the merge is in the audit log and can be undone for 7 days.")}
+DUPES = drawer("dupes", "3 possible duplicates", "Same name and birth date, or same mobile number", f"""{hint("Merging keeps the older account and moves its payment and seat. Nothing is deleted; the merge is in the activity log and can be undone for 7 days.")}
 <div class="dupe"><div><b>Maria S. Dela Cruz</b><span class="muted">maria.delacruz@gmail.com · signed up Jan 11 · Scheduled</span></div><div><b>Maria Santos Dela Cruz</b><span class="muted">mariadc08@yahoo.com · signed up Jan 20 · Draft</span></div><div class="acts">{btn("Not the same person")}{btn("Merge into the older one", "#merged", "primary")}</div></div>
 <div class="dupe"><div><b>Jomar P. Abdullah</b><span class="muted">0917 555 0101 · Approved</span></div><div><b>Jomar Abdullah</b><span class="muted">0917 555 0101 · In review</span></div><div class="acts">{btn("Not the same person")}{btn("Merge into the older one", "#merged", "primary")}</div></div>""", btn("Close", "#"))
 BULK = f"""<div class="bulkbar" id="bulk"><b>3 selected</b><a class="btn" href="#bulk-remind">Send reminder</a><a class="btn" href="sessions.html#auto">Assign seats automatically</a><a class="btn" href="exports.html#queued">Export selected</a><a class="btn" href="#">Clear</a></div>"""
@@ -683,7 +683,7 @@ admin("applications", "Applications", f"""<div class="filters"><span class="mute
 <div class="head"><span class="muted">Showing 1–8 of 16,408 · <a href="#dupes">3 possible duplicates</a></span><span style="display:flex;gap:6px">{btn("Previous")}{btn("Next")}</span></div></div>""",
       overlays=VIEW_DRAWER + DUPES
       + toast("resent", "ok", OK, "Permit email sent", "To maria.delacruz@gmail.com.")
-      + toast("merged", "ok", OK, "Merged", "Kept the Jan 11 account. You can undo this from the audit log for 7 days.")
+      + toast("merged", "ok", OK, "Merged", "Kept the Jan 11 account. You can undo this from the activity log for 7 days.")
       + modal("bulk-remind", "info", "✉", "Remind 3 applicants?", f'<div class="fld"><label for="bt">Template</label><select id="bt"><option>Pick your seat (reminder)</option><option>Payment still waiting</option></select></div><div class="preview">Hi Jomar, your payment is approved but you haven’t picked a seat. Seats at ACCESS are filling up. Pick yours: sksu-tpt.com/seat</div><div class="fld"><label for="bc">Send by</label><select id="bc"><option>Email and SMS</option><option>Email only</option></select>{hint("SMS costs about ₱0.50 each. 3 messages.")}</div>', btn("Cancel", "#") + btn("Send to 3", "#sent3", "primary"))
       + toast("sent3", "ok", OK, "Reminders sent", "3 emails and 3 texts. See them under Messages.")
       + modal("saveview", "info", "★", "Save this view", f'<div class="fld"><label for="sv">Name</label><input id="sv" value="Isulan · Round 2 · no seat"></div>{hint("Saved views keep your filters and columns. Only you see them unless you share.")}<label style="display:flex;gap:8px;font-size:14px"><input type="checkbox" style="height:18px;width:18px">Share with all admission staff</label>', btn("Cancel", "#") + btn("Save view", "#", "primary"))
@@ -735,7 +735,7 @@ admin("payments", "Payment review", f"""<div class="row">
 <div class="note warn">Same reference as Maria S. Dela Cruz (approved Jan 12)</div></div>
 {btn("Approve and issue number", "#approve", "primary lg")}
 <label for="rej" class="muted" style="font-size:13px">Reject reason</label><select id="rej"><option>Reference already used</option><option>Receipt is blurry</option><option>Amount is short</option><option>Reference does not match</option></select>
-{btn("Reject and email the reason", "#reject", "danger lg")}<small class="muted">Each decision goes in the audit log and opens the next one.</small></div></div>""",
+{btn("Reject and email the reason", "#reject", "danger lg")}<small class="muted">Each decision goes in the activity log and opens the next one.</small></div></div>""",
       overlays=modal("approve", "warn", WARN, "Approve a reused reference?", '<p class="muted" style="margin:0">This reference was already approved for Maria S. Dela Cruz. Approve only if you checked the GCash records.</p>', btn("Cancel", "#") + btn("Approve anyway", "#approved", "primary"))
       + toast("approved", "ok", OK, "Approved · 500216 issued", "Aisah was notified in the app, by email and by text. Next: Lea M. Sampulna.")
       + modal("reject", "bad", BAD, "Reject and email Aisah?", '<p class="muted" style="margin:0">Reason sent: “Reference already used”. She can send a new receipt.</p>', btn("Cancel", "#") + btn("Reject", "#rejected", "danger"))
@@ -812,7 +812,7 @@ admin("sessions", "Schedule days", f"""{rounds_bar(2)}<div class="panel" style="
       + modal("times", "info", "", "Guide times for Round 2", f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fld"><label for="g1">Report by</label><input id="g1" type="time" value="07:30"></div><div class="fld"><label for="g2">Exam starts</label><input id="g2" type="time" value="08:00"></div></div>{hint("A guide only; nobody books a time. Changing it updates every permit and sends one text to everyone scheduled.")}', btn("Cancel", "#") + btn("Save and notify", "#", "primary"))
       + modal("sittings", "warn", WARN, "Turn on two sittings a day?", '<p class="muted" style="margin:0">Each day then has a morning and an afternoon sitting with their own seats. Use it only when a date is overbooked. People already scheduled keep the morning sitting.</p>', btn("Keep one per day", "#") + btn("Turn on", "#", "primary"))
       + modal("auto", "info", "⇄", "Auto-assign seats · Round 2", f'{hint("For approved applicants who haven’t picked a seat. Nobody who already picked is moved.")}<div class="fld"><label for="au1">Rule</label><select id="au1"><option>Campus of their 1st choice, earliest session first</option><option>Nearest campus with room</option></select></div><div class="kv"><span>Applicants</span><span>627</span><span>Will get a seat</span><span>586</span><span>No room left</span><span>41 (Isulan) · add a session first</span></div>', btn("Cancel", "#") + btn("Assign 586 seats", "#assigned", "primary"))
-      + toast("assigned", "ok", OK, "586 seats assigned", "Each applicant got an email with their room and seat. Undo from the audit log for 1 hour."),
+      + toast("assigned", "ok", OK, "586 seats assigned", "Each applicant got an email with their room and seat. Undo from the activity log for 1 hour."),
       states=[("times", "Guide times"), ("sittings", "Two sittings switch"), ("add", "Add a day, with error"), ("added", "Added"), ("toggle", "Close session confirm"), ("auto", "Auto-assign preview"), ("assigned", "Assigned")])
 
 rooms = [("ACCESS · Room 1", "J. Ampatuan", 47, 2, 1, B("ok", "Synced")), ("ACCESS · Room 2", "R. Sinsuat", 45, 3, 2, B("ok", "Synced")), ("ACCESS · Room 3", "M. Usman", 31, 0, 19, B("warn", "3 queued, offline")), ("Isulan · Room 4", "L. Cabañero", 48, 2, 0, B("ok", "Closed")), ("Tacurong · Room 2", "E. Mangelen", 0, 0, 50, B("bad", "Not seen for 40 min")), ("Kalamansig · Room 1", "A. Bagundang", 46, 4, 0, B("ok", "Synced"))]
@@ -840,7 +840,7 @@ admin("scores", "Scores import", f"""{rounds_bar(1)}{stepper([("Upload CSV", "#u
       + modal("summary", "info", "", "Import finished", '<div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Ready to approve</span><b>9,088</b></div><div class="kpi"><span>Skipped</span><b>0</b></div><div class="kpi"><span>Problems</span><b style="color:var(--bad)">16</b></div></div>' + hint("Took 38 seconds. Nothing is visible to students yet."), btn("Download problem rows (CSV)") + btn("Review and approve", "#", "primary"))
       + modal("map", "info", "", "Match the columns", '<p class="muted" style="margin:0">Guessed from the header row. Fix any that are wrong; it is remembered for next time.</p>' + table(["In the file", "Means"], [("Examinee Number", "<select><option>Examinee no.</option></select>"), ("Name of Examinee", "<select><option>Name (only to double-check)</option></select>"), ("English · Standard Score", "<select><option>English · standard score</option></select>"), ("English · Stanine", "<select><option>English · stanine</option></select>"), ("Qualitative Interpretation", "<select><option>Ignore (worked out from stanine)</option></select>")]), btn("Cancel", "#") + btn("Use these columns", "#", "primary"))
       + modal("badfile", "bad", BAD, "This file has two tables side by side", '<p class="muted" style="margin:0">Columns 32–33 hold a second list (examinee number + program) next to the scores. Save only the scores table as its own CSV, with one header row, and upload again.</p>', btn("Download the template", "../docs/tpt-scores-template.csv") + btn("OK", "#", "primary"))
-      + modal("commit", "warn", WARN, "Approve 9,088 scores?", '<p class="muted" style="margin:0">They are saved exactly as in the file. Students cannot see them until you publish. The file and your approval go in the audit log.</p>', btn("Cancel", "#") + btn("Approve", "results.html#committed", "primary")),
+      + modal("commit", "warn", WARN, "Approve 9,088 scores?", '<p class="muted" style="margin:0">They are saved exactly as in the file. Students cannot see them until you publish. The file and your approval go in the activity log.</p>', btn("Cancel", "#") + btn("Approve", "results.html#committed", "primary")),
       states=[("uploading", "Uploading"), ("checking", "Checking rows"), ("bg", "Running in background"), ("summary", "Import summary"), ("map", "Match columns"), ("badfile", "Two tables in one file"), ("commit", "Approve confirm")])
 
 admin("results", "Results", f"""{rounds_bar(1)}<div class="stats"><div><small>Scored</small><b>9,098</b></div><div><small>Absent</small><b>635</b></div><div><small>Not in file</small><b>6</b></div><div><small>Release</small><b>Apr 20 · 9:00 AM</b></div></div>
@@ -940,7 +940,7 @@ admin("staff", "Staff and roles", f"""<div class="head"><span class="muted">Staf
       states=[("invite", "Invite form"), ("invited", "Invited"), ("role", "Change role"), ("last-admin", "Guard error")])
 
 audit = [("Today 9:05", "Cashier 1", "Approved Jomar P. Abdullah’s payment and issued 500215"), ("Today 8:58", "Cashier 1", "Rejected Noel B. Guiamal: reference already used"), ("Jan 13 2:10 PM", "Admission Office", "Closed session Isulan, Sun Mar 15 (full)"), ("Jan 13 9:42 AM", "Maria S. Dela Cruz", "Booked Isulan, Room 4 seat 27"), ("Jan 12 4:30 PM", "Cashier 2", "Approved Maria S. Dela Cruz’s payment and issued 500214"), ("Jan 10 8:30 AM", "Admission Office", "Invited Cashier 2 as Payment reviewer"), ("Jan 2 7:00 AM", "System", "Nightly backup: database 31 MB, files 412 MB, copied off-site"), ("Jan 1 12:00 AM", "Admission Office", "Opened Season 2027")]
-admin("audit", "Audit log", '<div class="filters"><select><option>Anyone</option></select><select><option>Any action</option></select><input type="date" value="2027-01-13"></div>' + hint("Approvals, moves, merges and bulk actions can be undone for a short time. Undo writes its own line here.") + table(["When", "Who", "What", ""], [(f'<span class="mono muted">{a[0]}</span>', f'<span class="ink">{a[1]}</span>', a[2], btn("Undo", "#undo") if i in (0, 1) else "") for i, a in enumerate(audit)]),
+admin("audit", "Activity log", '<div class="filters"><select><option>Anyone</option></select><select><option>Any action</option></select><input type="date" value="2027-01-13"></div>' + hint("Approvals, moves, merges and bulk actions can be undone for a short time. Undo writes its own line here.") + table(["When", "Who", "What", ""], [(f'<span class="mono muted">{a[0]}</span>', f'<span class="ink">{a[1]}</span>', a[2], btn("Undo", "#undo") if i in (0, 1) else "") for i, a in enumerate(audit)]),
       overlays=modal("undo", "warn", WARN, "Undo this approval?", '<p class="muted" style="margin:0">Jomar P. Abdullah goes back to “In review” and examinee no. 500215 is retired, never reused. He gets no email.</p>', btn("Cancel", "#") + btn("Undo approval", "#undone", "primary")) + toast("undone", "ok", OK, "Undone", "Jomar P. Abdullah is back in the payment queue."),
       states=[("undo", "Undo confirm"), ("undone", "Undone")])
 
@@ -1083,7 +1083,7 @@ admin_pages = [("dashboard", "", "Dashboard", "Today’s numbers, sign-ups, dema
                ("report-view", "", "Ranking report", ""), ("exports", "", "Downloads", "Big files build in the background."),
                ("exports", "queued", "Export queued", ""), ("campuses", "", "Campuses and programs", ""), ("campuses", "program", "Add program form", ""),
                ("campuses", "off", "Stop offering", ""), ("staff", "", "Staff and roles", "Invite only."), ("staff", "invite", "Invite form", ""),
-               ("staff", "last-admin", "Last admin guard", ""), ("audit", "", "Audit log", "Who did what, filterable."), ("account", "", "My account", "")]
+               ("staff", "last-admin", "Last admin guard", ""), ("audit", "", "Activity log", "Who did what, filterable."), ("account", "", "My account", "")]
 
 
 def admin_frames(kind):
@@ -1225,7 +1225,7 @@ ADMIN_CYCLE = [
         ("admin/exports.html", "Downloads", "Big files build in the background."),
         ("admin/exports.html#queued", "Export queued", ""),
         ("admin/exports.html#retry", "Retry a failed export", ""),
-        ("admin/audit.html", "Audit log", "Who did what, with Undo on recent actions."),
+        ("admin/audit.html", "Activity log", "Who did what, with Undo on recent actions."),
         ("admin/audit.html#undo", "Undo an approval", ""),
         ("admin/account.html", "My account", ""),
         ("admin/account.html#others", "Signed out other devices", "")]),
@@ -1413,7 +1413,7 @@ doc("index.html", "All pages", f"""<div class="idx"><header><img src="assets/sks
     ("Season setup wizard", "Copy last season, 5 steps", "admin/setup-1.html"),
     ("Score import checks", "Not registered, duplicate, out-of-range and missing rows before approval", "admin/scores.html"),
     ("Scheduled release", "Pre-built pages so release day stays fast", "admin/results.html"),
-    ("Audit log with undo", "Every change, reversible for a while", "admin/audit.html#undo"),
+    ("Activity log with undo", "Every change, reversible for a while", "admin/audit.html#undo"),
     ("Role permissions", "Fixed roles, clear matrix", "admin/staff.html"),
     ("Proctor offline check-in", "Phones work without signal", "proctor/checkin.html")])}</div></section>
 <a href="design-system.html">Design system →</a></div>""")
