@@ -577,3 +577,4 @@ a.fr{align-items:flex-start}a.fr .cap{letter-spacing:0;text-transform:none;flex-
 .cmain>.filters,.cmain>.head{grid-column:1/-1}
 .cinfo-strip{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;padding:10px 16px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:13px;color:var(--muted)}.cinfo-strip b{color:var(--ink)}.cinfo-strip a{margin-left:auto;color:var(--deep-2)}
 .infogrid{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px}.cmain>.panel{grid-column:1/-1}
+.cmain>.kpis.cstats{grid-template-columns:repeat(4,1fr)}.cstats .kpi:first-child{background:#fff;border-color:var(--line)}.cstats .kpi:first-child b{font-size:24px;color:var(--ink)}
