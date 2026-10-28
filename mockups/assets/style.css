@@ -519,3 +519,21 @@ a.fr:hover .dev,a.fr:hover .win{outline:2px solid rgba(95,212,160,.6);outline-of
 .pagehead h1{font-weight:600}
 body.boardpage{background:var(--pat-dark),radial-gradient(ellipse at 20% 0,#0f6b3a 0,rgba(6,46,25,0) 55%),linear-gradient(180deg,#062e19,#041f11)}
 a.fr{align-items:flex-start}a.fr .cap{letter-spacing:0;text-transform:none;flex-direction:row;justify-content:flex-start;font:500 14px var(--sans);color:#fff}
+/* calm inside the app screens */
+.phone.app .gh,.phone.app .big{font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.phone.app.intro .big{font-size:30px}
+.phone.app .appb{gap:16px;padding:4px 20px 24px}
+.phone.app .cap,.phone.app .eyebrow{font:500 13px var(--round);letter-spacing:0;text-transform:none;color:#6b7a71}
+.phone.app .fld input,.phone.app .fld select{height:50px;border:1px solid #dbe6df;border-radius:12px;font-weight:400;width:100%;min-width:0}
+.phone.app .two>*{min-width:0}
+.phone.app .ses{border:1px solid #e3ebe6;border-radius:16px;padding:14px 16px}.phone.app .ses.on{border:1.5px solid var(--deep-2);background:#f3faf6}
+.phone.app .ses .h{font-weight:500;font-size:16px}.phone.app .ses .h em{color:#6b7a71;font-weight:400;font-size:13px}
+.phone.app .lb{padding:14px 16px;gap:10px}.phone.app .lb b{font-weight:500}
+.phone.app .big:not(.gh){font-size:28px}.phone.app .go{font:600 16px var(--round);box-shadow:0 6px 16px rgba(10,138,69,.22)}
+.phone.app small,.phone.app .hint{color:#7b867f}
+.phone.app .notes{gap:0}.phone.app .note{border:0;border-bottom:1px solid #edf2ef;border-radius:0;padding:14px 0;background:none}
+.phone.app .note.unread b:after{content:"";display:inline-block;width:7px;height:7px;border-radius:9px;background:var(--green);margin-left:8px;vertical-align:middle}
+.phone.app .note b{font-weight:500}.phone.app .note>span:last-child>span{color:#4b5a51;font-size:14px}
+.phone.app .st .n{width:28px;height:28px;font-size:13px;font-weight:500}
+.phone.app .choice b{font-weight:500;font-size:15px}
+.phone.app .alertbox{font-size:14px;border-radius:14px}

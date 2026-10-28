@@ -256,7 +256,7 @@ phone("notifications", "Notifications", """<h1 class="gh">Notifications</h1>
 <div class="notes">""" + "".join(f'<a class="note{" unread" if u else ""}" href="{h}"><span class="ni {k}">{NOTE_ICON[k]}</span><span><b>{t}</b><span>{d}</span><small>{w}</small></span></a>' for t, d, w, k, u, h in [('Your TPT 2027 result is out', 'You qualify for all 3 of your choices. Tap to see your scores.', 'Apr 20 · 9:00 AM', 'ok', True, 'result.html'), ('Seat booked', 'Isulan · Sat, Mar 14 · Room 4, seat 27. Your permit is ready.', 'Jan 13 · 9:42 AM', 'ok', True, 'permit.html'), ('Payment approved', 'Your examinee number is 500214. Pick your exam seat now.', 'Jan 12 · 4:30 PM', 'ok', True, 'seat.html'), ('Receipt received', 'We’re checking it. Usually within one working day.', 'Jan 12 · 8:10 AM', 'info', False, 'payment-waiting.html'), ('Application submitted', 'Next: pay the exam fee and send your receipt.', 'Jan 11 · 7:55 PM', 'info', False, 'payment.html'), ('Welcome to the SKSU Admission Test', 'Your account is ready. Start your application any time before Feb 28.', 'Jan 11 · 7:31 PM', 'info', False, 'home.html')]) + """</div>
 <small class="center" style="color:#757575">You also get these by email. Texts are on for exam-day reminders.</small>""",
       cta=("#prefs", "Notification settings"), back="home.html",
-      overlays=modal("prefs", "info", "", "How should we reach you?", '<label class="check"><input type="checkbox" checked disabled>Email · maria.delacruz@gmail.com (always on)</label><label class="check"><input type="checkbox" checked>Text messages to 0917 123 4567</label><div class="fld"><label class="cap" for="lang">LANGUAGE</label><select id="lang"><option>English</option><option>Filipino</option></select></div><small style="color:#757575">Approval, schedule changes, exam-day reminders and results are always sent.</small>', '<a class="go" href="#prefs-ok">Save</a><a class="back" href="#">Cancel</a>')
+      overlays=modal("prefs", "info", "", "How should we reach you?", '<label class="check"><input type="checkbox" checked disabled>Email · maria.delacruz@gmail.com (always on)</label><label class="check"><input type="checkbox" checked>Text messages to 0917 123 4567</label><div class="fld"><label class="cap" for="lang">Language</label><select id="lang"><option>English</option><option>Filipino</option></select></div><small style="color:#757575">Approval, schedule changes, exam-day reminders and results are always sent.</small>', '<a class="go" href="#prefs-ok">Save</a><a class="back" href="#">Cancel</a>')
       + toast("prefs-ok", "ok", OK, "Saved", "We’ll text you as well as email.")
       + '<div class="modal" id="empty"><a class="scrim" href="#"></a><div class="dialog">' + empty("bell", "No notifications yet", "We’ll tell you here, by email and by text when something changes.") + '</div></div>',
       states=[("prefs", "Preferences"), ("prefs-ok", "Saved"), ("empty", "Empty")])
@@ -272,13 +272,13 @@ phone("home", "Home", """<h1 class="gh center">Welcome, Maria!</h1><p class="lea
       overlays=modal("closed", "warn", WARN, "Registration is closed", '<p style="margin:0;color:#545454">Season 2027 registration ended. If you already paid, you can still pick a seat.</p>', btn("OK", "#")) + OFFLINE,
       states=[("closed", "Season closed"), ("offline", "Offline")])
 
-phone("apply-personal", "About you", """<h1 class="gh">About you</h1><span class="cap">STEP 1 OF 3</span>
-<div class="fld"><label class="cap" for="n">FULL NAME</label><input id="n" value="Maria Santos Dela Cruz"></div>
-<div class="two"><div class="fld err"><label class="cap" for="d">BIRTH DATE</label><input id="d" value="May 12, 2018"><span class="errmsg">You must be at least 15. Check the year.</span><small class="hint">As on your birth certificate, e.g. May 12, 2008.</small></div>
-<div class="fld"><label class="cap" for="s">SEX</label><select id="s"><option>Female</option><option>Male</option></select></div></div>
-<div class="fld"><label class="cap" for="p">MOBILE NUMBER</label><input id="p" value="0917 123 4567"></div>
-<div class="fld"><label class="cap" for="a">HOME ADDRESS</label><input id="a" value="Brgy. Kalawag II, Isulan, Sultan Kudarat"></div>
-<span class="cap">2×2 PHOTO</span>
+phone("apply-personal", "About you", """<h1 class="gh">About you</h1><span class="cap">Step 1 of 3</span>
+<div class="fld"><label class="cap" for="n">Full name</label><input id="n" value="Maria Santos Dela Cruz"></div>
+<div class="two"><div class="fld err"><label class="cap" for="d">Birth date</label><input id="d" value="May 12, 2018"><span class="errmsg">You must be at least 15. Check the year.</span><small class="hint">As on your birth certificate, e.g. May 12, 2008.</small></div>
+<div class="fld"><label class="cap" for="s">Sex</label><select id="s"><option>Female</option><option>Male</option></select></div></div>
+<div class="fld"><label class="cap" for="p">Mobile number</label><input id="p" value="0917 123 4567"></div>
+<div class="fld"><label class="cap" for="a">Home address</label><input id="a" value="Brgy. Kalawag II, Isulan, Sultan Kudarat"></div>
+<span class="cap">2×2 photo</span>
 <div style="border:2px dashed #d5eaf0;border-radius:18px;padding:14px;display:flex;gap:14px;align-items:center"><div style="width:56px;height:56px;border-radius:12px;background:#eef7fa"></div>
 <div style="flex:1;display:flex;flex-direction:column;gap:6px"><b style="font-weight:600">photo.jpg · uploading 64%</b><div class="progress"><span style="width:64%"></span></div><small style="color:#757575">Shrinking 3.9 MB to about 250 KB on your phone</small></div></div>""",
       cta=("apply-school.html", "Next: school"), back="home.html",
@@ -286,18 +286,18 @@ phone("apply-personal", "About you", """<h1 class="gh">About you</h1><span class
       + toast("upload-failed", "bad", BAD, "Upload failed", "The signal dropped at 64%. Tap the photo to try again."),
       states=[("saved", "Autosaved"), ("photo-bad", "Photo rejected"), ("upload-failed", "Upload failed"), ("offline", "Offline")])
 
-phone("apply-school", "School", """<h1 class="gh">Your school</h1><span class="cap">STEP 2 OF 3</span>
-<div class="fld"><label class="cap" for="t">I AM A</label><select id="t"><option>Senior high graduate (Freshman)</option><option>Transferee</option><option>ALS passer</option></select></div>
-<div class="fld"><label class="cap" for="h">SENIOR HIGH SCHOOL</label><input id="h" value="Isulan National High School"></div>
-<div class="two"><div class="fld"><label class="cap" for="y">YEAR GRADUATED</label><input id="y" value="2026"></div><div class="fld"><label class="cap" for="g">GWA</label><input id="g" value="91.4"></div></div>
-<div class="fld"><label class="cap" for="st">STRAND</label><select id="st"><option>STEM</option><option>ABM</option><option>HUMSS</option><option>TVL</option></select></div>
-<span class="cap">DOCUMENTS</span>
+phone("apply-school", "School", """<h1 class="gh">Your school</h1><span class="cap">Step 2 of 3</span>
+<div class="fld"><label class="cap" for="t">I am a</label><select id="t"><option>Senior high graduate (Freshman)</option><option>Transferee</option><option>ALS passer</option></select></div>
+<div class="fld"><label class="cap" for="h">Senior high school</label><input id="h" value="Isulan National High School"></div>
+<div class="two"><div class="fld"><label class="cap" for="y">Year graduated</label><input id="y" value="2026"></div><div class="fld"><label class="cap" for="g">GWA</label><input id="g" value="91.4"></div></div>
+<div class="fld"><label class="cap" for="st">Strand</label><select id="st"><option>STEM</option><option>ABM</option><option>HUMSS</option><option>TVL</option></select></div>
+<span class="cap">Documents</span>
 <div class="lb" style="gap:10px"><div class="choice" style="border:0;padding:0"><b>✓</b><div><b style="font:600 15px var(--round);color:#212121">Form 138 (report card)</b><small>form138.jpg · 410 KB</small></div></div>
 <div class="choice" style="border:0;padding:0"><b style="color:#757575">+</b><div><b style="font:600 15px var(--round);color:#212121">Valid ID</b><small>School ID, PhilSys or passport · photo of the front</small></div></div></div>
-<div class="fld err"><label class="cap" for="aw">HONORS (OPTIONAL)</label><input id="aw" value="With High Honors, Best in Research, Most Outstanding Student Leader, Division Science Quiz Bee 1st place, Regional…"><span class="errmsg">Keep it under 200 characters (you have 236).</span></div>""",
+<div class="fld err"><label class="cap" for="aw">Honors (optional)</label><input id="aw" value="With High Honors, Best in Research, Most Outstanding Student Leader, Division Science Quiz Bee 1st place, Regional…"><span class="errmsg">Keep it under 200 characters (you have 236).</span></div>""",
       cta=("apply-programs.html", "Next: programs"), back="apply-personal.html", overlays=SAVED, states=[("saved", "Autosaved")])
 
-phone("apply-programs", "Programs", """<h1 class="gh">Pick 3 programs</h1><span class="cap">STEP 3 OF 3 · IN ORDER OF PREFERENCE</span>
+phone("apply-programs", "Programs", """<h1 class="gh">Pick 3 programs</h1><span class="cap">Step 3 of 3 · in order of preference</span>
 <div class="lb" style="gap:0;padding:4px 14px">
 <div class="choice"><b>1</b><div><b style="font:600 15px var(--round);color:#212121">BS Civil Engineering</b><small>Isulan Campus</small></div></div>
 <div class="choice"><b>2</b><div><b style="font:600 15px var(--round);color:#212121">BS Information Technology</b><small>ACCESS Campus, Tacurong</small></div></div>
@@ -320,17 +320,17 @@ phone("apply-review", "Review", """<h1 class="gh">Check and submit</h1>
       states=[("confirm", "Confirm dialog"), ("submitting", "Submitting"), ("missing", "Validation error")])
 
 phone("payment", "Payment", """<h1 class="gh">Pay the exam fee</h1>
-<span class="cap">HOW WILL YOU PAY?</span>
+<span class="cap">How will you pay?</span>
 <div class="paym"><a class="ses on" href="#"><span class="h">GCash or Maya<em>Instant check</em></span><span style="color:#545454">Pay, then add the reference and a screenshot</span></a>
 <a class="ses" href="#cashier"><span class="h">At an SKSU cashier<em>No upload</em></span><span style="color:#545454">Show your code; the cashier records it</span></a>
 <a class="ses" href="#"><span class="h">Landbank (LinkBiz or deposit)<em>1 working day</em></span><span style="color:#545454">Add the transaction no. and the slip photo</span></a></div>
-<div class="lb" style="align-items:center;gap:4px"><span class="cap">TO PAY</span><span class="big">[EXAM FEE]</span><span style="color:#545454">to [GCASH OR BANK ACCOUNT]</span></div>
+<div class="lb" style="align-items:center;gap:4px"><span class="cap">To pay</span><span class="big">[EXAM FEE]</span><span style="color:#545454">to [GCASH OR BANK ACCOUNT]</span></div>
 <ol class="howto"><li>Open GCash › Send money and pay the exact amount.</li><li>Copy the 13-digit reference number from the receipt.</li><li>Screenshot the receipt and add it below.</li></ol>
-<div class="fld"><label class="cap" for="r">REFERENCE NUMBER</label><input id="r" value="1009 284 551 203" style="font:600 17px var(--mono)"></div>
+<div class="fld"><label class="cap" for="r">Reference number</label><input id="r" value="1009 284 551 203" style="font:600 17px var(--mono)"></div>
 <div style="border:2px dashed #d5eaf0;border-radius:18px;padding:14px;display:flex;gap:14px;align-items:center"><div style="width:52px;height:64px;border-radius:10px;background:#eef7fa"></div><div><b style="font-weight:600">Receipt photo added</b><small style="display:block;color:#23873b">Made smaller: 4.8 MB to 310 KB</small><small style="color:#757575">Tap to change</small></div></div>""",
       cta=("payment-waiting.html#sent", "Send for checking"), back="apply-review.html",
       overlays=toast("submitted", "ok", OK, "Application submitted", "Next, pay the exam fee and send your receipt.")
-      + modal("cashier", "info", "", "Pay at an SKSU cashier", '<div class="lb" style="align-items:center;gap:6px"><span class="cap">SHOW THIS AT THE CASHIER</span><span class="mono" style="font-size:24px;font-weight:700">APP-27-10422</span><span style="color:#545454">Maria S. Dela Cruz</span></div><small style="color:#757575">Any campus cashier, Mon–Fri 8 AM–5 PM. You’ll get an official receipt and a text when it’s recorded; nothing to upload.</small>', '<a class="go" href="#">Got it</a>')
+      + modal("cashier", "info", "", "Pay at an SKSU cashier", '<div class="lb" style="align-items:center;gap:6px"><span class="cap">Show this at the cashier</span><span class="mono" style="font-size:24px;font-weight:700">APP-27-10422</span><span style="color:#545454">Maria S. Dela Cruz</span></div><small style="color:#757575">Any campus cashier, Mon–Fri 8 AM–5 PM. You’ll get an official receipt and a text when it’s recorded; nothing to upload.</small>', '<a class="go" href="#">Got it</a>')
       + toast("ref-used", "bad", BAD, "Reference already used", "This GCash reference was sent by another applicant. Check your receipt.")
       + modal("uploading", "info", '<span class="spin"></span>', "Sending your receipt… 72%", '<div class="progress"><span style="width:72%"></span></div>', '<a class="back" href="#">Cancel</a>'),
       states=[("submitted", "Arrived after submit"), ("cashier", "Pay at cashier code"), ("uploading", "Uploading"), ("ref-used", "Duplicate reference error")])
@@ -344,7 +344,7 @@ phone("payment-waiting", "Waiting for approval", """<div class="okmark" style="b
 phone("payment-rejected", "Payment rejected", """<div class="okmark" style="background:#dc2626;color:#fff;font-size:28px;font-weight:700">!</div>
 <h1 class="gh center">Please send your receipt again</h1>
 <div class="alertbox bad"><div><b>Reason:</b> The receipt photo is blurry. We can’t read the reference number.<br><small>Checked by the cashier, Jan 13 · 4:22 PM</small></div></div>
-<div class="fld"><label class="cap" for="r2">REFERENCE NUMBER</label><input id="r2" value="1009 284 551 203" style="font:600 17px var(--mono)"></div>
+<div class="fld"><label class="cap" for="r2">Reference number</label><input id="r2" value="1009 284 551 203" style="font:600 17px var(--mono)"></div>
 <div class="drop">Tap to add a clearer photo of the receipt</div>""",
       cta=("payment-waiting.html#sent", "Send again"), back="home.html")
 
@@ -372,25 +372,25 @@ phone("permit", "My permit", """<div class="wallet"><div class="wt"><div class="
       states=[("booked", "Arrived after booking"), ("making", "PDF loading")])
 
 phone("result-pending", "Result not yet", """<h1 class="gh center">Results come out Apr 20</h1>
-<div class="lb" style="align-items:center;text-align:center"><span class="cap">RELEASE</span><span class="big" style="font-size:26px">Apr 20 · 9:00 AM</span><span style="color:#545454">We’ll email you. Come back here then.</span></div>
+<div class="lb" style="align-items:center;text-align:center"><span class="cap">Release</span><span class="big" style="font-size:26px">Apr 20 · 9:00 AM</span><span style="color:#545454">We’ll email you. Come back here then.</span></div>
 <div class="alertbox ok">You were marked <b>present</b> on Mar 14, Room 4.</div>
 <div class="empty">While you wait, tell us how exam day went. It takes 1 minute and is optional.</div>""",
       cta=("survey.html", "Answer the short survey"), extra='<a class="mocklink" href="result.html">Mockup: results released →</a>',
       overlays=modal("absent", "warn", WARN, "You were marked absent", '<p style="margin:0;color:#545454">The proctor did not check you in on Mar 14. If that’s wrong, contact the admission office by Mar 21.</p>', '<a class="go" href="#">OK</a>'),
       states=[("absent", "Absent state")])
 
-phone("survey", "Survey", """<h1 class="gh">How did it go?</h1><span class="cap">OPTIONAL · 1 MINUTE</span>
+phone("survey", "Survey", """<h1 class="gh">How did it go?</h1><span class="cap">Optional · 1 minute</span>
 <div class="lb"><b style="font-weight:600">Was it easy to find your room?</b><div style="display:flex;gap:8px">""" + "".join(f'<span class="ses" style="padding:10px 14px;{"border:2.5px solid var(--green-btn);background:var(--green-tint)" if i == 4 else ""}">{i}</span>' for i in range(1, 6)) + """</div></div>
 <div class="lb"><b style="font-weight:600">Was the time enough?</b><div style="display:flex;gap:8px">""" + "".join(f'<span class="ses" style="padding:10px 14px;{"border:2.5px solid var(--green-btn);background:var(--green-tint)" if i == 3 else ""}">{i}</span>' for i in range(1, 6)) + """</div></div>
-<div class="fld"><label class="cap" for="c">ANYTHING ELSE?</label><input id="c" placeholder="Optional"></div>""",
+<div class="fld"><label class="cap" for="c">Anything else?</label><input id="c" placeholder="Optional"></div>""",
       cta=("result-pending.html#thanks", "Send"), extra='<a class="back" href="result-pending.html">Skip</a>')
 
 subj = [("English", 612, 8), ("Science", 548, 6), ("Mathematics", 571, 7), ("Filipino", 655, 9), ("Social Studies", 530, 6), ("ESM Competency", 566, 7)]
 sbars = "".join(f'<div class="subj"><div class="h"><span>{n}</span><span><b class="mono">{s}</b><span style="color:#757575"> · stanine {t}</span></span></div><div class="t"><span style="width:{round((s - 200) / 6)}%"></span></div></div>' for n, s, t in subj)
-phone("result", "Result", f"""<div class="lb" style="align-items:center;gap:4px"><span class="cap">OVERALL STANDARD SCORE</span><span class="mono" style="font-size:48px;font-weight:700;color:#006b2e;line-height:1.1">584</span>
+phone("result", "Result", f"""<div class="lb" style="align-items:center;gap:4px"><span class="cap">Overall standard score</span><span class="mono" style="font-size:48px;font-weight:700;color:#006b2e;line-height:1.1">584</span>
 <span style="background:var(--green-btn);color:#fff;border-radius:999px;padding:4px 14px;font-weight:600;font-size:14px">Stanine 7 of 9</span>
 <span class="center" style="color:#545454;margin-top:6px">Higher than about 80% of this year’s examinees. 500 is the average.</span></div>
-<div class="lb" style="gap:6px"><span class="cap">YOU QUALIFY FOR</span><b style="font-weight:600">All 3 of your choices, and 41 other programs</b><a href="#choose" style="font-weight:600">Choose the program to enrol in →</a></div><span class="cap">BY SUBJECT</span>{sbars}<small style="color:#757575">The grey line marks 500. Scores run from 200 to 800.</small>""",
+<div class="lb" style="gap:6px"><span class="cap">You qualify for</span><b style="font-weight:600">All 3 of your choices, and 41 other programs</b><a href="#choose" style="font-weight:600">Choose the program to enrol in →</a></div><span class="cap">By subject</span>{sbars}<small style="color:#757575">The grey line marks 500. Scores run from 200 to 800.</small>""",
       cta=("../docs/result-pdf.html", "Save result PDF"), extra='<a class="go blue" href="#cutoffs">See program cut-offs</a>',
       overlays=modal("cutoffs", "info", "i", "Programs you qualify for", '<div class="kv" style="grid-template-columns:1fr auto"><span>BS Civil Engineering · Isulan</span>' + B("ok", "Qualified") + '<span>BS IT · ACCESS</span>' + B("ok", "Qualified") + '<span>BS Criminology · Isulan</span>' + B("ok", "Qualified") + '</div><p style="margin:0;color:#545454">The admission office will contact you about enrolment.</p>', '<a class="go" href="#">OK</a>')
       + modal("choose", "info", "", "Choose your program", '<a class="ses on" href="#chosen"><span class="h">BS Civil Engineering<em>Your 1st choice</em></span><span style="color:#545454">Isulan · cut-off 530 · you have 584</span></a><a class="ses" href="#chosen"><span class="h">BS Information Technology<em>2nd choice</em></span><span style="color:#545454">ACCESS · cut-off 400</span></a><small style="color:#757575">You can change this until the enrolment period starts.</small>', '<a class="go" href="#chosen">Confirm</a><a class="back" href="#">Not yet</a>')
