@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scope check · SKSU TPT v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f4f8f5;color:#27302b;font:16px/1.65 Geist,"Segoe UI",system-ui,sans-serif}
+header{background:linear-gradient(135deg,#062e19,#0b4d2c 45%,#006b34);color:#fff;padding:28px 24px;box-shadow:inset 0 -3px 0 #f2c200}
+header div{max-width:920px;margin:0 auto;display:flex;gap:14px;align-items:center}header img{width:52px;height:52px;background:#fff;border-radius:99px}
+header a{color:#f2c200;font-size:14px}
+nav.toc{max-width:920px;margin:20px auto 0;padding:0 24px;font-size:14px}nav.toc a{color:#006b34;margin-right:12px;white-space:nowrap}
+main{max-width:920px;margin:20px auto 60px;background:#fff;border:1px solid #e3ebe6;border-radius:14px;padding:32px 40px}
+h1{font-size:30px;margin:0 0 8px}h2{margin-top:44px;padding-top:12px;border-top:1px solid #e3ebe6;color:#0b4d2c}h3{color:#13261b}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0;display:block;overflow-x:auto}th,td{border:1px solid #e3ebe6;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f6f9f7}
+code{font:13px "Geist Mono",monospace;background:#f1f5f2;padding:1px 5px;border-radius:4px}pre{background:#f6f9f7;padding:14px;border-radius:10px;overflow-x:auto}
+.mermaid{background:#fff;text-align:center;margin:16px 0}
+@media (max-width:700px){main{padding:20px}}
+</style>
+</head>
+<body>
+<header><div><img src="../assets/brand/sksu_seal.png" alt="SKSU seal"><div><b>SKSU TPT v4 · Scope check</b><br><a href="PRD.html">PRD and flows</a> · <a href="SCOPE-CHECK.html">Scope check</a> · <a href="FORMS-AND-PAYMENTS.html">Forms and payments</a> · <a href="RESULTS-IMPORT.html">Results import</a> · <a href="../mockups/index.html">Mockups</a></div></div></header>
+<nav class="toc" id="toc"></nav>
+<main id="doc"></main>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs";
+const md = "# Scope check: what v4 adds beyond tptv3\n\nThe rule: **keep the old process**, and make it work better. Everything below is either new or bigger than what tptv3 does. Mark each one keep or cut when you discuss it. The remittance in the cashier console is already removed; cash handling stays in the university's own accounting.\n\n**Legend:**\n\n- **Old**: tptv3 does this today.\n- **Asked**: you asked for it in this session.\n- **New**: neither of the above.\n\n| # | Feature | Old / Asked / New | Recommendation |\n|---|---|---|---|\n| 1 | Sign in with Google | Old | Keep |\n| 2 | Email-link sign-in for students without Google | New | Optional |\n| 3 | Application forms (personal, school, 3 programs) | Old | Keep (cleaner fields) |\n| 4 | Extra uploads: Form 138, valid ID | New (from the tpt-recreate-v2 plan) | Confirm with the admission office |\n| 5 | Photo shrunk on the phone | New | Keep (fixes 26 GB of uploads) |\n| 6 | Receipt upload + reviewer approval | Old | Keep |\n| 7 | Cashier console (record the OR no.) | Asked | Keep, simple version |\n| 8 | Fee waiver | New | Optional |\n| 9 | Refunds | New | **Cut** for v1 (accounting handles it) |\n| 10 | Reconciliation against GCash/Landbank statements | New | **Cut** for v1 |\n| 11 | Seasons with 1\u20133 rounds | Asked (\"three schedules\") | Keep; confirm what the three schedules are |\n| 12 | Season setup wizard (5 steps) | New | Simplify to plain forms |\n| 13 | Rooms with seats per room | Old (as a room count) | Keep, simple |\n| 14 | Rooms CSV import | New | **Cut** |\n| 15 | Schedule by date; times only as a guide | Asked | Keep |\n| 16 | AM/PM sittings switch | New | **Cut** (off by default anyway) |\n| 17 | Auto-assign seats to stragglers | New | Optional |\n| 18 | Permit with QR + public verify page | Old (permit) + New (verify) | Keep (cheap) |\n| 19 | Offline proctor check-in app | New | Optional; at minimum, record present/absent (fixes the 635 gap) |\n| 20 | Score import from the Testing Center CSV, with checks and preview | Old (import) + Asked | Keep |\n| 21 | Scheduled result release | New (old: a toggle) | Keep (simple) |\n| 22 | Qualification by cut-off + student chooses a program | New (from the v2 plan) | Confirm with the admission office |\n| 23 | Survey | Old (was a gate) | Keep, optional to answer |\n| 24 | Notifications: in-app, email, SMS per event | Asked (old had 2 emails) | Keep; SMS needs a budget |\n| 25 | Notification preferences for students | New | **Cut** |\n| 26 | Message blasts, templates, send log, resend | New | Optional (keep the send log) |\n| 27 | Reports and Excel exports | Old | Keep |\n| 28 | Report charts (funnel, histogram, demand) | New | Optional |\n| 29 | Dashboard with seats per exam day | Asked | Keep |\n| 30 | Global search (`/`) | New | Keep (cheap, saves time) |\n| 31 | Bulk actions (remind, export) | New | Optional |\n| 32 | Saved views | New | **Cut** |\n| 33 | Duplicate-applicant detector and merge | New | Optional (flag only; no merge in v1) |\n| 34 | Roles: admin, cashier, reviewer, scores admin, proctor | New (old: admin and applicant) | Keep a few: admin, cashier, proctor |\n| 35 | Activity logs | New | Keep |\n| 36 | Undo in the activity logs | New | **Cut** |\n| 37 | Welcome and splash screens in the app | New | Optional |\n| 38 | Applicant app tabs, bottom sheets, wallet permit | Asked (mobile look) | Keep |\n\n**If you cut every \"Cut\" and \"Optional\"**, v1 is:\n\n1. Sign in.\n2. Apply.\n3. Pay (cashier or upload).\n4. Approve.\n5. Pick a date.\n6. Permit.\n7. Attendance.\n8. Import scores.\n9. Release.\n10. Notify.\n11. Reports.\n\nThat's the old process, done properly.\n";
+const doc = document.getElementById("doc");
+doc.replaceChildren(...new DOMParser().parseFromString(DOMPurify.sanitize(marked.parse(md)), "text/html").body.childNodes);
+doc.querySelectorAll("pre code.language-mermaid").forEach(c => { const d = document.createElement("div"); d.className = "mermaid"; d.textContent = c.textContent; c.parentElement.replaceWith(d); });
+const toc = document.getElementById("toc");
+doc.querySelectorAll("h2").forEach((h, i) => { h.id = "s" + i; const a = document.createElement("a"); a.href = "#s" + i; a.textContent = h.textContent; toc.appendChild(a); });
+mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+await mermaid.run({ querySelector: ".mermaid" });
+</script>
+</body>
+</html>

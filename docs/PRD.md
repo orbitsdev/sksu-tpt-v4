@@ -306,13 +306,14 @@ flowchart TB
 - The filter sheet on mobile is only a placeholder.
 - Real content (program names, fees, the cut-off list) still needs the admission office.
 
-## 14. Cashier role and remittance
+## 14. Cashier role
 
-- **Cashier** is its own role with its own full-screen console (`cashier/console.html`). It can't open any other admin page. Admins and super admins can open the console too.
-- **Counter flow:** unlock with PIN → find (name, application or examinee no.) or scan the applicant's QR → the fee is fixed (not editable) → type the OR number (auto-focused, must be unused) → paid with cash (default), GCash at the counter, or check → Enter → success with "print OR copy" → resets for the next person.
-- **Guards:** already paid, OR already used, not found, wrong round (not open yet), fee waived. Voids need a supervisor PIN and a reason and stay on the list.
-- **End of day:** count the bills and coins → expected vs counted, with a note if short or over → submit the remittance (amount, OR range, method split) → export. Admins see every counter's takings, voids and remittance on **Cashier counters**.
-- **Data:** `payments.method = cashier`, `or_no` unique per season, `recorded_by`, `counter_id`; `remittances (counter, cashier, date, expected, counted, difference, or_from, or_to, note, submitted_at)`; `payment_voids (payment, reason, supervisor, at)`.
+- **Cashier** is its own role with a simple console (`cashier/console.html`). It can't open other admin pages; admins can open the console too.
+- **What TPT records** is only that the applicant paid: OR number, amount, payment method, who recorded it, and when. Cash handling and remittance stay in the university's own accounting system, as today.
+- **Counter flow:** find (name, application or examinee no.) or scan the applicant's QR → the fee is fixed → type the OR number (must be unused) → Enter → paid, print an OR copy if needed → next person.
+- **Guards:** already paid, OR already used, not found, round not open yet, fee waived.
+- **Today:** the cashier's list for the day with reprint and an Excel export to match against the OR booklet. Only an admin can void a payment, with a reason; voided payments stay on the list.
+- **Data:** `payments.method = cashier`, `or_no` unique per season, `recorded_by`, `counter`; voids recorded in the activity log.
 
 ## 15. Seats on the dashboard
 

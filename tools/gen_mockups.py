@@ -721,8 +721,8 @@ admin("applicant", "Maria S. Dela Cruz", f"""<div class="tabsbar"><a class="on" 
       states=[("edit", "Edit dialog with error"), ("saved", "Saved"), ("move", "Move session"), ("moved", "Moved"), ("cancel", "Danger confirm"), ("photo", "Review a photo"), ("asked", "New photo requested")])
 
 admin("cashier", "Cashier counters", f"""<div class="head"><span class="muted">Cashiers take the exam fee in their own console. Admins can open it too.</span>{btn("Open the cashier console", "../cashier/console.html", "primary")}</div>
-<div class="kpis"><div class="kpi"><span>Collected today</span><b>₱61,500</b><small>123 payments at 5 counters</small></div><div class="kpi"><span>Counters open</span><b>4</b><small>of 7</small></div><div class="kpi"><span>Voids today</span><b>2</b><small>both with supervisor PIN</small></div><div class="kpi"><span>Not yet remitted</span><b>₱45,000</b><small>3 counters</small></div></div>
-{table(["Counter", "Cashier", "Payments", "Collected", "Status", ""], [("Isulan counter 1", "Cashier 1", "36", "₱18,000", B("ok", "Open"), btn("View", "../cashier/today.html")), ("ACCESS counter 1", "Cashier 2", "52", "₱26,000", B("ok", "Open"), btn("View", "../cashier/today.html")), ("ACCESS counter 2", "Cashier 3", "21", "₱10,500", B("ok", "Open"), btn("View", "../cashier/today.html")), ("Tacurong counter 1", "Cashier 4", "14", "₱7,000", B("gray", "Remitted 4:58 PM · ₱0 difference"), btn("View", "../cashier/close.html"))])}""")
+<div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Recorded today</span><b>₱61,500</b><small>123 payments at 5 counters</small></div><div class="kpi"><span>Counters open</span><b>4</b><small>of 7</small></div><div class="kpi"><span>Voided today</span><b>2</b><small>by an admin, with a reason</small></div></div>
+{table(["Counter", "Cashier", "Payments", "Collected", "Status", ""], [("Isulan counter 1", "Cashier 1", "36", "₱18,000", B("ok", "Open"), btn("View", "../cashier/today.html")), ("ACCESS counter 1", "Cashier 2", "52", "₱26,000", B("ok", "Open"), btn("View", "../cashier/today.html")), ("ACCESS counter 2", "Cashier 3", "21", "₱10,500", B("ok", "Open"), btn("View", "../cashier/today.html")), ("Tacurong counter 1", "Cashier 4", "14", "₱7,000", B("gray", "Closed"), btn("View", "../cashier/today.html"))])}""")
 
 q = [("Aisah K. Mangudadatu", "1009284551203", "6 h", B("warn", "Same ref."), True), ("Lea M. Sampulna", "1009284552455", "5 h", B("gray", "Waiting"), False), ("Ramon T. Villanueva", "1009284552310", "5 h", B("gray", "Waiting"), False), ("Noel B. Guiamal", "1009284552601", "3 h", B("gray", "Waiting"), False), ("Princess A. Lumabao", "1009284552711", "2 h", B("gray", "Waiting"), False), ("Datu R. Mamalinta", "1009284552840", "40 min", B("gray", "Waiting"), False)]
 admin("payments", "Payment review", f"""<div class="row">
@@ -1184,7 +1184,7 @@ ADMIN_CYCLE = [
         ("admin/applicant.html#photo", "Review an upload", "Ask for a new photo without losing the seat.")]),
     ("5 · Payments, numbers and permits", [
         ("cashier/console.html", "Cashier console", "Its own role and screen: find or scan, fixed fee, OR no., Enter."),
-        ("admin/cashier.html", "Cashier counters", "Every counter’s takings, voids and remittance."),
+        ("admin/cashier.html", "Cashier counters", "Every counter’s payments and voids."),
         ("admin/payments.html", "Payment review (uploaded receipts)", "Queue, receipt and decision side by side; A and R keys."),
         ("admin/payments.html#approve", "Reused reference warning", "Caught before a double approval."),
         ("admin/payments.html#approved", "Approved, number issued", "Examinee no. comes from the season counter; next one opens."),
@@ -1262,10 +1262,10 @@ board("PROCTOR-JOURNEY-MOCKUP.html", "Proctor: exam day",
 
 # ---------------------------------------------------------------- cashier console (its own role and screen)
 def cashier(key, title, body, tab="counter", overlays="", states=None):
-    tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("today", "Today", "today.html"), ("close", "Close the day", "close.html")])
+    tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("today", "Today", "today.html")])
     doc(f"cashier/{key}.html", title, f"""<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
 <div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav>{tabs}</nav>
-<span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><span class="cshift">Today ₱18,000 · 36 paid</span><a class="btn sm" href="lock.html">Lock</a></header>
+<span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><span class="cshift">Today ₱18,000 · 36 paid</span></header>
 <main class="cmain">{body}</main></div>{overlays}""", states=states)
 
 
@@ -1291,40 +1291,20 @@ cashier("console", "Counter", f"""<section class="cleft"><label for="find" class
         + modal("scan", "info", "", "Scan the applicant’s QR", '<div class="cam" style="height:220px"><span></span><small>Hold the phone up to the camera</small></div>', btn("Type instead", "#", "primary")),
         states=[("done", "Recorded"), ("paid", "Already paid"), ("orused", "OR already used"), ("notfound", "Not found"), ("round", "Wrong round"), ("waived", "Fee waived"), ("scan", "Scan QR")])
 
-cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan counter 1</h1><p>Every payment you recorded today. Voiding needs a supervisor PIN and a reason.</p></div><div class="pacts">{btn("Print list")}</div></div>
+cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan counter 1</h1><p>Every payment you recorded today, to match against your OR booklet. Only an admin can void a payment.</p></div><div class="pacts">{btn("Export today’s list (Excel)", "../admin/exports.html#queued")}{btn("Print list")}</div></div>
 <div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Collected</span><b>₱18,000.00</b><small>36 payments</small></div><div class="kpi"><span>Cash</span><b>₱16,500.00</b><small>33</small></div><div class="kpi"><span>GCash at counter</span><b>₱1,500.00</b><small>3</small></div></div>
-{table(["Time", "Applicant", "OR no.", "Paid with", "Amount", ""], [(f'<span class="mono muted">{t}</span>', n, f'<span class="mono">{o}</span>', m, "₱500.00", '<span class="act">' + btn("Reprint", "#") + " " + btn("Void", "#void") + "</span>") for t, n, o, m in RECENT] + [('<span class="mono muted">8:20</span>', "Jasmine O. Kusain", '<span class="mono">0048210</span>', "Cash", '<s>₱500.00</s> ' + B("bad", "Voided"), "")])}""",
-        tab="today",
-        overlays=modal("void", "warn", WARN, "Void OR 0048213?", '<div class="fld"><label for="vr">Reason</label><select id="vr"><option>Wrong applicant</option><option>Wrong amount</option><option>Duplicate</option></select></div><div class="fld"><label for="vp">Supervisor PIN</label><input id="vp" type="password" value="••••"></div>' + hint("Ramon goes back to “Waiting for payment” and gets a text. The voided OR stays on the list."), btn("Cancel", "#") + btn("Void payment", "#", "danger")),
-        states=[("void", "Void with supervisor PIN")])
-
-cashier("close", "Close the day", f"""<div class="pagehead"><div><h1>Close the day</h1><p>Count the cash in the drawer. The difference is shown before you submit to the accounting office.</p></div></div>
-<div class="row"><div class="panel grow"><h2>Count the cash</h2>
-{table(["Bill or coin", "Count", "Amount"], [(d, f'<input value="{c}" style="width:90px;height:34px">', a) for d, c, a in [("₱1,000", "12", "₱12,000"), ("₱500", "8", "₱4,000"), ("₱200", "2", "₱400"), ("₱100", "1", "₱100"), ("Coins", "—", "₱0")]])}</div>
-<div class="panel" style="width:380px;flex-shrink:0"><h2>Remittance</h2><div class="kv"><span>Expected cash</span><b>₱16,500.00</b><span>Counted</span><b>₱16,500.00</b><span>Difference</span><b style="color:var(--ok)">₱0.00</b><span>GCash at counter</span><span>₱1,500.00 (not in drawer)</span><span>OR numbers used</span><span class="mono">0048178 – 0048214</span></div>
-{btn("Submit remittance", "#submitted", "primary lg")}{btn("Export (Excel)", "../admin/exports.html#queued")}</div></div>""",
-        tab="close",
-        overlays=modal("short", "warn", WARN, "₱100 short", '<p class="muted" style="margin:0">Counted ₱16,400.00 but expected ₱16,500.00. Recount, or submit with a note; the supervisor sees it.</p><div class="fld"><label for="sn">Note</label><input id="sn" placeholder="e.g. change given twice to one applicant"></div>', btn("Recount", "#") + btn("Submit with note", "#submitted", "primary"))
-        + toast("submitted", "ok", OK, "Remittance submitted", "₱16,500.00 cash, OR 0048178–0048214. The counter is closed for today."),
-        states=[("short", "Cash short"), ("submitted", "Submitted")])
-
-doc("cashier/lock.html", "Cashier locked", """<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><a class="sp" href="../index.html">All pages</a></div>
-<div class="clock"><div class="authcard" style="align-items:center;text-align:center;width:360px"><img src="../assets/sksu-seal.png" alt="" style="width:56px;height:56px"><h1 style="font-size:20px">Isulan counter 1</h1><span class="muted">Cashier 1 stepped away. Enter your PIN.</span>
-<div class="pins"><i class="on"></i><i class="on"></i><i></i><i></i></div>
-<div class="pad">""" + "".join(f'<a href="#">{k}</a>' for k in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "⌫"]) + """</div><a class="btn primary lg" style="width:100%" href="console.html">Unlock</a><small class="muted">Wrong PIN clears the dots so you can type again.</small></div></div>""")
+{table(["Time", "Applicant", "OR no.", "Paid with", "Amount", ""], [(f'<span class="mono muted">{t}</span>', n, f'<span class="mono">{o}</span>', m, "₱500.00", '<span class="act">' + btn("Reprint", "#") + "</span>") for t, n, o, m in RECENT] + [('<span class="mono muted">8:20</span>', "Jasmine O. Kusain", '<span class="mono">0048210</span>', "Cash", '<s>₱500.00</s> ' + B("bad", "Voided"), "")])}""",
+        tab="today")
 
 board("CASHIER-JOURNEY-MOCKUP.html", "Cashier: one counter, one fee",
-      "A cashier records the exam fee at a campus counter. It has its own role and screen: nothing else in the admin is open to it. Click any screen to open it.",
-      [("Start", [(D, "cashier/lock.html", "1", "Unlock with PIN", "")]),
-       ("Take a payment", [(D, "cashier/console.html", "2", "Counter", "Find or scan, fixed fee, OR no., Enter."),
+      "A cashier records that the exam fee was paid: OR number, amount, who and when. Cash handling and remittance stay in the university’s own accounting. Click any screen to open it.",
+      [("Take a payment", [(D, "cashier/console.html", "2", "Counter", "Find or scan, fixed fee, OR no., Enter."),
                            (D, "cashier/console.html#scan", "2a", "Scan the QR", "", True), (D, "cashier/console.html#done", "2b", "Paid", "Print OR copy, next person.", True),
                            (D, "cashier/console.html#paid", "2c", "Already paid", "", True), (D, "cashier/console.html#orused", "2d", "OR already used", "", True),
                            (D, "cashier/console.html#notfound", "2e", "Not found", "", True), (D, "cashier/console.html#round", "2f", "Wrong round", "", True),
                            (D, "cashier/console.html#waived", "2g", "Fee waived", "", True)]),
-       ("During the day", [(D, "cashier/today.html", "3", "Today", "Reprint or void."), (D, "cashier/today.html#void", "3a", "Void with supervisor PIN", "", True)]),
-       ("End of day", [(D, "cashier/close.html", "4", "Close the day", "Count, compare, remit."), (D, "cashier/close.html#short", "4a", "Cash short", "", True),
-                       (D, "cashier/close.html#submitted", "4b", "Remitted", "", True), (D, "admin/cashier.html", "5", "Admin sees every counter", "")])],
-      [("One fee, no typing amounts", "The fee is fixed; waivers come from the admission office."), ("Keyboard first", "/ to search, Enter to record, Esc to clear."), ("Nothing is deleted", "Voids need a supervisor PIN and stay on the list.")])
+       ("During the day", [(D, "cashier/today.html", "3", "Today", "Reprint; export to match the OR booklet."), (D, "admin/cashier.html", "4", "Admin sees every counter", "")])],
+      [("One fee, no typing amounts", "The fee is fixed; waivers come from the admission office."), ("Keyboard first", "/ to search, Enter to record, Esc to clear."), ("Nothing is deleted", "Only an admin can void, with a reason; voided payments stay on the list.")])
 
 
 # ---------------------------------------------------------------- index with coverage checklist
@@ -1362,7 +1342,7 @@ MAP = [
 ]
 groups = [
     ("Journey mockups (start here)", ["ADMIN-JOURNEY-MOCKUP.html", "APPLICANT-JOURNEY-MOCKUP.html", "CASHIER-JOURNEY-MOCKUP.html", "PROCTOR-JOURNEY-MOCKUP.html"]),
-    ("Cashier", ["cashier/lock.html", "cashier/console.html", "cashier/today.html", "cashier/close.html"]),
+    ("Cashier", ["cashier/console.html", "cashier/today.html"]),
     ("Public", ["public/landing.html", "public/login.html", "public/staff-login.html", "public/verify.html", "public/privacy.html", "public/error.html"]),
     ("Applicant (phone)", ["applicant/splash.html", "applicant/welcome-1.html", "applicant/welcome-2.html", "applicant/welcome-3.html"] + [f"applicant/{k}.html" for k, _ in FLOW]),
     ("Emails and printouts", ["docs/sms.html", "docs/email-approved.html", "docs/email-rejected.html", "docs/email-results.html", "docs/permit-pdf.html", "docs/result-pdf.html", "docs/seat-plan.html"]),
