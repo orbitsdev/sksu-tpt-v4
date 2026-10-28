@@ -1264,7 +1264,7 @@ board("PROCTOR-JOURNEY-MOCKUP.html", "Proctor: exam day",
 
 # ---------------------------------------------------------------- cashier console (its own role and screen)
 def cashier(key, title, body, tab="counter", overlays="", states=None):
-    tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("today", "Today", "today.html")])
+    tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("list", "Applicants", "applicants.html"), ("today", "Today", "today.html")])
     doc(f"cashier/{key}.html", title, f"""<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
 <div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav>{tabs}</nav>
 <span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><span class="cshift">Today ₱18,000 · 36 paid</span></header>
@@ -1289,8 +1289,15 @@ cashier("console", "Counter", f"""<section class="cleft"><label for="find" class
         + modal("orused", "bad", BAD, "OR 0048213 is already used", '<p class="muted" style="margin:0">It was recorded at 9:41 for Ramon T. Villanueva. Check your booklet and type the next number.</p>', btn("OK", "#", "primary"))
         + modal("notfound", "info", "", "No applicant found for “Lea Sampolna”", '<p class="muted" style="margin:0">Check the spelling, or ask for the application number on their phone (Home screen). Walk-ins must apply online first.</p>', btn("OK", "#", "primary"))
         + modal("round", "warn", WARN, "Applied for Round 3, not open yet", '<p class="muted" style="margin:0">Round 3 payments start Apr 11. Ask the applicant to come back then, or move to Round 2 in their app.</p>', btn("OK", "#", "primary"))
-        + modal("waived", "info", "", "Fee waived", '<p class="muted" style="margin:0">Aisah K. Mangudadatu’s fee was waived by the admission office (indigent). Nothing to collect.</p>', btn("OK", "#", "primary"))
+        + modal("waived", "info", "", "Fee waived", '<p class="muted" style="margin:0">Aisah K. Mangudadatu’s fee was waived by the admission office (indigent). Nothing to collect.</p>', btn("OK", "#", "primary")),
         states=[("done", "Recorded"), ("paid", "Already paid"), ("orused", "OR already used"), ("notfound", "Not found"), ("round", "Wrong round"), ("waived", "Fee waived")])
+
+CROWS = [("APP-27-10422", "Lea M. Sampulna", "BSEd Mathematics", "Kalamansig", False), ("APP-27-10431", "Noel B. Guiamal", "BS Criminology", "Isulan", False), ("APP-27-10437", "Jasmine O. Kusain", "BS Information Technology", "ACCESS", False),
+         ("APP-27-10440", "Rodel A. Sangki", "BS Agriculture", "Tacurong", False), ("APP-27-10398", "Ramon T. Villanueva", "BS Agriculture", "Tacurong", True), ("APP-27-10377", "Princess A. Lumabao", "BS Accountancy", "ACCESS", True)]
+cashier("applicants", "Applicants", f"""<div class="pagehead"><div><h1>Applicants · Round 2</h1><p>Everyone who submitted an application. Click a row to record their payment. Nothing else can be changed here.</p></div></div>
+<div class="filters"><input class="search" aria-label="Search applicants" placeholder="Search name or application no." style="width:320px"><span class="seg"><span class="on">Waiting for payment · 1,204</span><span>Paid · 9,471</span><span>All</span></span><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS</option></select></div>
+{table(["Application no.", "Applicant", "1st choice", "Campus", "Payment", ""], [(f'<span class="mono">{a}</span>', n, prg, c, B("ok", "Paid") if paid else B("warn", "Waiting"), "" if paid else btn("Record payment", "console.html", "sm primary")) for a, n, prg, c, paid in CROWS])}
+<div class="head"><span class="muted">Showing 6 of 1,204 waiting</span><span style="display:flex;gap:6px">{btn("Previous")}{btn("Next")}</span></div>""", tab="list")
 
 cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan counter 1</h1><p>Every payment you recorded today, to match against your OR booklet. Only an admin can void a payment.</p></div><div class="pacts">{btn("Export today’s list (Excel)", "../admin/exports.html#queued")}{btn("Print list")}</div></div>
 <div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Collected</span><b>₱18,000.00</b><small>36 payments</small></div><div class="kpi"><span>Cash</span><b>₱16,500.00</b><small>33</small></div><div class="kpi"><span>GCash at counter</span><b>₱1,500.00</b><small>3</small></div></div>
@@ -1304,7 +1311,7 @@ board("CASHIER-JOURNEY-MOCKUP.html", "Cashier: one counter, one fee",
                            (D, "cashier/console.html#paid", "2c", "Already paid", "", True), (D, "cashier/console.html#orused", "2d", "OR already used", "", True),
                            (D, "cashier/console.html#notfound", "2e", "Not found", "", True), (D, "cashier/console.html#round", "2f", "Wrong round", "", True),
                            (D, "cashier/console.html#waived", "2g", "Fee waived", "", True)]),
-       ("During the day", [(D, "cashier/today.html", "3", "Today", "Reprint; export to match the OR booklet."), (D, "admin/cashier.html", "4", "Admin sees every counter", "")])],
+       ("During the day", [(D, "cashier/applicants.html", "2h", "Applicants list", "Browse waiting applicants; click to record."), (D, "cashier/today.html", "3", "Today", "Reprint; export to match the OR booklet."), (D, "admin/cashier.html", "4", "Admin sees every counter", "")])],
       [("One fee, no typing amounts", "The fee is fixed; waivers come from the admission office."), ("Keyboard first", "/ to search, Enter to record, Esc to clear."), ("Nothing is deleted", "Only an admin can void, with a reason; voided payments stay on the list.")])
 
 
@@ -1343,7 +1350,7 @@ MAP = [
 ]
 groups = [
     ("Journey mockups (start here)", ["ADMIN-JOURNEY-MOCKUP.html", "APPLICANT-JOURNEY-MOCKUP.html", "CASHIER-JOURNEY-MOCKUP.html", "PROCTOR-JOURNEY-MOCKUP.html"]),
-    ("Cashier", ["cashier/console.html", "cashier/today.html"]),
+    ("Cashier", ["cashier/console.html", "cashier/applicants.html", "cashier/today.html"]),
     ("Public", ["public/landing.html", "public/login.html", "public/staff-login.html", "public/verify.html", "public/privacy.html", "public/error.html"]),
     ("Applicant (phone)", ["applicant/splash.html", "applicant/welcome-1.html", "applicant/welcome-2.html", "applicant/welcome-3.html"] + [f"applicant/{k}.html" for k, _ in FLOW]),
     ("Emails and printouts", ["docs/sms.html", "docs/email-approved.html", "docs/email-rejected.html", "docs/email-results.html", "docs/permit-pdf.html", "docs/result-pdf.html", "docs/seat-plan.html"]),
