@@ -1,0 +1,63 @@
+/* ===== applicant and proctor screens as a native app (euphoria app 2.0 patterns, SKSU light theme) ===== */
+.phone.app{position:relative;width:390px;max-width:100%;height:844px;min-height:0;padding:0;border-radius:44px;overflow:hidden;display:flex;flex-direction:column;
+ background:#fbfdfb;box-shadow:0 30px 80px rgba(0,107,52,.18),0 0 0 8px #fff,0 0 0 9px #d4e3d9;font-family:var(--round);color:#13261b}
+.framed .phone.app{border-radius:0;box-shadow:none}
+.sbar{height:44px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 26px 0 30px;font:600 15px -apple-system,"Segoe UI",var(--sans);color:#13261b}
+.sbar span{display:flex;gap:6px;align-items:center}.sbar svg{fill:currentColor}
+.apph{flex-shrink:0;min-height:48px;display:flex;align-items:center;gap:10px;padding:0 16px}
+.apph img{width:30px;height:30px}.apph .dots{flex:1;justify-content:center}
+.hbtn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:#13261b;border-radius:99px;position:relative;margin-left:auto}.hbtn:first-child{margin-left:-8px}
+.hbtn.bell i{top:4px;right:2px;background:var(--bad);color:#fff}
+.apph .dots span{background:#d7e6dc}.apph .dots span.done{background:var(--green)}.apph .dots span.now{background:var(--deep-2)}
+.appb{flex:1;overflow-y:auto;padding:4px 20px 24px;display:flex;flex-direction:column;gap:14px}
+.phone.app.tabbed .appb{padding-bottom:110px}
+.eyebrow{margin:0;font:600 11px var(--round);letter-spacing:.18em;text-transform:uppercase;color:var(--deep-2)}
+.gh,.big{margin:0;font:800 32px/1.05 var(--round);letter-spacing:-.02em;color:#13261b;background:none;-webkit-background-clip:initial;background-clip:initial;text-align:left!important}
+.appb .center{text-align:left}.appb .lead{text-align:left!important;color:#4b5a51;font-size:15px}
+.appb .lb{border-radius:20px;background:#f1f8f4;border:0}
+.cap{font:600 11px var(--round);letter-spacing:.14em;color:#5b6b61}
+.appcta{flex-shrink:0;padding:10px 20px 28px;display:flex;flex-direction:column;gap:10px}
+.inline-cta{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.go{height:54px;border-radius:999px;background:linear-gradient(90deg,#0a8a45,#006b34);box-shadow:0 10px 24px rgba(10,138,69,.32);font:700 17px var(--round)}
+.go.blue{background:#fff;color:var(--deep-2);box-shadow:none;border:1.5px solid var(--green-line)}.go.blue:hover{background:var(--mint-tint);color:var(--deep-2)}
+.back{border-color:#dbe6df}
+.tabbar{position:absolute;left:14px;right:14px;bottom:16px;height:64px;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.94);border:1px solid #e2ece6;border-radius:24px;box-shadow:0 12px 30px rgba(19,38,27,.14);backdrop-filter:blur(10px);padding:6px 4px;z-index:5}
+.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#7b867f;font:500 11px var(--round);position:relative}
+.tabbar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8}.tabbar a.on{color:#13261b;font-weight:700}.tabbar a.on:after{content:"";width:4px;height:4px;border-radius:9px;background:var(--green);position:absolute;bottom:2px}
+.tabbar i{position:absolute;top:2px;left:calc(50% + 6px);background:var(--bad);color:#fff;font:700 10px var(--sans);font-style:normal;border-radius:99px;padding:1px 5px}
+/* bottom sheets on phone screens */
+.phone-page .modal{align-items:flex-end}
+.phone-page .dialog{width:390px;max-width:100%;border-radius:28px 28px 0 0;padding:12px 20px 30px;box-shadow:0 -10px 40px rgba(0,0,0,.16)}
+.phone-page .dialog:before{content:"";width:40px;height:5px;border-radius:9px;background:#d4dad6;align-self:center;margin-bottom:4px}
+.phone-page .dialog .ico{display:none}.phone-page .dialog h3{font:700 20px var(--round)}
+.phone-page .toast{top:56px;width:360px;border-radius:18px}
+/* permit as a ticket */
+.wallet{border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 14px 34px rgba(19,38,27,.16)}
+.wallet .wt{background:var(--photo);color:#fff;padding:14px 16px 18px;display:flex;flex-direction:column;gap:2px}
+.wallet .wtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.wallet .wtop img{width:30px;height:30px;background:#fff;border-radius:99px}
+.wallet .wtop small{background:rgba(255,255,255,.18);border-radius:99px;padding:3px 10px;font:600 11px var(--round)}
+.wallet .wtitle{font:800 24px var(--round)}.wallet .wt>span{color:rgba(227,249,236,.85);font-size:14px}
+.perf{height:0;border-top:2px dashed #d7e3dc;margin:0 14px;position:relative}.perf:before,.perf:after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:99px;background:#fbfdfb}.perf:before{left:-24px}.perf:after{right:-24px}
+.wallet .wq{background:#fff;padding:18px 16px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#13261b}
+.wallet .wq b.no{font:700 26px var(--mono);color:#13261b;letter-spacing:.06em}
+.dotok{display:inline-flex;align-items:center;gap:6px;color:var(--ok);font:600 13px var(--round)}.dotok:before{content:"";width:8px;height:8px;border-radius:9px;background:#22c55e}
+.wallet .wg{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;padding:12px 16px 18px;color:#13261b}.wallet .wg small{display:block;color:#6b7a71;font-size:11px;text-transform:uppercase;letter-spacing:.06em}.wallet .wg b{font-weight:600}
+/* splash and welcome */
+.phone.app.intro{background:#fbfdfb}.phone.app.intro.dark{background:var(--photo);color:#fff}.phone.app.intro.dark .sbar{color:#fff}
+.introb{flex:1;position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:20px}
+.introb .skip{position:absolute;top:6px;right:20px;color:#13261b;font-weight:600;text-decoration:none}
+.hero-ph{position:absolute;inset:0 0 44% 0;background:linear-gradient(180deg,rgba(251,253,251,0) 55%,#fbfdfb),url("campus-duo.jpg") center/cover;border-radius:0 0 36px 36px}
+.introb .eyebrow,.introb .big,.introb .lead,.introb .pdots{position:relative}.introb .big{font-size:36px}
+.pdots{display:flex;gap:6px}.pdots span{width:8px;height:4px;border-radius:9px;background:#cfdcd4}.pdots span.now{width:22px;background:var(--deep-2)}
+.alt{display:flex;justify-content:space-between;font-size:14px}.alt a{color:#13261b;text-decoration:none;font-weight:500}
+.splash{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}.splash img{width:110px;height:110px;background:#fff;border-radius:99px;box-shadow:0 0 0 10px rgba(255,255,255,.12)}
+.splash .wm{align-items:center}.splash p{margin:0;color:var(--gold);font:600 13px var(--round);letter-spacing:.2em;text-transform:uppercase}
+.splash .load{margin-top:120px;width:120px;height:4px;border-radius:9px;background:rgba(255,255,255,.25)}.splash .load span{display:block;width:45%;height:100%;border-radius:9px;background:#fff}.splash small{color:rgba(255,255,255,.8)}
+/* proctor app shell */
+.pro{border-radius:44px;box-shadow:0 30px 80px rgba(0,107,52,.18),0 0 0 8px #fff,0 0 0 9px #d4e3d9;border:0}.pro .sbar{background:var(--deep-3);color:#fff}
+.framed .pro{box-shadow:none}
+.appb .alertbox{display:block}.mocklink{align-self:center;font:500 12px var(--sans);color:var(--muted);text-decoration:underline dotted;padding:2px}
+/* admin on a phone: filters fold into one button, rows are cards */
+@media (max-width:900px){.filters>select,.filters>.seg{display:none}.filters:after{content:"Filters";order:-1;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13px}
+ tr{background:#fff;border:1px solid var(--line)!important;border-radius:12px;margin-bottom:8px;padding:10px 0!important}table{border:0;background:transparent}tbody{display:flex;flex-direction:column}}
+.paym{display:flex;flex-direction:column;gap:8px}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · SKSU TPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&family=Lexend:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add("framed");</script>
+</head>
+<body>
+<div class="states"><b>States on this page:</b><a href="#loading">Loading</a><a href="#magic">Email link dialog</a><a href="#sent">Success toast</a><a href="#google-error">Error</a><a href="#closed">Season closed</a><a href="#">Reset</a></div>
+<div class="pub"><header class="pubnav"><img src="../assets/sksu-seal.png" alt="SKSU seal"><div class="wm"><b>Sultan Kudarat</b><span>State University · Admission Test</span></div><nav class="sp"><a href="landing.html">Home</a><a href="landing.html#how">How it works</a><a href="privacy.html">Privacy</a><a class="btn primary" href="login.html">Apply / Sign in</a></nav></header>
+<div class="auth"><div class="authcard">
+<img src="../assets/sksu-seal.png" alt="" style="width:56px;height:56px;align-self:center">
+<h1 style="text-align:center;font-size:22px">Sign in to apply</h1>
+<p class="muted" style="margin:0;text-align:center">Use the Google account you check most. Your result and permit will be linked to it.</p>
+<a class="gbtn" href="#loading"><span style="font-weight:700;color:#4285f4">G</span>Continue with Google</a>
+<div class="muted" style="text-align:center;font-size:13px">No Google account? <a href="#magic">Get a sign-in link by email</a></div>
+<div id="error-box"></div>
+<small class="muted" style="text-align:center">By continuing you agree to the <a href="privacy.html">privacy notice</a>.</small>
+<a href="../applicant/home.html" class="btn">Mockup: continue as a signed-in applicant →</a>
+</div></div></div>
+<div class="modal" id="loading"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="loading-t"><div class="ico info"><span class="spin"></span></div><h3 id="loading-t">Signing you in…</h3><p class="muted" style="margin:0">Waiting for Google. Keep this tab open.</p><div class="acts"><a class="btn " href="#">Cancel</a></div></div></div>
+<div class="modal" id="magic"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="magic-t"><div class="ico info">@</div><h3 id="magic-t">Get a sign-in link</h3><div class="fld"><label for="em">Email</label><input id="em" value="maria.delacruz@yahoo.com"></div><div class="acts"><a class="btn " href="#">Cancel</a><a class="btn primary" href="#sent">Send link</a></div></div></div>
+<div class="toast" id="sent" role="status"><div class="ico ok" style="width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg></div><div><b>Link sent</b><span class="muted">Check maria.delacruz@yahoo.com. The link works for 15 minutes.</span></div><a class="x" href="#" aria-label="Dismiss">×</a></div>
+<div class="modal" id="google-error"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="google-error-t"><div class="ico bad"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div><h3 id="google-error-t">Google sign-in didn’t finish</h3><p class="muted" style="margin:0">The sign-in window was closed or timed out. Nothing was saved. Try again.</p><div class="acts"><a class="btn primary" href="#loading">Try again</a></div></div></div>
+<div class="modal" id="closed"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="closed-t"><div class="ico warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17.5v.01"/></svg></div><h3 id="closed-t">Registration is closed</h3><p class="muted" style="margin:0">Season 2027 registration ended Feb 28. You can still sign in to see your permit or result.</p><div class="acts"><a class="btn " href="#">OK</a></div></div></div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+/* calm colour: neutral table heads, no ornamental watermarks inside the app, icons only where they mean something */
+th{background:var(--side);color:var(--text)}.queue .qh{background:var(--side);color:var(--text)}
+.shell main{background:linear-gradient(180deg,#f1f8f4 0,#ffffff 220px)}
+nav.side{background:var(--pat-dark),linear-gradient(180deg,#0b4d2c,#062e19)}
+.stats{border-left:1px solid var(--line)}
+.kpi.act b{color:var(--ink)}
+.dialog .ico.info{display:none}.dialog .ico{width:36px;height:36px}
+.toast .ico{background:none!important;width:auto!important;height:auto!important}.toast .ico.ok{color:var(--ok)}.toast .ico.bad{color:var(--bad)}.toast .ico.warn{color:var(--warn)}.toast .ico.info{color:var(--info)}
+/* charts */
+.chart{width:100%;height:auto;font:11px var(--sans);fill:var(--muted)}.chart .axis{stroke:var(--line-2)}.chart .area{fill:rgba(10,138,69,.10)}.chart .ln{fill:none;stroke:var(--green);stroke-width:2}
+.chart .pt{fill:var(--deep-2)}.chart .val{fill:var(--ink);font-weight:600}.chart .bar{fill:#bfe6cf}.chart .hi{fill:var(--deep-2)}.chart .mean{stroke:var(--ink);stroke-dasharray:3 3}
+.hbars{display:flex;flex-direction:column;gap:8px}.hb{display:grid;grid-template-columns:190px 1fr 60px 56px;gap:10px;align-items:center;font-size:13px}
+.hb .l{display:flex;flex-direction:column;color:var(--ink)}.hb .l small{color:var(--muted)}.hb .t{height:10px;background:var(--chip);border-radius:9px;overflow:hidden}.hb .t span{display:block;height:100%;background:var(--green);border-radius:9px}
+.hb b{font:600 13px var(--mono);color:var(--ink);text-align:right}.hb .drop{color:var(--bad);font:12px var(--mono)}.hbars:not(.funnel) .hb{grid-template-columns:190px 1fr 60px}
+/* whole-page states, skeletons, empty states */
+.inmain{display:none;position:fixed;left:244px;right:0;top:92px;bottom:0;z-index:39;background:#fff;padding:60px 28px 28px;overflow:auto;flex-direction:column;gap:16px}.inmain:target{display:flex}
+.inmain>.x{position:absolute;top:20px;right:24px;text-decoration:none;color:var(--muted);font-size:22px}
+.skt{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}.sr{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:16px;padding:14px;border-top:1px solid var(--line)}.sr.sh{background:var(--side);border-top:0}
+.skel{display:inline-block;min-height:12px}
+.empty{border:0;padding:56px 24px}.eico{width:48px;height:48px;border-radius:99px;background:var(--side);display:flex;align-items:center;justify-content:center;color:var(--muted)}.eico svg{width:22px;height:22px}
+/* uploads, forms */
+.uploads{display:flex;flex-direction:column;gap:8px}.up{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px}.up>div:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px;align-items:flex-start}
+.thumb{width:48px;height:48px;border-radius:8px;background:var(--side);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)}
+.scrollx{overflow-x:auto;display:flex;flex-direction:column;gap:18px}.formpage{max-width:1080px}.formfoot{max-width:1080px}td b{white-space:nowrap}
+.howto{margin:0;padding-left:20px;color:#545454;font-size:14px;display:flex;flex-direction:column;gap:4px}
+/* notifications */
+.bell{margin-left:auto;position:relative;color:#fff;display:inline-flex}.bell i{position:absolute;top:-6px;right:-8px;background:var(--gold);color:var(--gold-ink);font:700 10px var(--sans);font-style:normal;border-radius:99px;padding:1px 5px}
+.notes{display:flex;flex-direction:column;gap:8px}.note{display:flex;gap:12px;padding:12px;border:1px solid var(--mint-line);border-radius:14px;text-decoration:none;color:#212121}
+.note.unread{background:var(--mint-tint);border-color:var(--green-line)}.note>span:last-child{display:flex;flex-direction:column;gap:2px}.note b{font-weight:600}.note small{color:#757575}
+.ni{flex-shrink:0;margin-top:2px}.ni.ok{color:var(--ok)}.ni.info{color:var(--info)}.ni.bad{color:var(--bad)}
+.smsgrid{max-width:900px;margin:24px auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:0 16px}
+.smsw{display:flex;flex-direction:column;gap:6px}.sms{background:#e9e9eb;border-radius:18px 18px 18px 4px;padding:10px 14px;font:14px/1.4 -apple-system,"Segoe UI",sans-serif;color:#111}
+@media (max-width:900px){.inmain{left:0}.hb,.hbars:not(.funnel) .hb{grid-template-columns:110px 1fr 50px}.hb .drop{display:none}}

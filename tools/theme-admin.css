@@ -1,0 +1,48 @@
+/* ===== admin UI rules: one template, one card, one table, one button set, 8px grid, one focal point ===== */
+:root{--r-card:12px;--r-ctl:8px}
+/* chrome stays quiet so the page content is what you look at */
+.top{box-shadow:inset 0 -2px 0 var(--gold);height:56px}
+nav.side{background:#f7faf8;border-right:1px solid var(--line)}
+nav.side .grp{color:var(--muted);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:16px 12px 6px}
+nav.side a{color:var(--text);padding:8px 12px}nav.side a:hover{background:#eef4f0}
+nav.side a.on{background:#e3f2e9;color:var(--deep-2);font-weight:600;box-shadow:none}
+nav.side .count{background:#fde8e8;color:var(--bad)}
+.shell main{background:#fff;padding:32px 40px 48px;gap:24px;max-width:1360px}
+/* page template */
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.pagehead h1{margin:0;font:600 26px/1.2 var(--sans);color:var(--ink);letter-spacing:-.01em}
+.pagehead p{margin:6px 0 0;max-width:680px;color:var(--muted);font-size:14px;line-height:1.5}
+.pacts{display:flex;gap:8px;flex-shrink:0}
+/* one card */
+.panel,.kpi,.tile,.stats,.queue,.step,.dupe,.up,.skt,.stepper,.tabsbar.rounds,.attn-wrap{border:1px solid var(--line);border-radius:var(--r-card);background:#fff;box-shadow:none}
+.panel{padding:20px;gap:16px}
+.alertbox{border-radius:var(--r-card)}
+/* one table */
+table{border:1px solid var(--line);border-radius:var(--r-card);border-collapse:separate;border-spacing:0}
+th{background:#fafbfa;color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:10px 16px;border-bottom:1px solid var(--line)}
+td{padding:12px 16px;border-top:1px solid var(--line);font-size:14px}tr:first-child td{border-top:0}
+tbody tr:hover td{background:#fafcfb}
+td b.mono,td .mono{font-weight:500}
+.panel table{border:0;border-radius:0}.panel th{background:transparent}
+/* row actions are quiet until you point at a row */
+td .act .btn{border-color:transparent;background:transparent;color:var(--muted)}tbody tr:hover td .act .btn{border-color:var(--line);color:var(--ink);background:#fff}
+td .act .btn:first-child{color:var(--deep-2)}
+/* one button set: primary, secondary, ghost (danger only for destructive) */
+.btn{height:40px;padding:0 16px;gap:8px;border-radius:var(--r-ctl);font:600 14px var(--sans);border:1px solid var(--line-2);background:#fff;color:var(--ink)}
+.btn:hover{background:#f6f8f7}.btn.primary:hover{filter:brightness(1.06)}
+td .btn,.filters .btn,.btn.sm{height:32px;padding:0 12px;font-size:13px}
+.btn.lg{height:48px;padding:0 20px;font-size:15px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--deep-2)}
+.btn.danger{background:#fff;border-color:#f3c5c5;color:var(--bad)}.btn.danger:hover{background:#fef2f2}
+.btn.disabled,.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+.btn.loading{color:transparent!important;position:relative;pointer-events:none}.btn.loading:after{content:"";position:absolute;width:16px;height:16px;border-radius:99px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;animation:sp .8s linear infinite}
+.btn:not(.primary).loading:after{border-color:var(--line-2);border-top-color:var(--green)}
+/* filters: one quiet row */
+.filters{gap:8px}.chip{border-radius:999px;padding:5px 12px}.chip.on{background:#e3f2e9;border-color:transparent}
+/* one focal point on the dashboard: the first KPI is the task */
+.kpis{grid-template-columns:2fr 1fr 1fr 1fr;gap:16px}
+.kpi{padding:16px 20px}.kpi b{font:600 24px var(--sans)}.kpi span{font-size:13px}
+.kpi:first-child{background:#f3faf6;border-color:#cfe9da}.kpi:first-child b{font-size:40px;color:var(--deep-2)}.kpi:first-child u{display:inline-block;margin-top:8px;background:var(--deep-2);color:#fff;padding:7px 14px;border-radius:var(--r-ctl);font-size:13px}
+.attn{padding:14px 0}
+h2{font:600 16px var(--sans);color:var(--ink)}
+@media (max-width:900px){.shell main{padding:16px}.kpis{grid-template-columns:1fr 1fr}.kpi:first-child{grid-column:1/-1}.pagehead{flex-direction:column;align-items:flex-start}}
