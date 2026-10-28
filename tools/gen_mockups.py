@@ -524,6 +524,8 @@ def pagehead(title, content):
         desc = m.group(1)
         acts = m.group(2) if m.re is HEAD_RE else ""
         content = content[m.end():]
+    if "<table" in content and 'class="search"' not in content and "Dashboard" not in title:
+        acts = '<input class="search" aria-label="Search this list" placeholder="Search this list">' + acts
     return (f'<div class="pagehead"><div><h1>{title}</h1>{f"<p>{desc}</p>" if desc else ""}</div><div class="pacts">{acts}</div></div>'
             f'{rounds}{content}')
 
@@ -1183,7 +1185,7 @@ ADMIN_CYCLE = [
         ("admin/applicant.html#cancel", "Cancel application", "Type CANCEL; the seat is freed."),
         ("admin/applicant.html#photo", "Review an upload", "Ask for a new photo without losing the seat.")]),
     ("5 · Payments, numbers and permits", [
-        ("cashier/console.html", "Cashier console", "Its own role and screen: find or scan, fixed fee, OR no., Enter."),
+        ("cashier/console.html", "Cashier console", "Its own role and screen: search, fixed fee, OR no., Enter."),
         ("admin/cashier.html", "Cashier counters", "Every counter’s payments and voids."),
         ("admin/payments.html", "Payment review (uploaded receipts)", "Queue, receipt and decision side by side; A and R keys."),
         ("admin/payments.html#approve", "Reused reference warning", "Caught before a double approval."),
@@ -1274,8 +1276,8 @@ RECENT = [("9:41", "Ramon T. Villanueva", "0048213", "Cash"), ("9:12", "Princess
 STRIP = '<div class="cstrip"><b>Last paid</b>' + "".join(f'<a href="today.html"><span class="mono">{t}</span>{n}<span class="mono">OR {o}</span></a>' for t, n, o, _ in RECENT) + '<a class="more" href="today.html">All today →</a></div>'
 
 cashier("console", "Counter", f"""<section class="cleft"><label for="find" class="clabel">Find the applicant</label>
-<div class="cfind"><input id="find" value="Lea Sampulna" placeholder="Name, application no. or examinee no." autofocus><a class="btn lg" href="#scan">Scan QR</a></div>
-<small class="hint">Press <kbd>/</kbd> to search. Ask the applicant to open their app; the QR is on the Pay screen.</small>
+<div class="cfind"><input id="find" value="Lea Sampulna" placeholder="Name, application no. or examinee no." autofocus></div>
+<small class="hint">Press <kbd>/</kbd> to search. The application number is on the applicant’s Pay screen.</small>
 {APPLICANT_CARD}</section>
 <section class="cright"><span class="clabel">Exam fee</span><div class="fee">₱500.00</div><small class="hint">Fixed for Season 2027. A fee waiver is set by the admission office, not here.</small>
 <div class="fld"><label for="or">Official receipt no.</label><input id="or" class="orno" value="0048214" autofocus>{hint("The next number on your OR booklet. It must be unused.")}</div>
@@ -1288,8 +1290,7 @@ cashier("console", "Counter", f"""<section class="cleft"><label for="find" class
         + modal("notfound", "info", "", "No applicant found for “Lea Sampolna”", '<p class="muted" style="margin:0">Check the spelling, or ask for the application number on their phone (Home screen). Walk-ins must apply online first.</p>', btn("OK", "#", "primary"))
         + modal("round", "warn", WARN, "Applied for Round 3, not open yet", '<p class="muted" style="margin:0">Round 3 payments start Apr 11. Ask the applicant to come back then, or move to Round 2 in their app.</p>', btn("OK", "#", "primary"))
         + modal("waived", "info", "", "Fee waived", '<p class="muted" style="margin:0">Aisah K. Mangudadatu’s fee was waived by the admission office (indigent). Nothing to collect.</p>', btn("OK", "#", "primary"))
-        + modal("scan", "info", "", "Scan the applicant’s QR", '<div class="cam" style="height:220px"><span></span><small>Hold the phone up to the camera</small></div>', btn("Type instead", "#", "primary")),
-        states=[("done", "Recorded"), ("paid", "Already paid"), ("orused", "OR already used"), ("notfound", "Not found"), ("round", "Wrong round"), ("waived", "Fee waived"), ("scan", "Scan QR")])
+        states=[("done", "Recorded"), ("paid", "Already paid"), ("orused", "OR already used"), ("notfound", "Not found"), ("round", "Wrong round"), ("waived", "Fee waived")])
 
 cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan counter 1</h1><p>Every payment you recorded today, to match against your OR booklet. Only an admin can void a payment.</p></div><div class="pacts">{btn("Export today’s list (Excel)", "../admin/exports.html#queued")}{btn("Print list")}</div></div>
 <div class="kpis" style="grid-template-columns:repeat(3,1fr)"><div class="kpi"><span>Collected</span><b>₱18,000.00</b><small>36 payments</small></div><div class="kpi"><span>Cash</span><b>₱16,500.00</b><small>33</small></div><div class="kpi"><span>GCash at counter</span><b>₱1,500.00</b><small>3</small></div></div>
@@ -1298,8 +1299,8 @@ cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan cou
 
 board("CASHIER-JOURNEY-MOCKUP.html", "Cashier: one counter, one fee",
       "A cashier records that the exam fee was paid: OR number, amount, who and when. Cash handling and remittance stay in the university’s own accounting. Click any screen to open it.",
-      [("Take a payment", [(D, "cashier/console.html", "2", "Counter", "Find or scan, fixed fee, OR no., Enter."),
-                           (D, "cashier/console.html#scan", "2a", "Scan the QR", "", True), (D, "cashier/console.html#done", "2b", "Paid", "Print OR copy, next person.", True),
+      [("Take a payment", [(D, "cashier/console.html", "2", "Counter", "Search, fixed fee, OR no., Enter."),
+                           (D, "cashier/console.html#done", "2b", "Paid", "Print OR copy, next person.", True),
                            (D, "cashier/console.html#paid", "2c", "Already paid", "", True), (D, "cashier/console.html#orused", "2d", "OR already used", "", True),
                            (D, "cashier/console.html#notfound", "2e", "Not found", "", True), (D, "cashier/console.html#round", "2f", "Wrong round", "", True),
                            (D, "cashier/console.html#waived", "2g", "Fee waived", "", True)]),

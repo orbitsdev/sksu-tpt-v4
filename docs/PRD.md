@@ -310,7 +310,7 @@ flowchart TB
 
 - **Cashier** is its own role with a simple console (`cashier/console.html`). It can't open other admin pages; admins can open the console too.
 - **What TPT records** is only that the applicant paid: OR number, amount, payment method, who recorded it, and when. Cash handling and remittance stay in the university's own accounting system, as today.
-- **Counter flow:** find (name, application or examinee no.) or scan the applicant's QR → the fee is fixed → type the OR number (must be unused) → Enter → paid, print an OR copy if needed → next person.
+- **Counter flow:** search (name, application or examinee no.; no QR scanning at the counter) → the fee is fixed → type the OR number (must be unused) → Enter → paid, print an OR copy if needed → next person.
 - **Guards:** already paid, OR already used, not found, round not open yet, fee waived.
 - **Today:** the cashier's list for the day with reprint and an Excel export to match against the OR booklet. Only an admin can void a payment, with a reason; voided payments stay on the list.
 - **Data:** `payments.method = cashier`, `or_no` unique per season, `recorded_by`, `counter`; voids recorded in the activity log.
