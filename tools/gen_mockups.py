@@ -108,7 +108,7 @@ def inmain(iid, html):
 # ---------------------------------------------------------------- public pages
 def pubnav(active=""):
     return ('<header class="pubnav"><img src="{UP}assets/sksu-seal.png" alt="SKSU seal">'
-            '<div class="wm"><b>Sultan Kudarat</b><span>State University · Admission Test</span></div>'
+            '<div class="brandline"><b>SKSU Admission Test</b><span>Sultan Kudarat State University</span></div>'
             '<nav class="sp"><a href="landing.html">Home</a><a href="landing.html#how">How it works</a><a href="privacy.html">Privacy</a>'
             '<a class="btn primary" href="login.html">Apply / Sign in</a></nav></header>')
 
@@ -959,26 +959,34 @@ doc("docs/seat-plan.html", "Seat plan", f"""<div class="crumbs" style="text-alig
 # ---------------------------------------------------------------- journey boards (frames with captions)
 def frame(kind, src, n, title, caption, state=False, pre="../"):
     page = src.split("#")[0]
+    tip_text = caption.replace('"', "&quot;")
     if kind == "phone":
-        dev = f'<div class="dev"><div class="scr"><iframe src="{pre}{src}" loading="lazy" title="{title}"></iframe></div></div>'
+        dev = f'<div class="dev"><div class="scr"><iframe src="{pre}{src}" loading="lazy" title="{title}" tabindex="-1"></iframe></div></div>'
     else:
         dev = (f'<div class="win"><div class="bar"><i></i><i></i><i></i><span>sksu-tpt.com/{page.replace(".html", "")}</span></div>'
-               f'<div class="scr"><iframe src="{pre}{src}" loading="lazy" title="{title}"></iframe></div></div>')
-    return (f'<div class="fr">{dev}<div class="cap"><span class="t"><span class="n{" state" if state else ""}">{n}</span>{title}</span>'
-            f'<p class="muted">{caption}</p><a href="{pre}{src}">Open this page →</a></div></div>')
+               f'<div class="scr"><iframe src="{pre}{src}" loading="lazy" title="{title}" tabindex="-1"></iframe></div></div>')
+    return (f'<a class="fr k-{kind}" href="{pre}{src}" title="{tip_text}">{dev}'
+            f'<span class="cap"><span class="n{" state" if state else ""}">{n}</span>{title}</span></a>')
 
 
 def board(path, title, intro, sections, rules):
     pre = "../" * path.count("/")
-    secs = "".join(f'<h2 class="sec" id="stage-{i}">{name}</h2><div class="frames">{"".join(frame(*f, pre=pre) if len(f) == 6 else frame(*f, False, pre) for f in frames)}</div>' for i, (name, frames) in enumerate(sections))
+    def rows(frames):
+        full = [f if len(f) == 6 else (*f, False) for f in frames]
+        out = ""
+        for kind in ("desk", "phone"):
+            group = [f for f in full if f[0] == kind]
+            if group:
+                out += f'<div class="frames f-{kind}">' + "".join(frame(*f, pre=pre) for f in group) + "</div>"
+        return out
+    secs = "".join(f'<h2 class="sec" id="stage-{i}">{name}</h2>{rows(frames)}' for i, (name, frames) in enumerate(sections))
     chips = "".join(f'<a href="#stage-{i}">{name}</a>' for i, (name, _) in enumerate(sections))
     rule_html = "".join(f"<div><b>{t}</b>{d}</div>" for t, d in rules)
     doc(path, title, f"""<div class="board">
 <div class="crumbs"><a href="{pre}index.html">All pages</a></div>
-<div class="bhead"><img src="{pre}assets/sksu-seal.png" alt="SKSU seal"><div><div class="wm"><b>Sultan Kudarat</b><span>State University</span></div><h1>{title}</h1><div class="kicker">Mockup for review · 28 Oct 2026</div></div></div>
+<div class="bhead"><img src="{pre}assets/sksu-seal.png" alt="SKSU seal"><div><h1>{title}</h1><div class="kicker">Mockup for review · 28 Oct 2026</div></div></div>
 <p class="intro">{intro}</p>
 <nav class="stagebar">{chips}</nav>
-<div class="legend"><span class="cap"><span class="t"><span class="n">1</span>A screen</span></span><span class="cap"><span class="t"><span class="n state">1a</span>A state of that screen (dialog, error, loading, success)</span></span></div>
 {secs}
 <h2 class="sec">Calm rules</h2><div class="rules">{rule_html}</div></div>""", "boardpage")
 
@@ -986,7 +994,7 @@ def board(path, title, intro, sections, rules):
 P, D = "phone", "desk"
 board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
       "Every screen a student sees, from the public page to the result, drawn on a phone because most applicants use one. "
-      "Numbers are screens; orange numbers are states of the screen before them. Tap “Open this page” to click through it for real.",
+      "Click any screen to open it.",
       [("Start", [
           (P, "applicant/splash.html", "S", "Splash", "Seal and wordmark while the app loads."),
           (P, "applicant/welcome-1.html", "W1", "Welcome 1 of 3", "Big type, one idea, Skip on top."),
@@ -1233,7 +1241,7 @@ sections.append(("10 · The same pages on a phone", numbered(P, [(src, "Phone: "
 board("ADMIN-JOURNEY-MOCKUP.html", "Admin: the full season",
       "Everything the admission office does in one season, in order: sign in, set up the season, build the exam schedule, run registration, "
       "approve payments and issue numbers, run exam day, import scores, publish results, then report. Every form and every state is its own frame. "
-      "Numbers are screens; orange numbers are states of the screen before them.",
+      "Click any screen to open it.",
       sections,
       [("One green button per area", "Danger actions are red and always behind a confirm."), ("Every change has a reason", "Edits, moves and corrections ask why and write the history."),
        ("Nothing waits on a spinner", "Exports, emails and score maths run in the background."), ("Tables fold on a phone", "Each row becomes a card; filters stack."),
@@ -1367,7 +1375,7 @@ doc("design-system.html", "Design system", f"""<div class="idx"><div class="crum
 if OUT.exists():
     shutil.rmtree(OUT)
 (OUT / "assets").mkdir(parents=True)
-(OUT / "assets" / "style.css").write_text("".join((TOOLS / f).read_text(encoding="utf-8") for f in ("base.css", "theme.css", "theme-extra.css", "theme-app.css", "theme-admin.css")), encoding="utf-8")
+(OUT / "assets" / "style.css").write_text("".join((TOOLS / f).read_text(encoding="utf-8") for f in ("base.css", "theme.css", "theme-extra.css", "theme-app.css", "theme-admin.css", "theme-calm.css")), encoding="utf-8")
 shutil.copyfile(TOOLS / "sksu-seal.png", OUT / "assets" / "sksu-seal.png")
 (OUT / "docs").mkdir(parents=True, exist_ok=True)
 shutil.copyfile(TOOLS / "tpt-scores-template.csv", OUT / "docs" / "tpt-scores-template.csv")

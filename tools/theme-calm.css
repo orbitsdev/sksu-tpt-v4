@@ -1,0 +1,28 @@
+/* ===== calm typography and journey boards =====
+   Type scale 12 / 14 / 16 / 20 / 28. One UI font (Geist on the boards and staff screens, Lexend inside the applicant app).
+   Oswald only for the SKSU wordmark (landing hero, splash). Bold only for titles. Body line height 1.5. */
+body{line-height:1.5}
+.brandline{display:flex;flex-direction:column;line-height:1.25}.brandline b{font:600 16px var(--sans);color:#fff}.brandline span{font-size:12px;color:rgba(255,255,255,.72)}
+/* boards */
+body.boardpage{font-family:var(--sans)}
+.board{gap:56px;padding:48px 40px 96px}
+.bhead{padding:32px 36px 56px;gap:20px}.bhead h1{font:600 28px/1.25 var(--sans);letter-spacing:-.01em}.bhead .kicker{font:500 12px var(--sans);letter-spacing:.12em;color:rgba(242,194,0,.9)}
+.bhead img{width:72px;height:72px}
+.intro{font-size:16px;line-height:1.6;color:rgba(215,239,225,.85);max-width:720px;margin:-24px 0 0}
+.stagebar{gap:4px}.stagebar a{font-size:13px;color:rgba(227,249,236,.85)}
+.sec{font:600 12px var(--sans);letter-spacing:.16em;color:var(--gold);margin:8px 0 -8px}
+.frames{gap:56px 40px;align-items:flex-start}
+.frames+.frames{margin-top:8px}
+a.fr{display:flex;flex-direction:column;gap:14px;text-decoration:none}
+a.fr .cap{display:flex;align-items:center;gap:10px;max-width:none;font:500 14px var(--sans);color:#fff}
+a.fr .cap .n{min-width:auto;height:auto;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.1);color:rgba(227,249,236,.85);font:500 12px var(--mono)}
+a.fr .cap .n.state{background:transparent;border:1px solid rgba(255,255,255,.22);color:rgba(227,249,236,.7)}
+a.fr:hover .dev,a.fr:hover .win{outline:2px solid rgba(95,212,160,.6);outline-offset:4px}
+.rules div{font-size:14px;line-height:1.5}
+/* inside the screens: fewer weights */
+.gh,.big{font-weight:700}.appb b,.appb strong{font-weight:600}
+.st div,.choice div{font-weight:400}
+.appb .lead,.appb p{line-height:1.5}
+.pagehead h1{font-weight:600}
+body.boardpage{background:var(--pat-dark),radial-gradient(ellipse at 20% 0,#0f6b3a 0,rgba(6,46,25,0) 55%),linear-gradient(180deg,#062e19,#041f11)}
+a.fr{align-items:flex-start}a.fr .cap{letter-spacing:0;text-transform:none;flex-direction:row;justify-content:flex-start;font:500 14px var(--sans);color:#fff}
