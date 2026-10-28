@@ -1270,7 +1270,7 @@ board("PROCTOR-JOURNEY-MOCKUP.html", "Proctor: exam day",
 
 # ---------------------------------------------------------------- cashier console (its own role and screen)
 def cashier(key, title, body, tab="counter", overlays="", states=None):
-    tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("list", "Applicants", "applicants.html"), ("today", "Today", "today.html")])
+    tabs = "".join(f'<a href="{h}" class="{"on" if t == tab else ""}">{label}</a>' for t, label, h in [("counter", "Counter", "console.html"), ("list", "Applicants", "applicants.html"), ("info", "Info", "info.html"), ("today", "Today", "today.html")])
     doc(f"cashier/{key}.html", title, f"""<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
 <div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav>{tabs}</nav>
 <span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span></header>
@@ -1279,7 +1279,10 @@ def cashier(key, title, body, tab="counter", overlays="", states=None):
 
 APPLICANT_CARD = f"""<div class="ccard"><div class="thumb cthumb">Photo</div><div class="cinfo"><b>Lea M. Sampulna</b><span class="mono">APP-27-10422</span><span>BSEd Mathematics · Kalamansig · Round 2</span>{B("warn", "Waiting for payment")}</div></div>"""
 RECENT = [("9:41", "Ramon T. Villanueva", "0048213", "Cash"), ("9:12", "Princess A. Lumabao", "0048212", "Cash"), ("8:47", "Datu R. Mamalinta", "0048211", "GCash at counter")]
-STRIP = '<div class="cstrip"><b>Last paid</b>' + "".join(f'<a href="today.html"><span class="mono">{t}</span>{n}<span class="mono">OR {o}</span></a>' for t, n, o, _ in RECENT) + '<a class="more" href="today.html">All today →</a></div>'
+INFO_STRIP = ('<div class="cinfo-strip"><span><b>36</b> recorded here today · ₱18,000</span><span><b>1,204</b> waiting for payment</span>'
+              '<span>Seats left · Round 2: ACCESS Sat <b>12</b> ' + B('warn', 'Nearly full') + ' · Isulan Sat ' + B('bad', 'Full') + ' · Tacurong Sat <b>48</b> · ACCESS Sun <b>470</b></span>'
+              '<a href="info.html">More info →</a></div>')
+STRIP = INFO_STRIP + '<div class="cstrip"><b>Last paid</b>' + "".join(f'<a href="today.html"><span class="mono">{t}</span>{n}<span class="mono">OR {o}</span></a>' for t, n, o, _ in RECENT) + '<a class="more" href="today.html">All today →</a></div>'
 
 cashier("console", "Counter", f"""<section class="cleft"><label for="find" class="clabel">Find the applicant</label>
 <div class="cfind"><input id="find" value="Lea Sampulna" placeholder="Name, application no. or examinee no." autofocus></div>
@@ -1301,9 +1304,19 @@ cashier("console", "Counter", f"""<section class="cleft"><label for="find" class
 CROWS = [("APP-27-10422", "Lea M. Sampulna", "BSEd Mathematics", "Kalamansig", False), ("APP-27-10431", "Noel B. Guiamal", "BS Criminology", "Isulan", False), ("APP-27-10437", "Jasmine O. Kusain", "BS Information Technology", "ACCESS", False),
          ("APP-27-10440", "Rodel A. Sangki", "BS Agriculture", "Tacurong", False), ("APP-27-10398", "Ramon T. Villanueva", "BS Agriculture", "Tacurong", True), ("APP-27-10377", "Princess A. Lumabao", "BS Accountancy", "ACCESS", True)]
 cashier("applicants", "Applicants", f"""<div class="pagehead"><div><h1>Applicants · Round 2</h1><p>Everyone who submitted an application. Click a row to record their payment. Nothing else can be changed here.</p></div></div>
-<div class="filters"><input class="search" aria-label="Search applicants" placeholder="Search name or application no." style="width:320px"><span class="seg"><span class="on">Waiting for payment</span><span>Paid</span><span>All</span></span><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS</option></select></div>
+<div class="filters"><input class="search" aria-label="Search applicants" placeholder="Search name or application no." style="width:320px"><span class="seg"><span class="on">Waiting for payment · 1,204</span><span>Paid · 9,471</span><span>All</span></span><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS</option></select></div>
 {table(["Application no.", "Applicant", "1st choice", "Campus", "Payment", ""], [(f'<span class="mono">{a}</span>', n, prg, c, B("ok", "Paid") if paid else B("warn", "Waiting"), "" if paid else btn("Record payment", "console.html", "sm primary")) for a, n, prg, c, paid in CROWS])}
 <div class="head"><span class="muted">Showing 6</span><span style="display:flex;gap:6px">{btn("Previous")}{btn("Next")}</span></div>""", tab="list")
+
+DAYS = [("Sat, Apr 25", "ACCESS, Tacurong", 1200, 1188), ("Sat, Apr 25", "Isulan", 200, 200), ("Sat, Apr 25", "Tacurong", 600, 552), ("Sun, Apr 26", "ACCESS, Tacurong", 1200, 730), ("Sun, Apr 26", "Kalamansig", 400, 296)]
+ROOMS = [("Isulan", "Sat, Apr 25", "Main Building · Room 1", 50, 50), ("Isulan", "Sat, Apr 25", "Main Building · Room 4", 50, 50), ("Isulan", "Sat, Apr 25", "Engineering · ENG 201", 45, 45), ("ACCESS, Tacurong", "Sat, Apr 25", "CTE · Room 12", 50, 46), ("ACCESS, Tacurong", "Sun, Apr 26", "CTE · Room 12", 50, 18)]
+PROGS = [("BS Information Technology", "ACCESS, Tacurong", "Open"), ("BS Nursing", "ACCESS, Tacurong", "Open"), ("BS Civil Engineering", "Isulan", "Open"), ("BS Criminology", "Isulan", "Open"), ("BS Midwifery", "Isulan", "Not offered this season"), ("BS Agriculture", "Tacurong", "Open"), ("BS Fisheries", "Palimbang", "Open")]
+cashier("info", "Info", f"""<div class="pagehead"><div><h1>Info for applicants</h1><p>What people ask at the counter. Read-only.</p></div><div class="pacts"><input class="search" placeholder="Search programs, campuses, rooms" style="width:320px"></div></div>
+<div class="infogrid"><div class="panel"><h2>Key dates · Round 2</h2><div class="kv"><span>Registration</span><span>Mar 1 – Apr 10</span><span>Pay by</span><span>Apr 10</span><span>Exam days</span><span>Sat, Apr 25 and Sun, Apr 26</span><span>Report by</span><span>7:30 AM · exam starts 8:00 AM</span><span>Results</span><span>May 15</span><span>Next round</span><span>Round 3 · exam May 30</span></div></div>
+<div class="panel"><h2>Fee and what to bring</h2><div class="kv"><span>Exam fee</span><span>₱500.00 (waivers only through the admission office)</span><span>To apply</span><span>Online at sksu-tpt.com: 2×2 photo, Form 138, a valid ID</span><span>Exam day</span><span>Permit (phone or printed), valid ID, two pencils</span></div></div></div>
+<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>Exam days and seats left</h2></div>{table(["Day", "Campus", "Seats", "Left", ""], [(d, c, f"{taken:,} of {cap:,}", f'<b class="mono">{cap - taken}</b>', B("bad", "Full") if cap == taken else (B("warn", "Nearly full") if cap - taken < 60 else "")) for d, c, cap, taken in DAYS])}</div>
+<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>Rooms</h2></div>{table(["Campus", "Day", "Room", "Seats", "Taken", "Left"], [(c, d, r, cap, t, f'<b class="mono">{cap - t}</b>') for c, d, r, cap, t in ROOMS])}</div>
+<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>Programs</h2></div>{table(["Program", "Campus", "This season"], [(n, c, B("ok", st) if st == "Open" else B("gray", st)) for n, c, st in PROGS])}</div>""", tab="info")
 
 cashier("today", "Today", f"""<div class="pagehead"><div><h1>Today at Isulan counter 1</h1><p>Every payment you recorded today, to match against your OR booklet. Only an admin can void a payment.</p></div><div class="pacts">{btn("Export today’s list (Excel)", "../admin/exports.html#queued")}{btn("Print list")}</div></div>
 {table(["Time", "Applicant", "OR no.", "Paid with", "Amount", ""], [(f'<span class="mono muted">{t}</span>', n, f'<span class="mono">{o}</span>', m, "₱500.00", '<span class="act">' + btn("Reprint", "#") + "</span>") for t, n, o, m in RECENT] + [('<span class="mono muted">8:20</span>', "Jasmine O. Kusain", '<span class="mono">0048210</span>', "Cash", '<s>₱500.00</s> ' + B("bad", "Voided"), "")])}""",
@@ -1316,7 +1329,7 @@ board("CASHIER-JOURNEY-MOCKUP.html", "Cashier: one counter, one fee",
                            (D, "cashier/console.html#paid", "2c", "Already paid", "", True), (D, "cashier/console.html#orused", "2d", "OR already used", "", True),
                            (D, "cashier/console.html#notfound", "2e", "Not found", "", True), (D, "cashier/console.html#round", "2f", "Wrong round", "", True),
                            (D, "cashier/console.html#waived", "2g", "Fee waived", "", True)]),
-       ("During the day", [(D, "cashier/applicants.html", "2h", "Applicants list", "Browse waiting applicants; click to record."), (D, "cashier/today.html", "3", "Today", "Reprint; export to match the OR booklet."), (D, "admin/cashier.html", "4", "Admin sees every counter", "")])],
+       ("During the day", [(D, "cashier/applicants.html", "2h", "Applicants list", "Browse waiting applicants; click to record."), (D, "cashier/info.html", "2i", "Info for applicants", "Programs, exam days, seats, rooms, dates, fee."), (D, "cashier/today.html", "3", "Today", "Reprint; export to match the OR booklet."), (D, "admin/cashier.html", "4", "Admin sees every counter", "")])],
       [("One fee, no typing amounts", "The fee is fixed; waivers come from the admission office."), ("Keyboard first", "/ to search, Enter to record, Esc to clear."), ("Nothing is deleted", "Only an admin can void, with a reason; voided payments stay on the list.")])
 
 
@@ -1355,7 +1368,7 @@ MAP = [
 ]
 groups = [
     ("Journey mockups (start here)", ["ADMIN-JOURNEY-MOCKUP.html", "APPLICANT-JOURNEY-MOCKUP.html", "CASHIER-JOURNEY-MOCKUP.html", "PROCTOR-JOURNEY-MOCKUP.html"]),
-    ("Cashier", ["cashier/console.html", "cashier/applicants.html", "cashier/today.html"]),
+    ("Cashier", ["cashier/console.html", "cashier/applicants.html", "cashier/info.html", "cashier/today.html"]),
     ("Public", ["public/landing.html", "public/login.html", "public/staff-login.html", "public/verify.html", "public/privacy.html", "public/error.html"]),
     ("Applicant (phone)", ["applicant/splash.html", "applicant/welcome-1.html", "applicant/welcome-2.html", "applicant/welcome-3.html"] + [f"applicant/{k}.html" for k, _ in FLOW]),
     ("Emails and printouts", ["docs/sms.html", "docs/email-approved.html", "docs/email-rejected.html", "docs/email-results.html", "docs/permit-pdf.html", "docs/result-pdf.html", "docs/seat-plan.html"]),
