@@ -320,17 +320,88 @@ phone("notifications", "Notifications", """<h1 class="gh">Notifications</h1>
       overlays='<div class="modal" id="empty"><a class="scrim" href="#"></a><div class="dialog">' + empty("bell", "No notifications", "Updates about your application appear here and in your email.") + '</div></div>',
       states=[("empty", "Empty")])
 
-phone("home", "Home", """<p class="eyebrow">Schedule 1 · registration until Feb 28</p><h1 class="gh">Maria Santos Dela Cruz</h1>
-<p>Your application is not submitted yet.</p>
-<div class="ghead">Steps</div>""" + plist(
-    row("Fill in the application", "Personal details, school, 3 programs, 2×2 photo", "Not started", "apply-personal.html", "now", '<span class="num">1</span>'),
-    row("Pay the exam fee", "₱275.00 at an SKSU cashier", "", "", "", '<span class="num">2</span>'),
-    row("Pick your exam slot", "After the cashier records your payment", "", "", "", '<span class="num">3</span>'),
-    row("Take the exam", "Mar 14–15 · report by 7:30 AM · bring your permit and a valid ID", "", "", "", '<span class="num">4</span>')) + """
-<small>Schedule 2 registration: Mar 1 – Apr 10. Schedule 3: Apr 11 – May 15.</small>""",
-      cta=("apply-personal.html", "Start the application"),
-      overlays=modal("closed", "warn", WARN, "Schedule 1 registration is closed", '<p style="margin:0">Schedule 2 registration opens Mar 1. If you have already paid, you can still pick an exam slot.</p>', '<a class="go" href="#">OK</a>') + OFFLINE,
-      states=[("closed", "Registration closed"), ("offline", "Offline")])
+# Home always shows where the student is and the one next thing to do.
+STEPS = ["Apply", "Pay", "Exam slot", "Exam", "Result"]
+T_STEPS = ["Apply", "Chairperson", "Pay", "Exam", "Result"]
+
+
+def progress(cur, steps=STEPS):
+    """Compact step line: done steps green, the current one bold, the rest grey."""
+    return '<div class="prog">' + "".join(
+        f'<span class="{"done" if i < cur else ("now" if i == cur else "")}">{t}</span>' for i, t in enumerate(steps)) + "</div>"
+
+
+def home_view(status, cur, body, cta=None, eyebrow=None, name="Maria Santos Dela Cruz", steps=STEPS):
+    """One Home variant: who, where they are, the one emphasised thing, the next action."""
+    eyebrow = eyebrow or ("Schedule 1 · exam Mar 14–15" if cur >= 3 else "Schedule 1 · registration until Feb 28")
+    action = f'<div class="inline-cta"><a class="go" href="{cta[0]}">{cta[1]}</a></div>' if cta else ""
+    return (f'<p class="eyebrow">{eyebrow}</p><h1 class="gh">{name}</h1>{progress(cur, steps)}'
+            f'<p class="hstat"><span class="dot"></span>{status}</p>{body}{action}')
+
+
+def home_state(sid, html):
+    """A full Home variant shown in place of the default view (picked from the states bar)."""
+    return f'<div class="hvar" id="{sid}"><div class="appb">{html}</div></div>'
+
+
+CASHIER_HOURS = "<small>Cashiers are open Monday to Friday, 8:00 AM – 5:00 PM. Isulan also opens Saturday until 12:00 noon.</small>"
+HOME = {
+    "not-started": home_view("Not started", 0, plist(
+        row("Fill in the application", "Personal details, school, 3 programs, 2×2 photo", "", "apply-personal.html", "", '<span class="num">1</span>'),
+        row("Pay the exam fee", "₱275.00 at an SKSU cashier", "", "", "", '<span class="num">2</span>'),
+        row("Pick your exam slot", "After the cashier records your payment", "", "", "", '<span class="num">3</span>'),
+        row("Take the exam", "Mar 14–15 · report by 7:30 AM", "", "", "", '<span class="num">4</span>')),
+        ("apply-personal.html", "Start the application")),
+    "draft": home_view("Draft · saved Jan 10, 8:42 PM", 0, plist(
+        row("About you", "", "Done", "apply-personal.html"),
+        row("School", "", "Done", "apply-school.html"),
+        row("Programs", "Pick 3 programs", "Next", "apply-programs.html"),
+        row("Review and submit", "", "", "apply-review.html")),
+        ("apply-programs.html", "Continue · step 3 of 5")),
+    "chair": home_view("Waiting for the program chairperson", 1,
+        '<div class="hero"><span class="lbl">1st choice</span><span class="amt" style="font-size:22px">BS Information Technology</span><span class="lbl">ACCESS Campus, Tacurong · sent Nov 10</span></div>'
+        '<small>The chairperson checks your grades and the slots left. This usually takes up to 3 working days. You will be told here and by email.</small>',
+        ("payment-chair.html", "View my application"), "Schedule 4 · Transferees · exam Dec 12", "Kenneth L. Abo", T_STEPS),
+    "sent-back": home_view("Sent back · Jan 12", 0,
+        '<div class="alertbox warn"><b>2×2 photo:</b> the face is not clear. Use a plain white background and good light.</div>'
+        '<small>Everything else stays as you sent it. Fix this part and send it again.</small>',
+        ("payment-rejected.html", "Fix and send again")),
+    "approved": home_view("Paid · examinee number issued", 2,
+        '<div class="hero"><span class="lbl">Examinee number</span><span class="amt mono">500214</span><span class="lbl">Paid Jan 12 · OR 0048190</span></div>'
+        '<small>Pick your exam slot by Mar 1. After that date, one is assigned to you.</small>',
+        ("seat.html", "Pick exam slot")),
+    "booked": home_view("Exam slot booked", 3,
+        '<div class="hero"><span class="lbl">Exam</span><span class="amt" style="font-size:26px">Sat, Mar 14</span><span class="lbl">Isulan Campus · Room 4, seat 27</span><span class="lbl">Report by 7:30 AM · exam starts 8:00 AM</span></div>'
+        '<small>Bring your permit, a No. 2 pencil with eraser and a valid ID.</small>',
+        ("permit.html", "View permit")),
+    "exam-done": home_view("Exam taken · Mar 14", 4,
+        '<div class="hero"><span class="lbl">Results release</span><span class="amt" style="font-size:26px">Apr 20</span><span class="lbl">You will be told here, by email and by text</span></div>'
+        + plist(row("Answer the 1-minute survey", "Optional", "", "survey.html"))),
+    "result-out": home_view("Result released · Apr 20", 4,
+        '<div class="hero"><span class="lbl">Overall standard score</span><span class="amt">584</span><span class="lbl">Stanine 7 · Above average · qualifies for 3 of 3 choices</span></div>',
+        ("result.html", "See result")),
+    "chosen": home_view("Program chosen · Apr 22", 5,
+        '<div class="hero"><span class="lbl">Your program</span><span class="amt" style="font-size:22px">BS Civil Engineering</span><span class="lbl">Isulan Campus</span></div>'
+        '<small>The Registrar’s Office will contact you about enrolment.</small>' + plist(row("Result PDF", "Official copy with a verify link", "", "../docs/result-pdf.html"))),
+    "absent": home_view("Absent · Mar 14", 3,
+        '<div class="alertbox warn">There is no score for you in the Testing Center file, so you are marked absent.</div>'
+        '<small>You can take the exam in Schedule 2 (Apr 25–26) without paying again. Your details are filled in.</small>'
+        + plist(row("Ask the admission office", "If you took the exam", "", "support.html#new")),
+        ("apply-review.html", "Apply for Schedule 2")),
+    "closed": home_view("Registration closed", 0,
+        '<div class="hero"><span class="lbl">Schedule 2 registration opens</span><span class="amt" style="font-size:26px">Mar 1</span><span class="lbl">Exam Apr 25–26</span></div>'
+        '<small>Schedule 1 registration closed on Feb 28. If you already paid, you can still pick an exam slot.</small>',
+        None, "Schedule 1 · registration closed"),
+}
+
+phone("home", "Home", home_view("Application submitted · Jan 11", 1,
+    '<div class="hero"><span class="lbl">Pay ₱275.00 at an SKSU cashier · show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl">The cashier records it and your examinee number appears here.</span></div>'
+    + CASHIER_HOURS + plist(row("Where to pay", "Cashier offices per campus", "", "payment.html")),
+    ("payment.html", "Show my code")),
+      overlays="".join(home_state(k, v) for k, v in HOME.items()) + OFFLINE,
+      states=[("not-started", "Not started"), ("draft", "Draft"), ("chair", "Waiting for chairperson"), ("sent-back", "Sent back"), ("approved", "Approved: pick exam slot"),
+              ("booked", "Exam slot picked"), ("exam-done", "Waiting for results"), ("result-out", "Result out"), ("chosen", "Program chosen"), ("absent", "Absent"),
+              ("closed", "Registration closed"), ("offline", "Offline")])
 
 phone("apply-personal", "About you", """<h1 class="gh">Personal details</h1>
 <div class="fld"><label class="cap" for="ln">Last name</label><input id="ln" value="Dela Cruz" autocomplete="family-name"></div>
@@ -1332,7 +1403,8 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (P, "public/login.html#google-error", "2b", "Sign-in failed", "Nothing saved; one Try again button.", True),
           (P, "public/login.html#closed", "2c", "Registration closed", "Per schedule; can still sign in to see a permit or result.", True)]),
        ("Apply", [
-          (P, "applicant/home.html", "3", "Home", "The four steps and where Maria is. Closing date shown."),
+          (P, "applicant/home.html#not-started", "3", "Home: first time", "The four steps and the closing date. One button: Start."),
+          (P, "applicant/home.html#draft", "3b", "Home: draft", "Where they stopped; Continue.", True),
           (P, "applicant/home.html#offline", "3a", "Offline", "Typing is kept and saved when the signal is back.", True),
           (P, "applicant/apply-personal.html", "4", "About you", "Name, birth date, contact and a 2×2 photo made smaller on the phone."),
           (P, "applicant/apply-personal.html#photo-bad", "4a", "Photo rejected", "No face found or too dark; choose another.", True),
@@ -1348,7 +1420,10 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (P, "applicant/apply-review.html#submitting", "7b", "Submitting", "Don’t close the page.", True),
           (P, "applicant/apply-review.html#missing", "7c", "Something missing", "Names exactly what is missing.", True)]),
        ("Pay", [
-          (P, "applicant/payment.html#submitted", "8", "Pay at an SKSU cashier", "A code to show, where to pay, office hours. Nothing to upload."),
+          (P, "applicant/home.html", "8", "Home: submitted", "The code to show the cashier, office hours, Show my code."),
+          (P, "applicant/home.html#chair", "8b", "Home: waiting for chairperson", "Transferees only.", True),
+          (P, "applicant/home.html#sent-back", "8c", "Home: sent back", "What to fix; Fix and send again.", True),
+          (P, "applicant/payment.html#submitted", "8d", "Pay at an SKSU cashier", "A code to show, where to pay, office hours. Nothing to upload."),
           (P, "applicant/payment.html#online", "8a", "Later: online payment", "Only when the office turns it on.", True),
           (P, "applicant/payment-waiting.html#sent", "9", "Later: receipt sent", "Online payment only.", True),
           (P, "applicant/payment-rejected.html", "10", "Sent back: please fix", "Photo or details, the office’s remarks, Send again."),
@@ -1357,22 +1432,28 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (D, "docs/email-approved.html", "11", "Email: payment recorded", "OR no., examinee number and one button: pick an exam slot."),
           (D, "docs/email-rejected.html", "12", "Email: sent back", "What to fix and a link straight back.")]),
        ("Exam slot and permit", [
+          (P, "applicant/home.html#approved", "12b", "Home: paid", "Examinee number; Pick exam slot by Mar 1."),
           (P, "applicant/seat.html#approved", "13", "Pick an exam slot", "Live seats left per exam slot; full ones are greyed."),
           (P, "applicant/seat.html#loading", "13a", "Loading exam slots", "Skeleton rows, never a blank screen.", True),
           (P, "applicant/seat.html#confirm", "13b", "Confirm exam slot", "One change allowed until Mar 1.", True),
           (P, "applicant/seat.html#taken", "13c", "Exam slot just filled", "Someone booked the last seat first.", True),
+          (P, "applicant/home.html#booked", "13d", "Home: exam slot booked", "Date, campus, room and seat, report time; View permit.", True),
           (P, "applicant/permit.html#booked", "14", "Permit", "QR, number, room and seat. Works offline once opened."),
           (P, "applicant/permit.html#making", "14a", "Making the PDF", "Built once, saved for next time.", True),
           (D, "docs/permit-pdf.html", "15", "Permit PDF", "A4 with letterhead, photo and verify QR.")]),
        ("After exam day", [
-          (P, "applicant/result-pending.html", "16", "Waiting for results", "Release date and the exam taken."),
+          (P, "applicant/home.html#exam-done", "16", "Home: waiting for results", "Release date; optional survey."),
+          (P, "applicant/home.html#absent", "16b", "Home: absent", "Apply for Schedule 2 without paying again.", True),
+          (P, "applicant/result-pending.html", "16c", "Waiting for results (detail)", "Release date and the exam taken.", True),
           (P, "applicant/result-pending.html#absent", "16a", "Marked absent", "No score in the file; apply for the next schedule or ask the office.", True),
           (P, "applicant/survey.html", "17", "Survey", "Optional, one minute, can skip."),
           (D, "docs/email-results.html", "18", "Email: results out", "One button to the result."),
+          (P, "applicant/home.html#result-out", "18b", "Home: result out", "Overall score and stanine; See result."),
           (P, "applicant/result.html", "19", "Result", "Overall score, stanine, plain meaning, each subject."),
           (P, "applicant/result.html#cutoffs", "19a", "Program cut-offs", "Qualified or not per choice.", True),
           (P, "applicant/result.html#choose", "19b", "Choose a program", "Only programs they qualify for.", True),
           (P, "applicant/result.html#chosen", "19c", "Program chosen", "The registrar contacts them.", True),
+          (P, "applicant/home.html#chosen", "19d", "Home: program chosen", "Done; result PDF.", True),
           (D, "docs/result-pdf.html", "20", "Result PDF", "Official copy with verify link.")]),
        ("Notifications and support", [
           (P, "applicant/notifications.html", "21", "Notifications", "Every update in one list, newest first."),
@@ -1385,7 +1466,7 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (P, "applicant/profile.html#photo", "23a", "Change photo", "", True),
           (P, "applicant/profile.html#history", "23b", "My history", "Every step with its date.", True),
           (D, "public/error.html", "24", "Error pages", "404, busy queue and server error, each with a next step.")])],
-      [("Big and few words", "Lexend, 16 px inputs, 60 px buttons, one action per screen."), ("Never lose work", "Autosave, offline typing, retry on upload."),
+      [("Few words, one action", "System font, 16 px text, 48 px tap targets, one main button per screen."), ("Never lose work", "Autosave, offline typing, retry on upload."),
        ("Say what happens next", "Every success says the next step; every error says how to fix it."), ("Safe answer first", "Dialogs put Cancel or Back below the main action."),
        ("Status in words", "Colour never carries meaning alone."), ("Phone first", "Every applicant screen is drawn at 390 px.")])
 
