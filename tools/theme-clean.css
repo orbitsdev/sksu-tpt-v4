@@ -383,3 +383,8 @@ main:has(#info:target) .ptabs a[data-pane="info"],main:has(#settings:target) .pt
 tbody tr:hover td .act .btn{border-color:transparent;background:transparent;color:var(--deep-2);text-decoration:underline;text-underline-offset:3px}
 .pattern{display:grid;grid-template-columns:1fr 90px 1fr;gap:10px}.pattern span{display:flex;flex-direction:column;gap:4px}.pattern small{font-size:12px;color:var(--muted)}
 .money{display:flex;min-width:0}.money input{min-width:0;width:100%}
+
+/* header motif: a quiet woven diamond pattern (from the border of SKSU's own forms), fading in from the right */
+header.top,.ctop{position:relative;isolation:isolate}
+header.top:before,.ctop:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2728%27%20height%3D%2728%27%20viewBox%3D%270%200%2028%2028%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-width%3D%271.4%27%20opacity%3D%27.09%27%3E%3Cpath%20d%3D%27M14%202%2026%2014%2014%2026%202%2014Z%27/%3E%3Cpath%20d%3D%27M14%208%2020%2014%2014%2020%208%2014Z%27/%3E%3C/g%3E%3Ccircle%20cx%3D%2714%27%20cy%3D%2714%27%20r%3D%271.4%27%20fill%3D%27%23f2c200%27%20opacity%3D%27.18%27/%3E%3C/svg%3E") repeat;
+  -webkit-mask-image:linear-gradient(90deg,transparent 18%,#000 70%);mask-image:linear-gradient(90deg,transparent 18%,#000 70%)}
