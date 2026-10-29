@@ -1111,3 +1111,8 @@ body.boardpage .sec{color:#245c3e!important}
 body.boardpage .rules div{background:#fff;border:1px solid #dfe3e0;border-radius:10px;box-shadow:none;color:#3f4542!important}
 body.boardpage .rules b{color:#1a1f1c!important}
 body.boardpage .legend,body.boardpage .legend *{color:#3f4542}
+
+/* permit: never shrink inside the scrolling screen; long values get the full width */
+.phone .permit{flex-shrink:0}
+.permit .pname .mono{display:block;margin-top:2px}
+.permit .pg div.wide{grid-column:1/-1;border-right:0}

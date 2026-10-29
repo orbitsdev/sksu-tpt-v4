@@ -114,6 +114,10 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ Results import doc: Excel as it is, absent rule.
 - ✅ PRD aligned with every mockup.
 
+## Decided
+
+- ✅ **Student app = installable web app (PWA).** Students install it from the website (Android: Install; iPhone: Share → Add to Home Screen). No APK, no Expo Go, no store accounts. One system for phones and computers.
+
 ## Open questions for the Guidance and Testing Center
 
 1. Is the freshman TPT fee also ₱275?
