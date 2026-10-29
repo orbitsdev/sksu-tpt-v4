@@ -148,6 +148,7 @@ Everything changed in the mockups and docs today. ✅ = done.
 7. Cut-off score per program; official stanine labels.
 8. Official sender email; SMS provider and budget.
 9. Transferees: is approval in the system enough, or do you still need the chairperson's signature on paper?
+10. Results file: does the Testing Center have a fixed format? Last year the office reformatted the file by hand before importing. If there is a fixed format, it becomes the built-in template; if not, the column match handles any layout.
 
 ## Not touched
 
