@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Sample 2×2 ID photo">
+  <!-- A neutral illustrated ID photo for the mockups: no real person. -->
+  <rect width="200" height="200" fill="#f7f8f7"/>
+  <path d="M30 200c4-38 30-58 70-58s66 20 70 58z" fill="#f2f3f2"/>
+  <path d="M30 200c4-38 30-58 70-58s66 20 70 58z" fill="none" stroke="#c9cfcb" stroke-width="2"/>
+  <path d="M84 146l16 22 16-22" fill="#ffffff" stroke="#c9cfcb" stroke-width="2" stroke-linejoin="round"/>
+  <rect x="88" y="118" width="24" height="26" rx="10" fill="#d9b48f"/>
+  <ellipse cx="100" cy="88" rx="34" ry="40" fill="#e3c19c"/>
+  <path d="M64 88c-2-34 16-52 38-52 24 0 38 18 36 50-4-14-12-22-22-26-10 8-30 12-52 28z" fill="#2b2622"/>
+  <ellipse cx="87" cy="92" rx="3.2" ry="3.6" fill="#2b2622"/>
+  <ellipse cx="113" cy="92" rx="3.2" ry="3.6" fill="#2b2622"/>
+  <path d="M93 110c4 3 10 3 14 0" fill="none" stroke="#9c6b52" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M100 96v8" fill="none" stroke="#c99f7b" stroke-width="2" stroke-linecap="round"/>
+</svg>
