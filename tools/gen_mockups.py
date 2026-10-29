@@ -721,13 +721,14 @@ subj = [("English", 612, 8), ("Science", 548, 6), ("Mathematics", 571, 7), ("Fil
 phone("result", "Result", f"""<p class="eyebrow">SKSU TPT · Schedule 1 · released Apr 20</p>
 <div class="score"><span class="outcome ok">Qualified</span><span class="lbl" style="color:#5f6662;font-size:13px">Overall standard score</span><span class="n">584</span><span>Stanine 7 of 9 · Above Average</span></div>
 <div class="ghead">Programs you qualify for</div>""" + plist(
-    row("BS Civil Engineering", "Isulan · cut-off 530", '<span class="dot g"></span>1st choice'),
-    row("BS Information Technology", "ACCESS · cut-off 500", '<span class="dot g"></span>2nd choice'),
-    row("BS Criminology", "Isulan · cut-off 480", '<span class="dot g"></span>3rd choice'),
+    row("BS Civil Engineering", "Isulan · cut-off 530 · ESM score 566", '<span class="dot g"></span>1st choice'),
+    row("BS Information Technology", "ACCESS · cut-off 500 · overall score 584", '<span class="dot g"></span>2nd choice'),
+    row("BS Criminology", "Isulan · cut-off 480 · overall score 584", '<span class="dot g"></span>3rd choice'),
     row("Other programs you qualify for", "", "41", "#cutoffs")) + """
+<small>Some programs use your ESM score (English, Mathematics, Science: 566); the rest use your overall score.</small>
 <small>Next: answer the 10-statement exam survey, then choose your program. Your full result, with every subject, is in the PDF.</small>""",
       cta=("survey.html", "Choose your program"), extra='<a class="back" href="../docs/result-pdf.html">Download full result (PDF)</a>',
-      overlays=modal("cutoffs", "info", "", "Programs you qualify for", plist(row("BS Civil Engineering", "Isulan", "530"), row("BS Information Technology", "ACCESS", "500"), row("BS Criminology", "Isulan", "480"), row("BS Agriculture", "Tacurong", "450")) + '<small>Cut-off = lowest overall score that qualifies.</small>', '<a class="back" href="#">Close</a>')
+      overlays=modal("cutoffs", "info", "", "Programs you qualify for", plist(row("BS Civil Engineering", "Isulan", "530"), row("BS Information Technology", "ACCESS", "500"), row("BS Criminology", "Isulan", "480"), row("BS Agriculture", "Tacurong", "450")) + '<small>Cut-off = lowest score that qualifies, on the overall or the ESM score depending on the program.</small>', '<a class="back" href="#">Close</a>')
       + modal("not-qualified", "info", "", "Your result", '<span class="outcome">Not qualified for your choices</span><div class="score" style="margin:0"><span class="lbl" style="color:#5f6662;font-size:13px">Overall standard score</span><span class="n">452</span><span>Stanine 4 of 9 · Low Average</span></div><p style="margin:0">Your score is below the cut-off of your three choices. This is not the end: you can still choose from programs that are open to your score, or apply again in a later schedule.</p>' + plist(row("BS Agriculture", "Tacurong · cut-off 450", "Open to you", "#chosen"), row("BSEd Filipino", "Kalamansig · cut-off 440", "Open to you", "#chosen")) + '<small>Questions? Open a support request.</small>', '<a class="go" href="survey.html">Choose from open programs</a><a class="back" href="../docs/result-pdf.html">Download full result (PDF)</a>')
       + modal("absent", "info", "", "Your result", '<span class="outcome">Absent</span><p style="margin:0">There is no score for you in the Testing Center’s file, so you are marked absent for Schedule 1.</p><p style="margin:0">You can apply for Schedule 3 (registration Apr 11 – May 15). Your details are copied.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="support.html#new">Ask the office</a>')
       + modal("choose", "info", "", "Choose your program", '<div class="plist" style="margin:0">' + row("BS Civil Engineering", "Isulan · cut-off 530 · your score 584", "1st choice", "#chosen", "on", RADIO) + row("BS Information Technology", "ACCESS · cut-off 500 · your score 584", "2nd choice", "#chosen", "", RADIO) + '</div>', '<a class="go" href="#chosen">Confirm</a><a class="back" href="#">Cancel</a>')
@@ -1590,9 +1591,18 @@ ISULAN = [("BS Civil Engineering", "BSCE", True, 530, 412, True), ("BS Criminolo
           ("Associate in Computer Technology", "ACT", False, 450, 54, True), ("BS Midwifery", "BSM", True, 530, 0, False)]
 
 
+# tptv3 checks these programs against the ESM competency score (English, Mathematics, Science); all others use the overall score
+ESM_PROGRAMS = ("Nursing", "Midwifery", "Medical Technology", "Electronics Engineering", "Civil Engineering", "Computer Engineering", "Computer Science",
+                "Fisheries", "Biology", "Accountancy", "Management Accounting", "Accounting Information System", "Mathematics", "Science Education")
+
+
+def cut_basis(name):
+    return "ESM" if any(k in name for k in ESM_PROGRAMS) else "Overall"
+
+
 def prog_row(name, short, board, cutoff, picks, offered):
     return (f'<b class="ink">{name}</b><span class="sub mono">{short}</span>', B("gray", "Board") if board else '<span class="muted">—</span>',
-            f'<span class="mono">{cutoff}</span>', f'<span class="mono">{picks:,}</span>' if offered else '<span class="muted">—</span>',
+            f'<span class="num">{cutoff}</span> <span class="muted">· {cut_basis(name)}</span>', f'<span class="mono">{picks:,}</span>' if offered else '<span class="muted">—</span>',
             f'<a class="switch{" on" if offered else ""}" href="{"#off" if offered else "#on"}" aria-label="Offered in SY 2027–2028"></a>',
             '<span class="act">' + btn("Edit", "#program") + "</span>")
 
@@ -1601,7 +1611,9 @@ PROGRAM_FORM = ('<div class="fld"><label for="p1">Campus</label><select id="p1">
                 '<div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:10px"><div class="fld"><label for="p2">Program name</label><input id="p2" value="BS Information Technology"></div>'
                 '<div class="fld"><label for="p3">Short name</label><input id="p3" value="BSIT" maxlength="10"></div></div>'
                 '<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px"><div class="fld"><label for="p4">Cut-off score</label><input id="p4" type="number" min="200" max="800" inputmode="numeric" value="480">'
-                + hint("Lowest overall score that qualifies.") + '</div><div class="fld"><label for="p5">Board program</label><select id="p5"><option>No</option><option>Yes, has a licensure exam</option></select></div></div>'
+                + hint("Lowest score that qualifies.") + '</div><div class="fld"><label for="p5">Board program</label><select id="p5"><option>No</option><option>Yes, has a licensure exam</option></select></div></div>'
+                '<div class="fld"><label>Cut-off based on</label><label class="chkrow"><input type="radio" name="basis" checked> Overall score</label><label class="chkrow"><input type="radio" name="basis"> ESM competency score (English, Mathematics, Science)</label>'
+                + hint("As in tptv3: Nursing, Midwifery, Medical Technology, Electronics, Civil and Computer Engineering, Computer Science, Fisheries, Biology, Accountancy, Management Accounting, Accounting Information Systems, Mathematics and Science Education use the ESM score.") + '</div>'
                 '<div class="fld"><label for="p6">Transferee slots this semester</label><input id="p6" type="number" min="0" inputmode="numeric" value="20">' + hint("How many transferees the program chair or dean may approve. 0 = not taking transferees.") + '</div><label class="chkrow"><input type="checkbox" checked> Offered in SY 2027–2028</label>')
 
 admin("campuses", "Campuses and programs", f"""<div class="head"><span class="muted"></span><span style="display:flex;gap:8px">{btn("Add campus", "#campus")}{btn("Add program", "#program", "primary")}</span></div>
