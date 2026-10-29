@@ -71,14 +71,25 @@ def table(headers, rows, sortable=(), active=None):
             return f'<th class="sort on" aria-sort="{aria}"><a href="#">{h}<i>{arrow}</i></a></th>'
         return f'<th class="sort"><a href="#">{h}<i>↕</i></a></th>'
     head = "".join(th(h) for h in headers)
-    body = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows)
+    body = "".join(r if isinstance(r, str) else "<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows)
     return f"<table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>"
 
 
 def pager(first, last, total):
-    """25 rows a page; the count and the page buttons under every long list."""
-    return (f'<div class="pager"><span class="muted">{first}–{last} of {total} · 25 per page</span>'
-            f'<span>{btn("Previous", "#", "sm")}{btn("Next", "#", "sm")}</span></div>')
+    """The footer under every long list: what is shown, then the pages."""
+    return (f'<div class="pager"><span class="muted">Showing {first} to {last} of {total} results</span>'
+            f'<span class="pages"><a href="#" aria-label="Previous page">‹</a><a class="on" href="#">1</a><a href="#">2</a><a href="#">3</a><span>…</span><a href="#" aria-label="Next page">›</a></span></div>')
+
+
+def fbar(search, dropdowns=(), extra=""):
+    """One filter bar above a list: a wide search, labelled dropdowns, Reset, Columns, rows per page."""
+    dds = "".join(f'<label class="fdd"><small>{label}</small><select aria-label="{label}">{"".join(f"<option>{o}</option>" for o in opts)}</select></label>' for label, opts in dropdowns)
+    return (f'<div class="fbar"><input class="search" type="search" aria-label="Search" placeholder="{search}">{dds}{extra}'
+            f'<a class="freset" href="#">Reset</a><span class="fright"><a class="fbtn" href="#">Columns</a><label class="fdd small"><select aria-label="Rows per page"><option>25 / page</option><option>50 / page</option></select></label></span></div>')
+
+
+def kebab(href):
+    return f'<a class="kebab" href="{href}" aria-label="More actions">⋮</a>'
 
 
 def calendar(month, first_weekday, days, sel_from, sel_to, today=None):
@@ -215,13 +226,13 @@ doc("public/error.html", "Error pages", f"""<div class="pub">{pubnav()}
 # ---------------------------------------------------------------- applicant pages
 FLOW = [("notifications", "Notifications"), ("home", "Home"), ("apply-personal", "About you"), ("apply-school", "School"), ("apply-programs", "Programs"),
         ("apply-review", "Review"), ("apply-t-school", "Transferee: school"), ("apply-t-programs", "Transferee: programs"), ("payment-chair", "Transferee: chairperson"), ("payment", "Payment"), ("payment-waiting", "Waiting"), ("payment-rejected", "Sent back"),
-        ("seat", "Pick an exam slot"), ("seat-t", "Transferee: batch"), ("permit", "Permit"), ("result-pending", "Result not yet"), ("survey", "Survey"),
+        ("seat", "Pick an exam slot"), ("permit", "Permit"), ("result-pending", "Result not yet"), ("survey", "Survey"),
         ("result", "Result"), ("profile", "My account"), ("support", "Support"), ("support-ticket", "Support request")]
 DOTS = {"notifications": 0, "home": 0, "apply-personal": 0, "apply-school": 1, "apply-programs": 2, "apply-review": 3, "apply-t-school": 1, "apply-t-programs": 2, "payment-chair": 4, "payment": 4,
-        "payment-waiting": 4, "payment-rejected": 4, "seat": 0, "seat-t": 0, "permit": 0, "result-pending": 0, "survey": 0, "result": 0, "profile": 0, "support": 0, "support-ticket": 0}
+        "payment-waiting": 4, "payment-rejected": 4, "seat": 0, "permit": 0, "result-pending": 0, "survey": 0, "result": 0, "profile": 0, "support": 0, "support-ticket": 0}
 
 
-TAB_OF = {"home": "home", "notifications": "alerts", "seat": "schedule", "seat-t": "schedule", "permit": "permit", "profile": "me"}
+TAB_OF = {"home": "home", "notifications": "alerts", "seat": "schedule", "permit": "permit", "profile": "me"}
 TABS = [("home", "Home", "home.html", '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>'),
         ("schedule", "Schedule", "seat.html", '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
         ("permit", "Permit", "permit.html", '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h6M7 13h4M15 12h3v3h-3z"/>'),
@@ -392,7 +403,7 @@ phone("payment-chair", "Chairperson", """<p class="eyebrow">Transferee test · 2
 <p>The chairperson of BS Information Technology reviews your grades and the available slots. Do not pay yet.</p>
 """ + plist(row("1st choice", "", "BS Information Technology"), row("Sent", "", "Nov 4, 9:12 AM"), row("Status", "", '<span class="dot a"></span>Waiting')),
       back="home.html", extra='<a class="mocklink" href="#approved">Mockup: approved →</a><a class="mocklink" href="#declined">Mockup: declined →</a>',
-      overlays=modal("approved", "ok", OK, "Approved by the chairperson", '<p style="margin:0">Pay ₱275.00 at any SKSU cashier. Give the cashier this code.</p><div class="hero"><span class="lbl">Application code</span><span class="amt mono" style="font-size:26px">APP-27-20418</span></div>', '<a class="go" href="#">OK</a>')
+      overlays=modal("approved", "ok", OK, "Approved by the chairperson", '<p style="margin:0">Pay ₱275.00 at any SKSU cashier. Give the cashier this code. Your exam is on Sun, Dec 12, Testing Room, Guidance and Testing Center, SKSU ACCESS Campus: report by 7:30 AM, exam starts 8:00 AM. It shows on your permit after you pay.</p><div class="hero"><span class="lbl">Application code</span><span class="amt mono" style="font-size:26px">APP-27-20418</span></div>', '<a class="go" href="#">OK</a>')
       + modal("declined", "bad", BAD, "Not approved for BS Information Technology", '<div class="alertbox warn"><div>Reason: no slots left for 2nd-year transferees this semester.</div></div><p style="margin:0">Your 2nd choice, BS Computer Engineering, is reviewed next. Do not pay yet.</p>', '<a class="go" href="#">OK</a>'),
       states=[("approved", "Approved: pay at the cashier"), ("declined", "Declined, with the reason")])
 
@@ -441,14 +452,6 @@ phone("seat", "Pick an exam slot", """<h1 class="gh">Exam slot</h1><p>Choose a c
       + toast("taken", "bad", BAD, "That exam slot is now full", "Choose another campus or date.")
       + modal("loading", "info", '<span class="spin"></span>', "Loading exam slots", '<div class="skel" style="width:90%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:80%"></div>', ""),
       states=[("approved", "Arrived after approval"), ("loading", "Loading"), ("confirm", "Confirm"), ("taken", "Exam slot full error")])
-
-phone("seat-t", "Pick your batch", """<p class="eyebrow">Transferee test · 2nd semester</p><h1 class="gh">Batch</h1><p>Sat, Dec 12 · Testing Room, Guidance and Testing Center, SKSU ACCESS Campus, Tacurong City</p>
-""" + plist(row("1st batch", "Report by 7:30 AM · exam starts 8:00 AM", "34 seats left", "#confirm-t", "on", RADIO),
-            row("2nd batch", "Report by 12:30 PM · exam starts 1:00 PM", "41 seats left", "#confirm-t", "", RADIO)) + "<small>Times are a guide; come at the report time.</small>",
-      cta=("#confirm-t", "Confirm batch"), back="home.html",
-      overlays=modal("confirm-t", "info", "", "1st batch · Sat, Dec 12", '<p style="margin:0">Report by 7:30 AM · exam starts 8:00 AM. You can change your batch once, until Dec 5.</p>', '<a class="go" href="permit.html#booked">Confirm</a><a class="back" href="#">Choose another</a>')
-      + toast("full-t", "bad", BAD, "The 1st batch is now full", "Choose the 2nd batch."),
-      states=[("confirm-t", "Confirm"), ("full-t", "Batch full")])
 
 phone("permit", "My permit", """<div class="permit"><div class="ph1"><img src="../assets/sksu-seal.png" alt="SKSU seal"><div><b>SULTAN KUDARAT STATE UNIVERSITY</b><small>Examination permit · SKSU TPT · SY 2027–2028</small></div></div>
 <div class="pb"><div class="pphoto">2×2 photo</div><div class="pname"><b>DELA CRUZ, Maria Santos</b><small>Examinee no.</small><span class="mono">500214</span></div></div>
@@ -637,7 +640,7 @@ NAV = [(None, [("dashboard", "Dashboard")]),
        ("System", [("email", "Email and SMS"), ("system", "System status"), ("audit", "Activity logs")])]
 
 
-ROUNDS_RE = re.compile(r'^\s*(<div class="tabsbar rounds">.*?</a></div>)', re.S)
+ROUNDS_RE = re.compile(r'^\s*(<div class="schedpick">.*?</div></div><!--/schedpick-->)', re.S)
 HEAD_RE = re.compile(r'^\s*<div class="head"><span class="muted">(.*?)</span>(.*?)</div>', re.S)
 HINT_RE = re.compile(r'^\s*<small class="hint">(.*?)</small>', re.S)
 
@@ -660,8 +663,8 @@ def pagehead(title, content):
         content = content[m.end():]
     if title in LIST_PAGES and 'class="search"' not in content:
         acts = '<input class="search" aria-label="Search this list" placeholder="Search this list">' + acts
-    return (f'<div class="pagehead"><div><h1>{title}</h1>{f"<p>{desc}</p>" if desc else ""}</div><div class="pacts">{acts}</div></div>'
-            f'{schedules}{content}')
+    return (f'<div class="pagehead"><div><h1>{title}</h1>{schedules}{f"<p>{desc}</p>" if desc else ""}</div><div class="pacts">{acts}</div></div>'
+            f'{content}')
 
 
 BELL_ITEMS = [
@@ -693,7 +696,7 @@ def admin(key, title, content, active=None, overlays="", states=None, crumb="", 
             links.append(f'<a href="{k}.html"{on}><svg viewBox="0 0 24 24" aria-hidden="true">{ICONS[k]}</svg>{label}{count}</a>')
     doc(f"admin/{key}.html", title, f"""<div class="strip"><strong>SKSU TPT · ADMIN MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
 <header class="top"><img src="../assets/sksu-seal.png" alt="SKSU seal"><span class="name">SKSU TPT</span><span class="muted">Admin</span>
-{tools}<a href="account.html" class="avatar" style="text-decoration:none">A</a><div style="line-height:1.15"><div class="ink">{user[0]}</div><small class="muted">{user[1]}</small></div></header>
+{tools}<div style="line-height:1.15;text-align:right"><div class="ink">{user[0]}</div><small class="muted">{user[1]}</small></div><a href="account.html" class="avatar" style="text-decoration:none">A</a></header>
 <nav class="mtabs">{''.join(f'<a href="{k}.html"{" class=on" if k == active else ""}>{label}</a>' for _, items in nav for k, label in items)}</nav>
 <div class="shell"><nav class="side">{''.join(links)}{f'<small class="sidenote">{side_note}</small>' if side_note else ''}</nav>
 <main>{crumb}{pagehead(title, content)}</main></div>{overlays}""", states=states)
@@ -746,9 +749,13 @@ def histogram():
 
 
 def rounds_bar(on=1):
+    """The schedule picker under a page title: one button that opens a menu of every schedule, then the status as quiet text."""
     schedules = [(1, "Schedule 1", "Mar 14–15", "Finished"), (2, "Schedule 2", "Apr 25–26", "Registration open"), (3, "Schedule 3", "May 30", "Not published"), (4, "Schedule 4", "Dec 12 · Transferees", "Not published")]
-    tabs = "".join(f'<a href="#" class="{"on" if n == on else ""}"><b>{t}</b> · {d} <span class="st{" live" if st == "Registration open" else ""}">{st}</span></a>' for n, t, d, st in schedules)
-    return f'<div class="tabsbar rounds">{tabs}</div>'
+    _, name, dates, status = schedules[on - 1]
+    items = "".join(f'<a href="#" class="{"on" if n == on else ""}"><span>{t} · {d}</span><small>{st}</small></a>' for n, t, d, st in schedules)
+    dot = "live" if status == "Registration open" else ""
+    return (f'<div class="schedpick"><a class="schedbtn" href="#schedmenu" aria-haspopup="menu">{name} · {dates} <span aria-hidden="true">▾</span></a>'
+            f'<span class="schedst {dot}">{status}</span><div class="menu" id="schedmenu" role="menu">{items}</div></div><!--/schedpick-->')
 
 
 def drawer(did, title, sub, body, acts):
@@ -790,8 +797,27 @@ SENDBACK_RECEIPT = ('<div class="fld"><label for="sbw2">What to fix</label><sele
 ROW_MENU = menu("menu", [("Quick look", "#view", "", "Opens on the right"), ("Open full record", "applicant.html", "", ""), ("Edit details", "applicant.html#edit", "", "Name, birth date, contact"),
                          ("Move to another exam slot", "applicant.html#move", "", ""), ("Resend permit email", "#resent", "", ""), ("Print permit", "../docs/permit-pdf.html", "", ""), ("Waive the fee", "applicant.html#waive", "", "Scholar or indigent, with a reason"),
                          ("-", "", "", ""), ("Cancel application", "applicant.html#cancel", "danger", "Frees the exam slot")])
-ACT = '<span class="act"><a class="btn" href="#view">View</a> <a class="btn" href="#menu" aria-label="More actions">···</a></span>'
+ACT = '<span class="act"><a class="kebab" href="#menu" aria-label="More actions">⋮</a></span>'
 ACT1 = ACT + ROW_MENU
+
+
+def steps_line(steps):
+    """The applicant's process on one line: done steps dark, the current one bold, the rest grey."""
+    out = []
+    for label, when, state in steps:
+        out.append(f'<span class="stp2 {state}"><b>{label}</b>{f"<small>{when}</small>" if when else ""}</span>')
+    return '<span class="stepsline">' + '<i aria-hidden="true">→</i>'.join(out) + "</span>"
+
+
+def app_row(i, a, expanded=False):
+    chev = f'<a class="chev{" open" if expanded else ""}" href="#" aria-label="Show steps" aria-expanded="{str(expanded).lower()}">›</a>'
+    name = f'<span class="cwho2"><span class="ini">{"".join(w[0] for w in a[1].replace(".", "").split()[::2])[:2]}</span><span><b class="ink">{a[1]}</b><span class="sub mono">{a[0] if a[0] != "—" else "no examinee no. yet"}</span></span></span>'
+    row = f'<tr{" class=open" if expanded else ""}><td>{chev}</td><td><input type="checkbox" aria-label="Select {a[1]}"></td><td>{name}</td><td>{two(a[3], a[4])}</td><td>{a[5]}</td><td>{two(a[6], a[7])}</td><td>{ACT1 if i == 0 else ACT}</td></tr>'
+    if not expanded:
+        return row
+    steps = steps_line([("Submitted", "Jan 11", "done"), ("Paid at cashier", "Jan 12 · OR 0048190", "done"), ("Exam slot", "Isulan · Sat, Mar 14", "now"), ("Scored", "", ""), ("Program chosen", "", "")])
+    acts = btn("Open", "applicant.html", "sm") + btn("Move exam slot", "applicant.html#move", "sm") + btn("Resend permit", "#resent", "sm")
+    return row + f'<tr class="expand"><td></td><td colspan="6"><div class="expandin">{steps}<span class="xacts">{acts}</span></div></td></tr>'
 
 # Schedule 2 exam slots: campus, date, rooms (50 seats each), seats taken, status. Used by the dashboard, Exam slots and the cashier.
 SLOTS2 = [("ACCESS, Tacurong", "Sat, Apr 25", 24, 1188, "Open"), ("ACCESS, Tacurong", "Sun, Apr 26", 24, 730, "Open"), ("Isulan", "Sat, Apr 25", 4, 200, "Full"), ("Isulan", "Sun, Apr 26", 4, 162, "Open"),
@@ -823,12 +849,15 @@ admin("dashboard", "Dashboard", f"""<div class="tabs"><span class="on">Schedule 
 
 apps = [("500214", "Maria S. Dela Cruz", "maria.delacruz@gmail.com", "BS Civil Engineering", "Isulan", B("info", "Exam slot picked"), "Mar 14", "Room 4 · seat 27"),
         ("500215", "Jomar P. Abdullah", "jomar.abdullah@gmail.com", "BS Information Technology", "ACCESS", B("ok", "Approved"), "—", "picks an exam slot next"),
-        ("—", "Aisah K. Mangudadatu", "aisah.m@gmail.com", "BS Nursing", "ACCESS", B("warn", "In review"), "—", ""),
+        ("—", "Aisah K. Mangudadatu", "aisah.m@gmail.com", "BS Nursing", "ACCESS", B("warn", "Waiting for payment"), "—", ""),
         ("500223", "Ramon T. Villanueva", "ramon.v@gmail.com", "BS Agriculture", "Tacurong", B("info", "Exam slot picked"), "Mar 15", "Room 12 · seat 3"),
         ("—", "Lea M. Sampulna", "lea.sampulna@gmail.com", "BSEd Mathematics", "Kalamansig", B("gray", "Waiting for payment"), "—", ""),
         ("—", "Noel B. Guiamal", "noel.guiamal@gmail.com", "BS Criminology", "Isulan", B("warn", "Sent back"), "—", ""),
         ("500198", "Princess A. Lumabao", "princess.l@gmail.com", "BS Accountancy", "ACCESS", B("info", "Exam slot picked"), "Mar 14", "Room 7 · seat 41"),
         ("500176", "Datu R. Mamalinta", "datu.mamalinta@gmail.com", "BS Fisheries", "Palimbang", B("ok", "Scored"), "Mar 15", "Room 1 · seat 18")]
+APP_ROWS = [app_row(i, a, expanded=(i == 0)) for i, a in enumerate(apps)] + [
+    '<tr class="open"><td><a class="chev open" href="#" aria-label="Show steps" aria-expanded="true">›</a></td><td><input type="checkbox" aria-label="Select Kenneth L. Abo"></td><td><span class="cwho2"><span class="ini">KA</span><span><b class="ink">Kenneth L. Abo</b><span class="sub mono">APP-27-20418 · Transferee</span></span></span></td><td>BS Information Technology<span class="sub">ACCESS, Tacurong</span></td><td><span class="st">Waiting for payment</span></td><td>Dec 12<span class="sub">Testing Room, ACCESS</span></td><td>' + ACT + '</td></tr>',
+    '<tr class="expand"><td></td><td colspan="6"><div class="expandin">' + steps_line([("Submitted", "Nov 4", "done"), ("Chairperson approved", "Nov 6 · Engr. R. Dalanda", "done"), ("Paid at cashier", "", "now"), ("Exam", "Dec 12", ""), ("Scored", "", ""), ("Program chosen", "", "")]) + '<span class="xacts">' + btn("Open", "applicant.html", "sm") + '</span></div></td></tr>']
 VIEW_DRAWER = drawer("view", "Maria S. Dela Cruz", "500214 · SY 2027–2028 · Schedule 1", f"""<div>{B("info", "Exam slot picked")}</div>
 <div class="kv"><span>Email</span><span>maria.delacruz@gmail.com</span><span>Mobile</span><span>0917 123 4567</span><span>1st choice</span><span>BS Civil Engineering · Isulan</span>
 <span>Payment</span><span>Approved Jan 12 by Cashier 2 · ref <span class="mono">1009284551203</span></span><span>Seat</span><span>Isulan · Sat, Mar 14 · Room 4 · seat 27</span></div>
@@ -838,13 +867,10 @@ DUPES = drawer("dupes", "3 possible duplicates", "Same name and birth date, or s
 <div class="dupe"><div><b>Maria S. Dela Cruz</b><span class="muted">maria.delacruz@gmail.com · signed up Jan 11 · Exam slot picked</span></div><div><b>Maria Santos Dela Cruz</b><span class="muted">mariadc08@yahoo.com · signed up Jan 20 · Draft</span></div><div class="acts">{btn("Not the same person")}{btn("Open both", "applicant.html", "primary")}</div></div>
 <div class="dupe"><div><b>Jomar P. Abdullah</b><span class="muted">0917 555 0101 · Approved</span></div><div><b>Jomar Abdullah</b><span class="muted">0917 555 0101 · In review</span></div><div class="acts">{btn("Not the same person")}{btn("Open both", "applicant.html", "primary")}</div></div>""", btn("Close", "#"))
 BULK = f"""<div class="bulkbar" id="bulk"><b>3 selected</b><a class="btn" href="#bulk-remind">Send reminder</a><a class="btn" href="exam-slots.html#auto">Assign rooms and seats</a><a class="btn" href="exports.html#queued">Export selected</a><a class="btn" href="#">Clear</a></div>"""
-admin("applications", "Applications", f"""<div class="panel"><div class="filters"><span class="seg"><span class="on">All</span><span>Freshmen</span><span>Transferees</span></span>
-<select aria-label="Schedule"><option>All schedules</option><option>Schedule 1</option><option>Schedule 2</option><option>Schedule 3</option><option>Schedule 4 · Transferees</option></select><select aria-label="Status"><option>Any status</option><option>Draft</option><option>Waiting for chairperson</option><option>Declined</option><option>Waiting for payment</option><option>In review</option><option>Sent back</option><option>Approved</option><option>Exam slot picked</option><option>Scored</option><option>Absent</option><option>Program chosen</option><option>Cancelled</option></select><select aria-label="Campus"><option>Any campus</option></select>
-<select aria-label="Payment"><option>Any payment</option><option>Paid</option><option>Not paid yet</option></select><select aria-label="Sort"><option>Oldest waiting first</option><option>Newest first</option><option>Name A–Z</option></select>
-<input class="search" aria-label="Search" placeholder="Search name, email, no. or reference"><span style="margin-left:auto;display:flex;gap:6px">{btn("Print")}{btn("Excel", "exports.html#queued")}</span></div>
+admin("applications", "Applications", f"""{fbar("Search name, email, examinee no. or OR no.", [("Schedule", ["All schedules", "Schedule 1", "Schedule 2", "Schedule 3", "Schedule 4 · Transferees"]), ("Status", ["All statuses", "Draft", "Waiting for chairperson", "Declined", "Waiting for payment", "Sent back", "Approved", "Exam slot picked", "Scored", "Absent", "Program chosen", "Cancelled"]), ("Campus", ["All campuses", "ACCESS, Tacurong", "Isulan", "Tacurong", "Kalamansig"]), ("Applicant type", ["Everyone", "Freshmen", "Transferees"])])}
 {BULK}
-{table(['<input type="checkbox" aria-label="Select all">', "Examinee no.", "Applicant", "1st choice", "Status", "Exam slot", ""], [(f'<input type="checkbox" aria-label="Select {a[1]}">', f'<b class="mono ink">{a[0]}</b>', two(a[1], a[2]), two(a[3], a[4]), a[5], two(a[6], a[7]), ACT1 if i == 0 else ACT) for i, a in enumerate(apps)], sortable=("Examinee no.", "Applicant", "1st choice", "Status"), active=("Applicant", "asc"))}
-<div class="pager"><span class="muted">1–25 of 16,408 · 25 per page · <a href="#dupes">3 possible duplicates</a></span><span>{btn("Previous", "#", "sm")}{btn("Next", "#", "sm")}</span></div></div>""",
+{table(["", '<input type="checkbox" aria-label="Select all">', "Applicant", "1st choice", "Status", "Exam slot", ""], APP_ROWS, sortable=("Applicant", "1st choice", "Status", "Exam slot"), active=("Applicant", "asc"))}
+{pager(1, 25, "4,980")}""",
       overlays=VIEW_DRAWER + DUPES
       + toast("resent", "ok", OK, "Permit email sent", "To maria.delacruz@gmail.com.")
       + modal("bulk-remind", "info", "✉", "Remind 3 applicants?", f'<div class="fld"><label for="bt">Template</label><select id="bt"><option>Pick your exam slot (reminder)</option><option>Payment still waiting</option></select></div><div class="preview">Hi Jomar, your payment is approved but you haven’t picked an exam slot. ACCESS is filling up. Pick yours: sksu-tpt.com/slot</div><div class="fld"><label for="bc">Send by</label><select id="bc"><option>Email and SMS</option><option>Email only</option></select>{hint("SMS costs about ₱0.50 each. 3 messages.")}</div>', btn("Cancel", "#") + btn("Send to 3", "#sent3", "primary"))
@@ -917,7 +943,7 @@ admin("schedules", "Exam schedules", f"""<div class="head"><span class="muted"><
     ('<b class="ink">Schedule 1</b>', '<span class="num">Jan 1 – Feb 28</span>', '<span class="num">Mar 14–15</span>', '<span class="num">Released Apr 20</span>', '<span class="num">9,733</span>', '<span class="st">Finished</span>', '<span class="act">' + btn("View", "results.html") + "</span>"),
     ('<b class="ink">Schedule 2</b>', '<span class="num">Mar 1 – Apr 10</span>', '<span class="num">Apr 25–26</span>', '<span class="num">Releases May 15</span>', '<span class="num">4,980</span>', '<span class="st live">Registration open</span>', '<span class="act">' + btn("Edit", "#round") + btn("···", "#s2menu") + "</span>"),
     ('<b class="ink">Schedule 3</b>', '<span class="num">Apr 11 – May 15</span>', '<span class="num">May 30</span>', '<span class="num">Not set</span>', '<span class="num">0</span>', '<span class="st">Not published</span>', '<span class="act">' + btn("Publish", "#publish") + btn("···", "#s3menu") + "</span>"),
-    ('<b class="ink">Schedule 4</b> <span class="tag">Transferees</span>', '<span class="num">Nov 2 – Dec 3</span>', '<span class="num">Dec 12 · 2 batches</span>', '<span class="num">Not set</span>', '<span class="num">0</span>', '<span class="st">Not published</span>', '<span class="act">' + btn("Publish", "#publish") + btn("···", "#s3menu") + "</span>")])}
+    ('<b class="ink">Schedule 4</b> <span class="tag">Transferees</span>', '<span class="num">Nov 2 – Dec 3</span>', '<span class="num">Dec 12</span>', '<span class="num">Not set</span>', '<span class="num">0</span>', '<span class="st">Not published</span>', '<span class="act">' + btn("Publish", "#publish") + btn("···", "#s3menu") + "</span>")])}
 {menu("s2menu", [("Unpublish", "#unpublish", "danger", "New applications stop")])}{menu("s3menu", [("Edit", "#round", "", "")])}
 <div class="setrow"><span>Absent examinees can take a later schedule without paying again</span><a class="switch on" href="#" aria-label="Absent examinees can take a later schedule without paying again"></a></div>
 <small class="muted">Students can apply only while a schedule is published and its registration is open.</small></div>
@@ -937,7 +963,7 @@ admin("schedules", "Exam schedules", f"""<div class="head"><span class="muted"><
       + modal("sched-t", "info", "+", "Schedule 4 · Transferees", '<div class="fld"><label>Who is this schedule for?</label><label class="chkrow"><input type="radio" name="for2"> Freshmen</label><label class="chkrow"><input type="radio" name="for2" checked> Transferees (2nd semester)</label></div>'
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fld"><label for="t1">Registration opens</label><input id="t1" type="date" value="2027-11-02"></div><div class="fld"><label for="t2">Closes</label><input id="t2" type="date" value="2027-12-03"></div>'
         '<div class="fld"><label for="t3">Exam day</label><input id="t3" type="date" value="2027-12-12"></div><div class="fld"><label for="t4">Fee</label><span class="money"><span>₱</span><input id="t4" inputmode="decimal" value="275.00"></span></div>'
-        '<div class="fld"><label for="t5">1st batch</label><input id="t5" type="time" value="08:00"></div><div class="fld"><label for="t6">2nd batch</label><input id="t6" type="time" value="13:00"></div></div>'
+        '<div class="fld"><label for="t5">Report by (guide)</label><input id="t5" type="time" value="07:30"></div><div class="fld"><label for="t6">Exam starts (guide)</label><input id="t6" type="time" value="08:00"></div></div>'
         '<div class="fld"><label for="t7">Venue</label><input id="t7" value="Testing Room, Guidance and Testing Center, SKSU ACCESS Campus"></div>'
         + hint("Applicants pick 2 programs and upload their grades. The program chairperson approves before they can pay at the cashier."), btn("Cancel", "#") + btn("Save schedule", "#round-saved", "primary"))
       + modal("publish", "info", "", "Publish Schedule 3?", '<p class="muted" style="margin:0">Students see the Apply button from <b class="ink">Apr 11</b>, when registration opens. Until then the home page says “Schedule 3 opens Apr 11”.</p><div class="kv"><span>Exam days</span><span>May 30 · 4 campuses</span><span>Seats</span><span>2,000</span><span>Fee</span><span>₱275.00</span></div>', btn("Cancel", "#") + btn("Publish", "#published", "primary"))
@@ -982,20 +1008,19 @@ for i, (c, w, r, t, st) in enumerate(ses):
     cap = r * 50
     srows.append((f'<span class="ink">{c}</span>', w, f'<span class="num">{r}</span>',
                   f'<div class="meter"><div class="t"><span class="{"full" if t >= cap else ""}" style="width:{round(t / cap * 100)}%"></span></div><span class="num">{t:,} of {cap:,}</span></div>',
-                  f'<span class="st{" bad" if st == "Full" else (" live" if st == "Open" else "")}">{st}</span>', btn("···", "#slotmenu")))
+                  f'<span class="st{" bad" if st == "Full" else (" live" if st == "Open" else "")}">{st}</span>', kebab("#slotmenu")))
 admin("exam-slots", "Exam slots", f"""{rounds_bar(2)}<div class="head"><span class="muted"></span>{btn("Assign rooms and seats", "#auto")}{btn("Add exam slot", "#add", "primary")}</div>
-<div class="setrow"><span><b class="ink">Report by 7:30 AM · exam starts 8:00 AM</b> <a href="#times">Edit</a></span><span style="display:flex;gap:10px;align-items:center">Two batches (morning and afternoon)<a class="switch" href="#sittings" aria-label="Two batches"></a></span></div>
-<div class="filters"><select aria-label="Campus"><option>All campuses</option><option>ACCESS, Tacurong</option><option>Isulan</option><option>Tacurong</option><option>Kalamansig</option><option>Bagumbayan</option><option>Palimbang</option><option>Lutayan</option></select><select aria-label="Date"><option>All dates</option><option>Sat, Apr 25</option><option>Sun, Apr 26</option></select><select aria-label="Status"><option>Any status</option><option>Open</option><option>Full</option><option>Closed</option></select></div>
+<p class="guideline">Report by 7:30 AM · exam starts 8:00 AM · <a href="#times">Edit</a></p>
+{fbar("Search campus or room", [("Campus", ["All campuses", "ACCESS, Tacurong", "Isulan", "Tacurong", "Kalamansig", "Bagumbayan", "Palimbang", "Lutayan"]), ("Date", ["All dates", "Sat, Apr 25", "Sun, Apr 26"]), ("Status", ["All statuses", "Open", "Full", "Closed"])])}
 {table(["Campus", "Date", "Rooms", "Seats taken", "Status", ""], srows, sortable=("Campus", "Date", "Seats taken"), active=("Date", "asc"))}
 {menu("slotmenu", [("Close this exam slot", "#toggle", "", "People keep their seats"), ("Seat plan", "../docs/seat-plan.html", "", ""), ("Edit rooms", "#add", "", "")])}""",
       overlays=modal("add", "info", "+", "Add an exam slot", '<div class="fld"><label for="a1">Campus</label><select id="a1"><option>Isulan</option></select></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fld"><label for="a2">Date</label><input id="a2" type="date" value="2027-04-26"></div><div class="fld"><label for="a3">Report by (guide)</label><input id="a3" type="time" value="07:30"></div></div><div class="fld err"><label for="a4">Rooms</label><select id="a4"><option>Pick rooms…</option></select><span class="errmsg">Pick at least 1 room.</span><small class="hint">Rooms come from the Rooms page; seats add up by themselves.</small></div>', btn("Cancel", "#") + btn("Add exam slot", "#added", "primary"))
       + toast("added", "ok", OK, "Exam slot added", "Isulan · Sun, Apr 26 · 200 seats. 41 waiting applicants were emailed.")
       + modal("toggle", "warn", WARN, "Close Isulan, Sun Apr 26?", '<p class="muted" style="margin:0">162 people keep their seats. Nobody new can pick it.</p>', btn("Cancel", "#") + btn("Close exam slot", "#", "primary"))
       + modal("times", "info", "", "Guide times for Schedule 2", f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fld"><label for="g1">Report by</label><input id="g1" type="time" value="07:30"></div><div class="fld"><label for="g2">Exam starts</label><input id="g2" type="time" value="08:00"></div></div>{hint("A guide only; nobody books a time. Changing it updates every permit and sends one text to everyone scheduled.")}', btn("Cancel", "#") + btn("Save and notify", "#", "primary"))
-      + modal("sittings", "warn", WARN, "Turn on two batches?", '<div class="kv"><span>1st batch</span><span>8:00 AM</span><span>2nd batch</span><span>1:00 PM</span></div><p class="muted" style="margin:0">Each batch has its own seats. People already scheduled stay in the 1st batch.</p>', btn("Keep one batch", "#") + btn("Turn on", "#", "primary"))
       + modal("auto", "info", "⇄", "Assign rooms and seats · Schedule 2", f'{hint("For approved applicants who haven’t picked an exam slot. Nobody who already picked is moved.")}<div class="fld"><label for="au1">Rule</label><select id="au1"><option>Campus of their 1st choice, earliest exam slot first</option><option>Nearest campus with room</option></select></div><div class="kv"><span>Applicants</span><span>627</span><span>Will get a seat</span><span>586</span><span>No room left</span><span>41 (Isulan) · add an exam slot first</span></div>', btn("Cancel", "#") + btn("Assign 586 applicants", "#assigned", "primary"))
       + toast("assigned", "ok", OK, "586 applicants assigned", "Each applicant got an email with their room and seat."),
-      states=[("slotmenu", "··· menu"), ("times", "Guide times"), ("sittings", "Two batches"), ("add", "Add exam slot, with error"), ("added", "Added"), ("toggle", "Close exam slot confirm"), ("auto", "Assign rooms and seats"), ("assigned", "Assigned")])
+      states=[("slotmenu", "··· menu"), ("times", "Guide times"), ("add", "Add exam slot, with error"), ("added", "Added"), ("toggle", "Close exam slot confirm"), ("auto", "Assign rooms and seats"), ("assigned", "Assigned")])
 
 rooms = [("ACCESS · Room 1", "J. Ampatuan", 47, 2, 1, B("ok", "Synced")), ("ACCESS · Room 2", "R. Sinsuat", 45, 3, 2, B("ok", "Synced")), ("ACCESS · Room 3", "M. Usman", 31, 0, 19, B("warn", "3 queued, offline")), ("Isulan · Room 4", "L. Cabañero", 48, 2, 0, B("ok", "Closed")), ("Tacurong · Room 2", "E. Mangelen", 0, 0, 50, B("bad", "Not seen for 40 min")), ("Kalamansig · Room 1", "A. Bagundang", 46, 4, 0, B("ok", "Synced"))]
 CHECKIN_LIVE = f'''<div class="kpis"><div class="kpi"><span>Expected today</span><b>4,212</b></div><div class="kpi"><span>Here</span><b>3,904</b></div><div class="kpi"><span>Noted not here</span><b>121</b></div><div class="kpi"><span>Not scanned yet</span><b>187</b></div><div class="kpi"><span>Proctor phones</span><b>88 / 91 synced</b></div></div>
@@ -1033,8 +1058,8 @@ RESULTS_BAR = ('<div class="setrow"><span style="display:flex;gap:10px;align-ite
                '<span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + btn("Publish now", "#release", "primary") + '</span></div>')
 admin("results", "Results", f"""{rounds_bar(1)}<div class="kpis"><div class="kpi"><span>Scored</span><b>9,088</b></div><div class="kpi"><span>Absent</span><b>635</b></div></div>
 {RESULTS_BAR}
-<div class="filters"><input class="search" aria-label="Search examinee" placeholder="Name or examinee no." style="width:260px"><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS, Tacurong</option></select><select aria-label="Program"><option>All programs</option><option>BS Civil Engineering</option><option>BS Nursing</option></select><select aria-label="Qualified"><option>Everyone</option><option>Qualified for 1st choice</option><option>Not qualified</option></select><span style="margin-left:auto">{btn("Ranking report", "report-view.html")}</span></div>
-{table(["Examinee no.", "Name", "1st choice", "Overall standard score", "Stanine", ""], [('<span class="mono ink">500214</span>', "Maria S. Dela Cruz", "BS Civil Engineering · Isulan", '<span class="mono">584</span>', "7", btn("View", "result-detail.html")), ('<span class="mono ink">500176</span>', "Datu R. Mamalinta", "BS Fisheries · Palimbang", '<span class="mono">512</span>', "6", btn("View", "result-detail.html")), ('<span class="mono ink">500198</span>', "Princess A. Lumabao", "BS Accountancy · ACCESS", '<span class="mono">661</span>', "9", btn("View", "result-detail.html")), ('<span class="mono ink">500231</span>', "Abdul R. Kanakan", "BS IT · ACCESS", "—", B("gray", "Absent"), btn("View", "result-detail.html"))], sortable=("Examinee no.", "Name", "Overall standard score"), active=("Overall standard score", "desc"))}
+{fbar("Search name or examinee no.", [("Campus", ["All campuses", "Isulan", "ACCESS, Tacurong"]), ("Program", ["All programs", "BS Civil Engineering", "BS Nursing"]), ("Qualified", ["Everyone", "Qualified for 1st choice", "Not qualified"])])}
+{table(["Examinee no.", "Name", "1st choice", "Overall standard score", "Stanine", ""], [('<span class="mono ink">500214</span>', "Maria S. Dela Cruz", "BS Civil Engineering · Isulan", '<span class="mono">584</span>', "7", kebab("result-detail.html")), ('<span class="mono ink">500176</span>', "Datu R. Mamalinta", "BS Fisheries · Palimbang", '<span class="mono">512</span>', "6", kebab("result-detail.html")), ('<span class="mono ink">500198</span>', "Princess A. Lumabao", "BS Accountancy · ACCESS", '<span class="mono">661</span>', "9", kebab("result-detail.html")), ('<span class="mono ink">500231</span>', "Abdul R. Kanakan", "BS IT · ACCESS", "—", B("gray", "Absent"), kebab("result-detail.html"))], sortable=("Examinee no.", "Name", "Overall standard score"), active=("Overall standard score", "desc"))}
 {pager(1, 25, "9,088")}""",
       overlays=inmain("none", empty("list", "No scores for Schedule 2 yet", "Import the Testing Center Excel after exam day.", btn("Import scores", "scores.html", "primary")))
       + toast("committed", "ok", OK, "9,088 scores approved", "Release is set for Apr 20, 9:00 AM.")
@@ -1074,9 +1099,8 @@ TICKETS = [("#1046", "Rhea L. Sumagka", "Change my details", "Isulan", "Open", "
            ("#1044", "Farida M. Ampatuan", "Payment", "Tacurong", "Open", "3 h ago", "—"),
            ("#1042", "Maria S. Dela Cruz", "Payment", "Isulan", "Answered", "Jan 12", "Ana R."),
            ("#0977", "Maria S. Dela Cruz", "Application", "Isulan", "Closed", "Jan 5", "Ben T.")]
-admin("support", "Support", f"""<div class="filters"><input class="search" aria-label="Search requests" placeholder="Name, request no. or words" style="flex:1;max-width:360px"><span class="seg"><a class="on" href="#">All · 856</a><a href="#">Open · 3</a><a href="#">Answered · 41</a><a href="#">Closed · 812</a></span>
-<select aria-label="Topic"><option>Any topic</option><option>Payment</option><option>Application</option><option>Change my details</option><option>Exam slot</option><option>Result</option><option>Other</option></select><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS, Tacurong</option></select><label class="chkrow"><input type="checkbox"> Assigned to me</label></div>
-{table(["No.", "Student", "Topic", "Campus", "Status", "Last update", "Assigned", ""], [(f'<span class="mono">{n}</span>', st, t, c, f'<span class="st{" live" if s_ == "Open" else ""}">{s_}</span>', u, a, '<span class="act">' + btn("View", "support-ticket.html") + "</span>") for n, st, t, c, s_, u, a in TICKETS], sortable=("No.", "Last update"), active=("Last update", "asc"))}
+admin("support", "Support", f"""{fbar("Search name, request no. or words", [("Status", ["All · 856", "Open · 3", "Answered · 41", "Closed · 812"]), ("Topic", ["All topics", "Payment", "Application", "Change my details", "Exam slot", "Result", "Other"]), ("Campus", ["All campuses", "Isulan", "ACCESS, Tacurong"]), ("Assigned", ["Anyone", "Me"])])}
+{table(["No.", "Student", "Topic", "Campus", "Status", "Last update", "Assigned", ""], [(f'<span class="mono">{n}</span>', st, t, c, f'<span class="st{" live" if s_ == "Open" else ""}">{s_}</span>', u, a, '<span class="act">' + kebab("support-ticket.html") + "</span>") for n, st, t, c, s_, u, a in TICKETS], sortable=("No.", "Last update"), active=("Last update", "asc"))}
 {pager(1, 5, 856)}
 <div class="setrow"><span>Limits: 1 open request per student, 5 per school year, 1 reply a minute</span>{btn("Edit limits", "#limits", "sm")}</div>""",
       overlays=modal("limits", "info", "✎", "Support limits", '<div class="formgrid"><div class="fld"><label for="l1">Requests per student per school year</label><input id="l1" type="number" min="1" value="5"></div><div class="fld"><label for="l2">Open requests at a time</label><input id="l2" type="number" min="1" value="1" disabled></div><div class="fld"><label for="l3">Replies per request per day</label><input id="l3" type="number" min="1" value="20"></div><div class="fld"><label for="l4">Close after no reply (days)</label><input id="l4" type="number" min="1" value="7"></div></div>' + hint("Also fixed: one reply a minute, 10–1,000 characters, one photo up to 2 MB (JPG or PNG), links shown as plain text."), btn("Cancel", "#") + btn("Save", "#limits-ok", "primary"))
@@ -1154,7 +1178,8 @@ admin("exports", "Downloads", table(["File", "Asked by", "Status", ""], [
       states=[("queued", "Export queued"), ("retry", "Retry"), ("empty", "Empty")])
 
 camp = [("ACCESS, Tacurong", 22, "4,343"), ("Isulan", 14, "1,884"), ("Tacurong", 9, "1,663"), ("Kalamansig", 5, "731"), ("Bagumbayan", 2, "128"), ("Palimbang", 2, "94"), ("Lutayan", 2, "93")]
-admin("rooms", "Rooms", f"""<div class="filters"><span class="seg"><span class="on">Isulan</span><span>ACCESS</span><span>Tacurong</span><span>Kalamansig</span><span>Bagumbayan</span><span>Palimbang</span><span>Lutayan</span></span><input class="search" aria-label="Search rooms" placeholder="Building or room" style="width:200px"><span style="margin-left:auto">{btn("Add room", "#room", "primary")}</span></div>
+admin("rooms", "Rooms", f"""<div class="head"><span class="muted"></span>{btn("Add room", "#room", "primary")}</div>
+{fbar("Search building or room", [("Campus", ["Isulan", "ACCESS, Tacurong", "Tacurong", "Kalamansig", "Bagumbayan", "Palimbang", "Lutayan"])])}
 {table(["Building", "Room", "Seats", "Exam use", "Used in", ""], [("Main Building", "Room 1", '<span class="mono">50</span>', '<a class="switch on" href="#"></a>', "Schedule 1 · Schedule 2", btn("Edit", "#room")), ("Main Building", "Room 4", '<span class="mono">50</span>', '<a class="switch on" href="#"></a>', "Schedule 1 · Schedule 2", btn("Edit", "#room")), ("Engineering", "ENG 201", '<span class="mono">45</span>', '<a class="switch on" href="#"></a>', "Schedule 1", btn("Edit", "#room")), ("Engineering", "ENG 202", '<span class="mono">45</span>', '<a class="switch" href="#"></a>', "—", btn("Edit", "#room")), ("Library", "AVR", '<span class="mono">80</span>', '<a class="switch on" href="#"></a>', "Schedule 2", btn("Edit", "#room"))], sortable=("Building", "Room", "Seats"), active=("Building", "asc"))}
 <span class="muted">Isulan: 4 of 5 rooms used for exams · 225 seats per exam slot.</span>""",
       overlays=modal("room", "info", "+", "Add a room · Isulan", f'<div class="fld"><label for="ro1">Building</label><input id="ro1" value="Engineering"></div><div class="fld"><label for="ro2">Room name</label><input id="ro2" value="ENG 203"></div><div class="fld"><label for="ro3">Seats for an exam</label><input id="ro3" type="number" min="1" inputmode="numeric" value="45">{hint("Count the chairs with one seat gap between examinees, not the room’s class size.")}</div>', btn("Cancel", "#") + btn("Add room", "#added", "primary"))
@@ -1231,7 +1256,7 @@ admin("chair", "Transferee applicants · BS Information Technology", f"""<div cl
 admin("staff", "Staff and roles", f"""<div class="head"><span class="muted">Staff join by invite only.</span>{btn("Invite staff", "#invite", "primary")}</div>
 <h2 style="margin:8px 0 0">What each role can do</h2>{table(["", "Admin", "Cashier", "Proctor", "Program chair"], PERMS)}
 <h2 style="margin:16px 0 0">Staff</h2>
-<div class="filters"><input class="search" aria-label="Search staff" placeholder="Name or email" style="width:260px"><select aria-label="Role"><option>All roles</option><option>Admin</option><option>Cashier</option><option>Proctor</option><option>Program chair</option></select></div>
+{fbar("Search name or email", [("Role", ["All roles", "Admin", "Cashier", "Proctor", "Program chair"])])}
 {table(["Staff", "Role", "Can", "Last active", ""], [(two(f'<span class="ink">{s[0]}</span>', s[1]), B("gray", s[2]), s[3], s[4], btn("Change role", "#role")) for s in staff], sortable=("Staff", "Role", "Last active"), active=("Staff", "asc"))}""",
       overlays=modal("invite", "info", "+", "Invite staff", '<div class="fld"><label for="i1">Email</label><input id="i1" type="email" value="proctor.kalamansig@sksu.edu.ph"></div><div class="fld"><label for="i2">Role</label><select id="i2"><option>Proctor</option><option>Cashier</option><option>Program chair (picks their program)</option><option>Admin</option></select></div>', btn("Cancel", "#") + btn("Send invite", "#invited", "primary"))
       + toast("invited", "ok", OK, "Invite sent", "proctor.kalamansig@sksu.edu.ph can sign in within 7 days.")
@@ -1240,7 +1265,7 @@ admin("staff", "Staff and roles", f"""<div class="head"><span class="muted">Staf
       states=[("invite", "Invite form"), ("invited", "Invited"), ("role", "Change role"), ("last-admin", "Guard error")])
 
 audit = [("Today 9:05", "Cashier 1", "Recorded Jomar P. Abdullah’s payment (OR 0048190) and issued 500215"), ("Today 8:58", "Ana R. (admin)", "Sent back Noel B. Guiamal: reference already used"), ("Jan 13 2:10 PM", "Admission Office", "Closed exam slot Isulan, Sat Apr 25 (full)"), ("Jan 13 9:42 AM", "Maria S. Dela Cruz", "Booked Isulan, Room 4 seat 27"), ("Jan 12 4:30 PM", "Ana R. (admin)", "Approved Maria S. Dela Cruz’s payment and issued 500214"), ("Jan 10 8:30 AM", "Admission Office", "Invited Ana R. as Admin"), ("Jan 2 7:00 AM", "System", "Nightly backup: database 31 MB, files 412 MB, copied off-site"), ("Jan 1 12:00 AM", "Admission Office", "Opened SY 2027–2028")]
-admin("audit", "Activity log", '<div class="filters"><input class="search" aria-label="Search the log" placeholder="Name, examinee no. or OR no." style="width:240px"><select aria-label="Who"><option>Anyone</option><option>Admins</option><option>Cashiers</option><option>Applicants</option></select><select aria-label="Action"><option>Any action</option><option>Payments</option><option>Approvals and send-backs</option><option>Exam slots</option><option>Results</option><option>Settings</option></select><span class="range"><input type="date" aria-label="From" value="2027-01-01"><span class="muted">to</span><input type="date" aria-label="To" value="2027-01-13"></span></div>'
+admin("audit", "Activity log", fbar("Search name, examinee no. or OR no.", [("Who", ["Anyone", "Admins", "Cashiers", "Applicants"]), ("Action", ["Any action", "Payments", "Approvals and send-backs", "Exam slots", "Results", "Settings"])], '<label class="fdd"><small>Dates</small><span class="range"><input type="date" aria-label="From" value="2027-01-01"><span class="muted">to</span><input type="date" aria-label="To" value="2027-01-13"></span></label>')
       + table(["When", "Who", "What"], [(f'<span class="muted">{a[0]}</span>', f'<span class="ink">{a[1]}</span>', a[2]) for a in audit], sortable=("When", "Who"), active=("When", "desc")) + pager(1, 25, "48,210"))
 
 admin("account", "My account", f"""<div class="panel" style="max-width:640px"><div class="kv"><span>Name</span><span class="ink">Admission Office</span><span>Email</span><span>sksutpt@gmail.com</span><span>Role</span><span>{B("gray", "Admin")}</span><span>Signed in on</span><span>This PC · Chrome · since 7:58 AM</span></div>
@@ -1453,7 +1478,6 @@ ADMIN_CYCLE = [
         ("admin/rooms.html#room", "Add a room", "With a hint on how to count seats."),
         ("admin/exam-slots.html", "Exam slots", "Campus and date only; report and start times are a guide on the permit."),
         ("admin/exam-slots.html#times", "Guide times", ""),
-        ("admin/exam-slots.html#sittings", "Two batches (off)", "1st batch 8:00 AM, 2nd batch 1:00 PM."),
         ("admin/exam-slots.html#add", "Add exam slot form", "Shown with a validation error on rooms."),
         ("admin/exam-slots.html#added", "Exam slot added", "Waiting applicants are emailed by themselves."),
         ("admin/exam-slots.html#toggle", "Close an exam slot", "People already booked keep their seats."),
@@ -1609,7 +1633,7 @@ PAID_TABLE = table(["Applicant", "OR no.", "Paid with", "When", "Where", "Examin
     (who(n, a), f'<span class="mono">{o}</span>', m, w, c, f'<span class="mono">{e}</span>', '<span class="act">' + btn("Reprint receipt", "#") + "</span>") for a, n, o, m, w, c, e in PAID])
 
 cashier("paid", "Paid", f"""<div class="pagehead"><div><h1>Paid</h1></div><div class="pacts">{btn("Export (Excel)", "../admin/exports.html#queued")}{btn("Print list")}</div></div>
-<div class="filters"><input class="search" aria-label="Search paid" placeholder="Name, OR no. or examinee no." style="flex:1;max-width:420px"><span class="seg"><a class="on" href="#">Today · 36 · ₱9,900</a><a href="#">This schedule · 3,976</a></span><select aria-label="Paid with"><option>Any way</option><option>Cash</option><option>GCash at counter</option><option>Check</option></select></div>
+{fbar("Search name, OR no. or examinee no.", [("When", ["Today · 36 · ₱9,900", "This schedule · 3,976"]), ("Paid with", ["Any way", "Cash", "GCash at counter", "Check"])])}
 {PAID_TABLE}{pager(1, 25, "36")}""", tab="paid")
 
 DAYS = [(w, c, r * 50, t) for c, w, r, t, st in SLOTS2 if st != "Closed"]

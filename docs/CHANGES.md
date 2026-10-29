@@ -7,7 +7,7 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ **School year → Schedule → Exam slot** everywhere (was season / round / session). Example: "SY 2027–2028 · Schedule 2".
 - ✅ "Pick your exam slot" (was "pick a seat"). Room 4 · seat 27 stays as the seat number.
 - ✅ "Excel" for the Testing Center results file (was CSV).
-- ✅ Real values from the SKSU post: fee **₱275.00**, **1st batch 8:00 AM / 2nd batch 1:00 PM**, exam-day items (pencil No. 2, permit, valid ID, official receipt), Guidance and Testing Center contact.
+- ✅ Real values from the SKSU post: fee **₱275.00**, exam-day items (pencil No. 2, permit, valid ID, official receipt), Guidance and Testing Center contact.
 - ✅ File names follow the new words: schedules.html, exam-slots.html.
 
 ## Process (kept like tptv3)
@@ -28,7 +28,6 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ **Landing page settings**: announcement, requirements, questions and answers, contact.
 - ✅ **System status** page: website, people online, email and SMS usage, server, backups.
 - ✅ **Transferee test (2nd semester)**: a schedule can be for Transferees; 2 program choices + current school and course; the **program chairperson approves** before paying; cashier payment only; new Program chair page.
-- ✅ Transferee picks 1st or 2nd batch.
 
 ## Results import
 
@@ -87,6 +86,18 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ **Details locked after approval**; changes through a support request or an admin, with a reason.
 - ✅ **Exam guide times** on the slot picker, confirm sheet, permit, Home and notifications.
 - ✅ Program picker: search with an icon, campus as one dropdown, grouped by campus, chosen programs greyed out.
+
+## No morning/afternoon
+
+- ✅ Removed morning/afternoon batches everywhere (freshmen and transferees): one guide report time and start time per exam day. Transferees get the schedule's one exam day automatically after paying. tptv3 had AM/PM built into its core; v4 has none.
+
+## Header and lists
+
+- ✅ White header with a thin line under it; green only as an accent. Seal + SKSU TPT, search, bell, name and avatar.
+- ✅ Schedule picker under the page title ("Schedule 2 · Apr 25–26 ▾" + status), instead of the boxed tab bar. Works for any number of schedules.
+- ✅ Lists use the full width with roomy rows, initials + name, a ⋮ row menu, sortable headers, and "Showing 1 to 25 of 4,980 results" with page numbers.
+- ✅ One filter bar above each list: wide search, labelled dropdowns, Reset, Columns, rows per page (Applications, Support, Results, Exam slots, Activity log, Staff, Rooms, cashier Paid).
+- ✅ Applications: expand a row to see the applicant's steps (Submitted → Paid at cashier → Exam slot → Scored → Program chosen; transferees also show Chairperson approved) with quick actions.
 
 ## Docs
 

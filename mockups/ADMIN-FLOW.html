@@ -171,7 +171,7 @@ const NODES = [
     links: [["Rooms", "admin/rooms.html"]] },
   { id: "days", row: 6, col: "C", actor: "admin", t: "Exam slots", s: "Campus + date + rooms = seats",
     what: "An exam slot is one campus on one date with the rooms used that day. Its seats are the total of those rooms. Report and start times (7:30 / 8:00 AM) are only a guide printed on the permit.",
-    bullets: ["AM/PM sittings stay off unless a day overflows.", "Applicants see seats left per slot."],
+    bullets: ["One guide time per exam day; no morning or afternoon groups.", "Applicants see seats left per slot."],
     links: [["Setup step 4: Exam slots and rooms", "admin/setup-4.html"], ["Exam slots page", "admin/exam-slots.html"]] },
   { id: "open", row: 7, col: "C", actor: "admin", t: "Publish registration", s: "Not public until you press Publish",
     what: "Finishing setup never makes anything public. The admin presses Publish for a schedule; students then see the Apply button during its registration dates. Unpublish any time to pause: nobody can start or submit, and anyone already in keeps their progress and seat.",
@@ -286,7 +286,7 @@ const ORDER = ["season", "rounds", "campus", "rooms", "days", "open", "apply", "
 // What each step fixes compared with tptv3 (from the audit of the live system).
 const BETTER = {
   season: "tptv3 needed new code, routes and a new database every year. Here a school year is just data you create.",
-  days: "tptv3 split seats in half for AM/PM in the code. Here each slot uses real rooms with real seat counts.",
+  days: "tptv3 split each day's seats in half for morning and afternoon in the code. Here an exam slot is one day with real rooms and seat counts.",
   open: "Same Activate / Deactivate idea, but two schedules can never be open by mistake, and the close date stops registration by itself.",
   apply: "Clear fields with limits shown, autosave, and the photo is shrunk on the phone (tptv3 kept photos up to 100 MB: 26 GB). One application per schedule, so a student can apply again next schedule (tptv3 allowed one per account).",
   ask: "tptv3 has no way to ask the office inside the system. Here requests are tickets with limits, and change requests are logged against the change they caused.",

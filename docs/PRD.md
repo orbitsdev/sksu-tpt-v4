@@ -12,7 +12,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 |---|---|---|
 | 1 | Keep every function the old TPT performs; how each one works is ours to improve. | The user's mandate. |
 | 2 | **A schedule is a day**: campus + date. The applicant picks campus and date, and the system assigns room and seat. Report and start times (for example 7:30 / 8:00 AM) are a guide printed on the permit, not a bookable slot. | It works like the Civil Service exam. It's simpler and matches how SKSU runs test days [Likely]. |
-| 3 | Two batches (1st batch 8:00 AM, 2nd batch 1:00 PM) stay as a switch, **off by default**, for a day that overflows. | tptv3 hard-coded times, which split seats in half (`slots / 2`). |
+| 3 | **No morning/afternoon.** One exam session per exam day, with one guide report time and start time. If two groups are ever needed, the office adds two exam slots on the same day with different guide times. | tptv3 hard-coded AM/PM, which split each day's seats in half (`slots / 2`); the office wants it removed. |
 | 4 | **School years and schedules are data, never code.** A school year has one or more exam schedules, each marked Freshmen or Transferees, each with its own registration, exam day(s), seats, scores and release. | tptv3 has year-specific routes, templates and database names. |
 | 5 | **For now, payment is at an SKSU cashier only**: the cashier records the OR no., the application is approved at once and the examinee number is issued. Online payment with a receipt upload and admin review is a **later switch per school year** ("Payment methods"), off by default. | The office has no online payment yet (user, 29 Oct). The online path stays designed so it can be turned on without new code. |
 | 6 | Notifications are a core module: in-app, email and SMS per event. | The user said notifying students is important. |
@@ -28,7 +28,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | School years and schedules | School year, one or more schedules (Freshmen or Transferees), registration windows, exam fee, copy from last school year (5-step form with a step rail) | `admin/schedules`, `admin/setup-1…5` |
 | Campuses and programs | 7 campuses, programs per campus, offered per school year, board flag, **cut-off score** | `admin/campuses` |
 | Rooms | Buildings and rooms per campus with exam seats; reused every school year; added one by one | `admin/rooms` |
-| Schedule days | Campus + date + rooms → seats; guide times; optional two batches | `admin/exam-slots` |
+| Schedule days | Campus + date + rooms → seats; guide times | `admin/exam-slots` |
 | Applicants and applications | Google sign-in; profile, school, 3 program choices (2 for transferees); one status per application (see the status list in section 7) | `applicant/*`, `admin/applications`, `admin/applicant` |
 | Uploads | Only what is used: 2×2 ID photo (for the permit), and the payment receipt only when online payment is turned on; transferees add their grades for the chairperson. Compressed on the phone; reviewer can ask for a new one | `applicant/apply-*`, `admin/applicant#photo` |
 | Payments | Cashier records the OR number (instant), or upload and review; duplicate-reference guard | `admin/cashier`, `admin/payments` |
@@ -91,7 +91,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Walk-in on exam day | Proctor can't add people. The campus admin can seat a walk-in only if they're approved and unscheduled, into an empty seat; it's logged. |
 | Duplicate registration | Detector flags same name + birth date or same mobile. A flag only: staff cancel the newer application if it is the same person. No merge. |
 | Late payment | Registration close blocks new payments; an admin can extend one applicant with a reason, or roll them to the next schedule. |
-| A date overflows | Add rooms or another day; as a last resort, switch on two batches for that day. |
+| A date overflows | Add rooms, or add another exam slot (another day, or the same day with a later guide time). |
 | Wrong room at the door | The scan says which room to send them to. |
 | Lost permit | The permit lives in the app and works offline; the proctor can also search by name. |
 | Score correction | Upload a fixed Excel file (the screen shows what changes), or correct one score with a reason; the old value is kept. |
@@ -155,7 +155,7 @@ Key rules:
 
 - `applications`: one per (user, schedule), and only one in progress at a time. The account and profile are reused, so a new application is prefilled from the last one. Rejected, absent or past-season applicants can apply again in a later schedule or school year [needs office confirmation: retakes after a result]. `status` enum; `examinee_no` INT, unique per school year, from `seasons.next_examinee_no` locked in the approval transaction.
 - `seat_assignments`: unique (schedule_day_room, seat) and unique (application). Assigned under `SELECT … FOR UPDATE`.
-- `schedule_days`: campus, date, `report_at` and `starts_at` (guide), `sitting` nullable (only when the two-batches switch is on).
+- `schedule_days`: campus, date, `report_at` and `starts_at` (guide). No sitting/batch column.
 - `scores`: imported exactly as the Testing Center gives them (standard score and stanine per subject and overall). v4 never computes scores. `score_imports` keeps every uploaded file, who and when; a re-import shows what changes before approval.
 - `program_offerings`: school year, program, `cutoff` INT, `is_board` bool.
 - `payments`: `method` (cashier | upload), `or_no` or `reference_no` unique per school year, `recorded_by`.
@@ -177,7 +177,7 @@ One status per application. These exact names are used on every screen, in filte
 | In review | Online payment only: the admin checks the receipt | Approved, or Sent back |
 | Sent back | The admin sent back the photo or details (any time) or the receipt (online); the student fixes it and sends again | Back to the status it had |
 | Approved | Paid at the cashier; examinee number issued. **Details are locked from here** | Exam slot picked |
-| Exam slot picked | Has a campus and date (or batch), room and seat; permit ready | Scored, or Absent |
+| Exam slot picked | Has a campus and date, room and seat; permit ready | Scored, or Absent |
 | Scored | Score imported from the Testing Center file | Program chosen |
 | Absent | Had a slot but no score in the file | Draft in a later schedule (if allowed) |
 | Program chosen | Picked one program they qualify for | — |
@@ -203,7 +203,7 @@ A small ticket system for questions and change requests (replaces "Ask the offic
 
 ### Exam times
 
-Times are a guide, not a booking rule, but students always see them: on the exam slot picker ("Sat, Apr 25 · report by 7:30 AM"), the confirm sheet, the permit ("Report by 7:30 AM · exam starts 8:00 AM"), Home, the "Exam slot booked" notification and the reminder SMS/email. Transferee batches: 1st batch report by 7:30 AM, starts 8:00 AM; 2nd batch report by 12:30 PM, starts 1:00 PM.
+Times are a guide, not a booking rule, but students always see them: on the exam slot picker ("Sat, Apr 25 · report by 7:30 AM"), the confirm sheet, the permit ("Report by 7:30 AM · exam starts 8:00 AM"), Home, the "Exam slot booked" notification and the reminder SMS/email. Transferee schedules work the same: one exam day, one guide time.
 
 ## 8. Flows
 
@@ -315,6 +315,7 @@ flowchart TB
 4. Official stanine labels and the cut-off list per program for 2027.
 5. Which SMS provider and budget?
 6. Can absent examinees move to the next schedule for free?
+7. Confirm why the office wants morning/afternoon removed.
 
 ---
 
@@ -363,7 +364,7 @@ The dashboard shows the round's seats (total, taken, left, open exam days) and e
 
 ## 16. Transferee test (2nd semester)
 
-Today the Guidance and Testing Center runs a separate walk-in test for transferees (for example Dec 13, 2026, ₱275, 1st batch 8:00 AM and 2nd batch 1:00 PM, Testing Room, SKSU ACCESS Campus). The paper form asks for personal details, current school, current course and two preferred programs, and the program chairperson or college dean signs it after checking grades and slots.
+Today the Guidance and Testing Center runs a separate walk-in test for transferees (for example Dec 13, 2026, ₱275, Testing Room, SKSU ACCESS Campus; the post still lists a 1st and 2nd batch, which v4 drops). The paper form asks for personal details, current school, current course and two preferred programs, and the program chairperson or college dean signs it after checking grades and slots.
 
 v4 handles it in the same system:
 
@@ -373,7 +374,7 @@ v4 handles it in the same system:
 | Apply | Online: 3 program choices | Online or encoded by staff: 2 choices, plus current school and current course, and the transcript or certificate of grades |
 | Approval before paying | — | The program chairperson or dean of the 1st-choice program approves (slot available, grades OK) or declines with a reason |
 | Pay | Cashier (online later, if turned on) | Cashier only |
-| Exam | Exam slots by campus and date | One venue, 1st or 2nd batch |
+| Exam | Exam slots by campus and date | One exam day and venue, assigned automatically after payment |
 | Examinee no., permit, results, choosing a program | Same | Same |
 
 New role: **Program chair**. Sees only the transferee applicants for their own program, with the uploaded grades, and approves or declines. Every decision goes in the activity log.
