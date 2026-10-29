@@ -1396,6 +1396,7 @@ pager(1, 25, "9,088"))}""",
       + toast("committed", "ok", OK, "9,088 scores approved", "Release is set for Apr 20, 9:00 AM.")
       + toast("date-ok", "ok", OK, "Release date saved", "Results go out by themselves on Apr 20, 9:00 AM.")
       + inmain("before", RESULTS_BAR)
+      + inmain("pdf-failed", '<div class="setrow"><span>Result PDFs: <b>9,086 of 9,088</b> ready · <span style="color:var(--bad)">Build failed for 2</span> (500231, 500655)</span>' + btn("Retry", "#before") + '</div>' + RESULTS_BAR.split('</div>', 1)[1])
       + modal("release", "warn", WARN, "Publish results to 9,088 examinees now?", '<p class="muted" style="margin:0">They get an email and a text and can see scores at once. You can hide the results again here, but sent emails and texts stay sent.</p>', btn("Cancel", "#") + btn("Publish now", "#releasing", "primary"))
       + modal("hide", "warn", WARN, "Hide Schedule 1 results?", '<p class="muted" style="margin:0">Students stop seeing scores in the app, and the verify page says “not available”. Emails and texts already sent can’t be unsent.</p>', btn("Cancel", "#") + btn("Hide results", "#hidden", "danger"))
       + toast("hidden", "ok", OK, "Results hidden", "Publish them again from this page when ready.")
