@@ -15,7 +15,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | 3 | **No morning/afternoon.** One exam session per exam day, with one guide report time and start time. If two groups are ever needed, the office adds two exam slots on the same day with different guide times. | tptv3 hard-coded AM/PM, which split each day's seats in half (`slots / 2`); the office wants it removed. |
 | 4 | **School years and schedules are data, never code.** A school year has one or more exam schedules, each marked Freshmen or Transferees, each with its own registration, exam day(s), seats, scores and release. | tptv3 has year-specific routes, templates and database names. |
 | 5 | **For now, payment is at an SKSU cashier only**: the cashier records the OR no., the application is approved at once and the examinee number is issued. Online payment with a receipt upload and admin review is a **later switch per school year** ("Payment methods"), off by default. | The office has no online payment yet (user, 29 Oct). The online path stays designed so it can be turned on without new code. |
-| 6 | Notifications are a core module: in-app, email and SMS per event. | The user said notifying students is important. |
+| 6 | Notifications are a core module: in-app and email per event in v1; SMS later (tptv3 has no SMS). | The user said notifying students is important. |
 | 7 | Stack: Laravel 12, Inertia, Vue 3, Tailwind 4, Nuxt UI or shadcn-vue, Pest, MySQL 8, Redis, queue worker. | The same stack as the team's euphoria v2 and the earlier tpt-recreate-v2 attempt. |
 | 8 | Look: SKSU deep green, mint and gold, the official seal, light mode. Applicant screens are a native-style mobile app; admin follows euphoria v2 admin patterns. | User feedback in this session. |
 
@@ -36,7 +36,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Exam day | Optional, off by default: offline QR check-in on the proctor's phone, information only. Absent is decided by the score import | `proctor/*`, `admin/checkin` |
 | Results import | Upload the Testing Center Excel as it is → match columns → checks → preview changes → approve → publish; every file kept unchanged | `admin/scores`, `admin/results` |
 | Results and qualification | Standard score, stanine, qualified programs by cut-off; student chooses a program | `applicant/result`, `docs/result-pdf` |
-| Notifications | Event → in-app, email, SMS; templates, blasts, send log with resend; student preferences | `applicant/notifications`, `admin/messages`, `docs/sms` |
+| Notifications | Event → in-app and email (SMS later); templates, announcements, send log with resend | `applicant/notifications`, `admin/messages`, `docs/sms` |
 | Reports and downloads | Funnel, demand, score histogram, every old report; background exports | `admin/reports`, `admin/exports` |
 | Staff, roles, audit | Invite-only staff, four roles (Admin, Cashier, Proctor, Program chair), permission matrix; activity log (read-only) | `admin/staff`, `admin/audit` |
 
@@ -58,7 +58,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Results upload (Excel) | Imports scores computed by the Testing Center | Columns read by position; header row saved as a result; no checks; re-upload duplicates; file not kept [Certain] | Same idea, import not compute: Excel as it is, column matching, checks, preview of changes, approval, original file kept |
 | Survey + select courses before result | Gate to see the result | Forces a survey; second course pick duplicates choices [Certain] | Same 10 tptv3 statements (the office submits these results), required once after the result and before choosing a program; the admin can edit them per school year (new answers only); results report and Excel in the office format |
 | Reports (6 Livewire pages) | Lists and exports | Slow full-table queries, missing indexes [Certain] | Same reports plus funnel, attendance and survey; exports queued |
-| Emails | Approve/reject via Gmail SMTP | Gmail daily limit, no SMS, no log [Certain] | Mail API + SMS provider; templates; send log with resend |
+| Emails | Approve/reject via Gmail SMTP | Gmail daily limit, no SMS, no log [Certain] | Mail service (no Gmail daily limit); templates; send log with resend; SMS provider later |
 | Test and debug routes | Left in production | Serious security risk (details kept offline) [Certain] | **Dropped.** Never ship test routes; route list checked in CI |
 | One-off PHP scripts in `docs/` | Manual DB fixes | Each school year needs hand fixes [Certain] | **Dropped.** Admin screens cover every fix, with a reason and audit |
 
@@ -87,7 +87,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Applicant wants another date | One self-service change until the schedule's change deadline; after that, staff move them with a reason. |
 | No-show | The score import marks anyone with an exam slot but no score as Absent (check-in, if on, is only a note). A setting lets them move to a later schedule without paying again. |
 | Room capacity changes | Edit the room's seats; if people already sit above the new capacity, the screen lists them and offers to move them before saving. |
-| Exam date moved (typhoon, holiday) | Move the schedule day: everyone on it keeps their room and seat, gets a new permit, and receives SMS + email at once. |
+| Exam date moved (typhoon, holiday) | Move the schedule day: everyone on it keeps their room and seat, gets a new permit, and is told in the app and by email at once. |
 | Walk-in on exam day | Proctor can't add people. The campus admin can seat a walk-in only if they're approved and unscheduled, into an empty seat; it's logged. |
 | Duplicate registration | Detector flags same name + birth date or same mobile. A flag only: staff cancel the newer application if it is the same person. No merge. |
 | Late payment | Registration close blocks new payments; an admin can extend one applicant with a reason, or roll them to the next schedule. |
@@ -103,7 +103,9 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 
 ## 6. Notifications
 
-| Event | In app | Email | SMS |
+v1 sends **in-app notices and email**. tptv3 has no SMS (email only, through Gmail). The SMS column shows what would be texted **later**, if SKSU picks a provider and budget; it is off in v1.
+
+| Event | In app | Email | SMS (later) |
 |---|---|---|---|
 | Account created | ✓ | ✓ | |
 | Application submitted | ✓ | ✓ | |
@@ -313,7 +315,7 @@ flowchart TB
 2. Confirm date-only scheduling with guide times. What are the real report and start times?
 3. Exam fee, GCash and bank accounts, and whether cashiers will use the system.
 4. Official stanine labels and the cut-off list per program for 2027.
-5. Which SMS provider and budget?
+5. SMS (later): which provider and budget, if SKSU wants texts? v1 works without it.
 6. Can absent examinees move to the next schedule for free?
 7. Confirm why the office wants morning/afternoon removed.
 
@@ -336,7 +338,7 @@ flowchart TB
 | As… | Friction found | Fixed in the mockups |
 |---|---|---|
 | A first-time applicant on a phone | Long scrolling form; unclear how to pay; birth date format; mockups looked like a shrunk website | Native app layout (status bar, big titles, floating tab bar, bottom sheets, sticky main button); GCash steps on the payment screen; date hint; autosave toast; wallet-style permit that works offline |
-| A first-time applicant | Didn't know when to come or what to bring | Permit and seat screen show "Report by 7:30 AM · exam starts 8:00 AM" and what to bring; reminder text the day before |
+| A first-time applicant | Didn't know when to come or what to bring | Permit and seat screen show "Report by 7:30 AM · exam starts 8:00 AM" and what to bring; reminder (app + email) the day before |
 | A registrar on a busy day | Too many equal boxes; no single thing to do first; dense rows with boxed buttons | One focal KPI with "Review now"; light sidebar; quiet row actions; global search with `/`; saved views; bulk actions |
 | A cashier | Every payment needed a photo and a second person | "Record a payment" at the counter: find the applicant, type the OR number, done |
 | A proctor at the door | Paper lists; no signal in some rooms | Optional offline check-in with big Here and Not here buttons (a note only); wrong-room and duplicate warnings |
@@ -355,7 +357,7 @@ flowchart TB
 - **Counter flow:** search (name, application or examinee no.; no QR scanning at the counter) → the fee is fixed → type the OR number (must be unused) → Enter → paid, print an OR copy if needed → next person.
 - **Guards:** already paid, OR already used, not found, schedule not open yet, fee waived.
 - **Today:** the cashier's list for the day with reprint and an Excel export to match against the OR booklet. The cashier also sees a small info strip (today's count, applicants waiting, seats left per exam day) and an **Info** tab to answer questions at the counter: key dates, fee and requirements, exam days and seats left, rooms (seats, taken, left) and the programs open this school year. All of it is read-only.
-- **Void (admin only):** a reason is required. The application goes back to "waiting for payment", and any seat is released if the exam hasn't happened. The applicant gets the reason in the app, by email and by text, and can pay again as normal. The voided payment stays on the lists and in the activity log.
+- **Void (admin only):** a reason is required. The application goes back to "waiting for payment", and any seat is released if the exam hasn't happened. The applicant gets the reason in the app and by email, and can pay again as normal. The voided payment stays on the lists and in the activity log.
 - **Data:** `payments.method = cashier`, `or_no` unique per school year, `recorded_by`, `counter`; voids recorded in the activity log.
 
 ## 15. Seats on the dashboard

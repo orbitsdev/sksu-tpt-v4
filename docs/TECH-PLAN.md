@@ -47,17 +47,22 @@ flowchart LR
 - Every action is rate-limited per student; support has its own limits.
 - **Load test** with 10,000 simulated students (k6) on a copy of the server before going live.
 
-## 4. Server
+## 4. Server: the existing TPT server
+
+Decision: v4 runs on the **existing TPT server** (128.199.96.48), next to tptv3 until the switch.
 
 | | Plan |
 |---|---|
-| Where | A **new Ubuntu 24.04 droplet** (the current one is Ubuntu 20.04, out of standard support). tptv3 keeps running until the switch |
-| Size | 2 cores / 8 GB for normal days; **4 cores on results day and registration opening** (resize, then back) |
-| Web | nginx + PHP-FPM; queue workers under Supervisor |
-| Deploy | From GitHub, same way as euphoria |
-| Backups | Daily database + files, kept off the server; restore tested |
-| Monitoring | Uptime check, error alerts, System status page in the admin |
-| Security | HTTPS, firewall, SSH keys only, separate users; fix the old server's /root ownership before anything else runs there |
+| Now | 2 cores / 8 GB / 97 GB disk (44 GB free), PHP 8.4, MySQL 8, nginx. Ubuntu 20.04 |
+| Side by side | v4 gets its **own folder, database, nginx site and address** (e.g. a test subdomain). tptv3 keeps running untouched |
+| Add | Redis (cache, sessions, queue) and Supervisor for the queue workers (Horizon) |
+| Switch day | Point the real address to v4, keep tptv3 read-only for a while, then retire it |
+| Peak days | Resize to 4 cores for results day and registration opening, then back |
+| Before anything | **Snapshot the server**, fix the /root ownership problem (owned by the web user), set up off-server backups |
+| Ubuntu 20.04 | Out of standard support. Upgrade (20.04 → 22.04 → 24.04) in a quiet month, **after a snapshot**, or later move to a fresh 24.04 droplet |
+| Disk cleanup | tptv3's old uploads (about 40 GB, oversized photos) can be shrunk or archived after the switch |
+
+Nothing on the server is changed until you say go.
 
 ## 5. Build order
 

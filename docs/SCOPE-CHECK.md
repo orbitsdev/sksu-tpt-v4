@@ -34,7 +34,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 22 | Qualification by cut-off + student chooses a program | New (from the v2 plan) | Confirm with the admission office |
 | 23 | Survey: tptv3's 10 statements, required after the result and before choosing a program | Old | Keep (the office submits these results) |
 | 23b | Survey questions editable per school year, with versions; results report and Excel in the office format | Asked | Keep |
-| 24 | Notifications: in-app, email, SMS per event | Asked (old had 2 emails) | Keep; SMS needs a budget |
+| 24 | Notifications: in-app and email per event; SMS later | Asked (old had 2 emails, no SMS) | Keep in-app + email; **SMS: Later** (needs a provider and budget) |
 | 25 | Notification preferences for students | New | **Cut** |
 | 26 | Message blasts, templates, send log, resend | New | Optional (keep the send log) |
 | 27 | Reports and Excel exports | Old | Keep |

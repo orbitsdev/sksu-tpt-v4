@@ -133,6 +133,11 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ Campus visible when creating: the schedule form has a Where section (campus checkboxes with rooms and seats, "Creates 7 exam slots · 2,950 seats"); transferee form picks one campus and room; New school year step 2 shows Where, step 4 is grouped by campus.
 - ✅ Check-in is per schedule (Edit schedule → "Check-in at the door", off by default), no longer in the sidebar; reached from the schedule row and Exam slots; the Dashboard shows a check-in line on exam day.
 
+## SMS is for later
+
+- ✅ tptv3 has no SMS (checked: email only, through Gmail as sksutpt@gmail.com). v1 sends in-app notices and email.
+- ✅ Mockups show SMS as "later, off": the admin page is now **Email**, with an SMS (later) note; the notifications table's SMS column says Later; announcements, reminders, delivery reports and System status count in-app + email only.
+
 ## Decided
 
 - ✅ **Student app = installable web app (PWA).** Students install it from the website (Android: Install; iPhone: Share → Add to Home Screen). No APK, no Expo Go, no store accounts. One system for phones and computers.

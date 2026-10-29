@@ -212,11 +212,11 @@ const NODES = [
     links: [["Payment review queue", "admin/payments.html"], ["One applicant", "admin/applicant.html"], ["Two reviewers conflict", "admin/payments.html#conflict"]] },
   { id: "payreject", row: 12, col: "R", actor: "admin", t: "Sent back with remarks", s: "Photo or details, any time · receipt when online",
     what: "From the applicant's page, the admin can send back the photo or details at any time. When online payment is on, a bad receipt is sent back the same way. The admin picks what to fix, a reason, and types remarks. The applicant fixes that part and sends it again. Nothing else is lost. If the schedule closes first, they can apply for the next one.",
-    status: ["For review", "Sent back"], notify: "Applicant: the remarks (in app, email, SMS)",
+    status: ["For review", "Sent back"], notify: "Applicant: the remarks (in app, email)",
     links: [["Send back from the applicant's page", "admin/applicant.html#sendback"], ["Receipt version (online)", "admin/payments.html#reject"], ["What the applicant sees", "applicant/payment-rejected.html"], ["Email", "docs/email-rejected.html"]] },
   { id: "approved", row: 13, col: "C", actor: "system", t: "Approved: examinee no. issued", s: "From the school year counter",
     what: "When the cashier records the payment, the application is approved and the examinee number is issued (in tptv3 this happened when the admin approved the receipt). The number comes from a counter, so two people never get the same one. From here the student's details are locked; changes go through Support.",
-    status: ["Submitted", "Approved"], notify: "Applicant: “Payment recorded, exam no. 500214” (in app, email, SMS)",
+    status: ["Submitted", "Approved"], notify: "Applicant: “Payment recorded, exam no. 500214” (in app, email)",
     links: [["Cashier: recorded", "cashier/console.html#done"], ["Email", "docs/email-approved.html"]] },
 
   // 4 · Exam slot and permit
@@ -229,7 +229,7 @@ const NODES = [
     status: ["Approved", "Scheduled"], links: [["Seat plan", "docs/seat-plan.html"]] },
   { id: "permit", row: 17, col: "C", actor: "system", t: "Permit ready", s: "In the app + PDF with QR",
     what: "The permit lives in the app (works offline) and as a PDF with a QR code. It shows the room, seat, report time and what to bring.",
-    notify: "Applicant: “Exam slot booked, permit ready”, then a reminder the day before at 5 PM (in app, email, SMS)",
+    notify: "Applicant: “Exam slot booked, permit ready”, then a reminder the day before at 5 PM (in app, email)",
     links: [["Permit in the app", "applicant/permit.html"], ["Permit PDF", "docs/permit-pdf.html"]] },
 
   // 5 · Exam day
@@ -253,12 +253,12 @@ const NODES = [
     what: "Preview what changes, then approve. The original file and your approval are kept. Applicants still can't see anything.",
     status: ["Scheduled", "Scored"], links: [["Approve dialog", "admin/scores.html#commit"], ["Results list", "admin/results.html"]] },
   { id: "declare", row: 23, col: "C", actor: "admin", t: "Publish the results", s: "Now or at a set date; can be hidden again",
-    what: "Publish now, or set the date and time (for example Apr 20, 9:00 AM). Like tptv3's Show / Hide results switch, the admin can hide them again; emails and texts already sent stay sent.",
+    what: "Publish now, or set the date and time (for example Apr 20, 9:00 AM). Like tptv3's Show / Hide results switch, the admin can hide them again; emails already sent stay sent.",
     status: ["Scored", "Released"], links: [["Publish on a date", "admin/results.html"], ["Publish confirm", "admin/results.html#release"], ["Hide results", "admin/results.html#hide"], ["Sending progress", "admin/results.html#releasing"]] },
-  { id: "sent", row: 24, col: "C", actor: "system", t: "Results sent to everyone", s: "In app, email, SMS",
+  { id: "sent", row: 24, col: "C", actor: "system", t: "Results sent to everyone", s: "In app and email",
     what: "Every examinee gets the result. The delivery report shows what failed, with resend.",
-    notify: "Applicant: “Results released” (in app, email, SMS)",
-    links: [["Delivery report", "admin/results.html#report"], ["Results email", "docs/email-results.html"], ["Text messages", "docs/sms.html"]] },
+    notify: "Applicant: “Results released” (in app, email)",
+    links: [["Delivery report", "admin/results.html#report"], ["Results email", "docs/email-results.html"], ["Text messages (later)", "docs/sms.html"]] },
   { id: "choose", row: 25, col: "C", actor: "applicant", t: "Sees result, chooses a program", s: "Only programs they qualify for",
     what: "Sees their scores, stanine and the programs they qualify for (by cut-off), then chooses one. The survey is optional.",
     links: [["Result screen", "applicant/result.html"], ["Result PDF", "docs/result-pdf.html"], ["Survey", "applicant/survey.html"]] },
@@ -299,7 +299,7 @@ const BETTER = {
   absent: "tptv3 recorded nobody as absent, so 635 people had no result and no reason. Here absent is recorded at the score import.",
   import: "tptv3 read columns by position, saved the header row as a result, and doubled everything on a re-upload. Here columns are matched by name, every row is checked, changes are shown before saving, and the file is kept.",
   declare: "Same Show / Hide switch as tptv3, plus a set date and time.",
-  sent: "tptv3 sent 2 emails through Gmail (daily limit, no record). Here every email and text is logged and can be resent.",
+  sent: "tptv3 sent 2 emails through Gmail (daily limit, no record). Here every email and in-app notice is logged and can be resent (SMS later).",
   choose: "The survey is optional, and only programs the student qualifies for are offered.",
   reports: "An activity log of who did what (tptv3 had none). Big exports run in the background so the site stays fast.",
 };
