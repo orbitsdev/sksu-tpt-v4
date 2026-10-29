@@ -482,3 +482,7 @@ header.top:before,.ctop:before{content:"";position:absolute;inset:0;z-index:-1;p
   .skel{animation:none!important}
   .spin{animation-duration:2.4s}
 }
+
+/* tab counts as small grey badges, easier to scan; the active tab's badge is darker */
+.stabs a span{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:#f1f2f1;color:#3f4542;font-size:12px;font-weight:500;line-height:18px}
+.stabs a.on span{background:#e2e5e3;color:var(--ink)}
