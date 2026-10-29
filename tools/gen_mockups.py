@@ -376,7 +376,7 @@ HOME = {
         ("permit.html", "View permit")),
     "exam-done": home_view("Exam taken · Mar 14", 4,
         '<div class="hero"><span class="lbl">Results release</span><span class="amt" style="font-size:26px">Apr 20</span><span class="lbl">You will be told here, by email and by text</span></div>'
-        + plist(row("Answer the 1-minute survey", "Optional", "", "survey.html"))),
+        ),
     "result-out": home_view("Result released · Apr 20", 4,
         '<div class="hero"><span class="lbl">Overall standard score</span><span class="amt">584</span><span class="lbl">Stanine 7 · Above average · qualifies for 3 of 3 choices</span></div>',
         ("result.html", "See result")),
@@ -536,17 +536,40 @@ phone("permit", "My permit", """<div class="permit"><div class="ph1"><img src=".
 
 phone("result-pending", "Result not yet", """<h1 class="gh">Result</h1>
 <div class="hero"><span class="lbl">Release</span><span class="amt" style="font-size:26px">Apr 20, 9:00 AM</span><span class="lbl">You will get a notification and an email.</span></div>
-""" + plist(row("Exam taken", "", "Sat, Mar 14 · Isulan"), row("Exam-day survey", "Optional, 1 minute", "", "survey.html")),
+""" + plist(row("Exam taken", "", "Sat, Mar 14 · Isulan")),
       extra='<a class="mocklink" href="result.html">Mockup: results released →</a>',
       overlays=modal("absent", "warn", WARN, "No score: marked absent", '<p style="margin:0">The Testing Center has no score for you from Mar 14. If you took the exam, ask the admission office by Apr 27. You can also apply for Schedule 3; your details are copied from this application.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="support.html#new">Ask the admission office</a>')
-      + toast("thanks", "ok", OK, "Survey sent", "Thank you."),
-      states=[("absent", "Absent"), ("thanks", "After the survey")])
+,
+      states=[("absent", "Absent")])
 
-phone("survey", "Survey", """<h1 class="gh">Exam-day survey</h1><p>Optional. Answers are anonymous.</p>
-<div class="fld"><label class="cap">Was it easy to find your room?</label><div class="plist" style="margin:0;border-top:0">""" + "".join(row(t, lead=RADIO, cls="on" if i == 3 else "") for i, t in enumerate(["Very hard", "Hard", "Okay", "Easy", "Very easy"])) + """</div></div>
-<div class="fld"><label class="cap">Was the time enough?</label><div class="plist" style="margin:0;border-top:0">""" + "".join(row(t, lead=RADIO, cls="on" if i == 1 else "") for i, t in enumerate(["Not enough", "Enough", "More than enough"])) + """</div></div>
-<div class="fld"><label class="cap" for="c">Comments (optional)</label><textarea id="c" rows="3"></textarea></div>""",
-      cta=("result-pending.html#thanks", "Send"), extra='<a class="back" href="result-pending.html">Skip</a>', back="result-pending.html")
+# The tptv3 exam survey, word for word: the office submits these results, so they are the defaults.
+SURVEY_SCALE = ["Strongly Agree", "Agree", "Neither Disagree nor Agree", "Disagree", "Strongly Disagree"]
+SURVEY_QS = [
+    "The pre-registration process is easy and convenient.",
+    "The testing personnel (ex. examiners, proctors, peer helpers, security guards and staff) responds efficiently to the needs and concerns of the examinees.",
+    "The signages in the testing site are visible and easy to follow.",
+    "There are enough rooms and facilities to cater the examinees.",
+    "The testing room is conducive and well-ventilated.",
+    "The examinees are well-guided of the instructions and procedures before, during and after the examination.",
+    "The test materials are readable, sufficient and in good condition.",
+    "The duration of the test is adequate.",
+    "The test items per subject are adequate and appropriate.",
+    "The test questions are comprehensible.",
+]
+# sample answers (1,204 per question), Strongly Agree first
+SURVEY_COUNTS = [(612, 431, 104, 41, 16), (538, 489, 121, 39, 17), (402, 466, 211, 92, 33), (311, 428, 262, 151, 52), (288, 401, 248, 187, 80),
+                 (566, 472, 120, 33, 13), (497, 503, 142, 46, 16), (341, 452, 230, 131, 50), (402, 518, 199, 63, 22), (377, 541, 208, 59, 19)]
+
+
+phone("survey", "Survey", """<h1 class="gh">Exam survey</h1><p>10 statements, about 2 minutes. Answer them before you choose your program.</p>""" + "".join(
+    f'<p class="sq"><b>{i}.</b> {q}</p><div class="plist">' + "".join(row(o, lead=RADIO, cls="on" if (i <= 6 and j == (1 if i % 3 else 0)) else "") for j, o in enumerate(SURVEY_SCALE)) + "</div>"
+    for i, q in enumerate(SURVEY_QS, 1)) + """
+<div class="fld"><label for="c">Comments and suggestions (optional)</label><textarea id="c" rows="3"></textarea></div>""",
+      cta=("#thanks", "Submit"), back="result.html",
+      overlays=toast("missing", "bad", BAD, "Answer question 7", "All 10 statements need an answer. Comments are optional.")
+      + toast("thanks", "ok", OK, "Thank you", "Now choose your program.")
+      + modal("already", "info", "", "You already answered the survey", '<p style="margin:0">Thank you. You can choose your program now.</p>', '<a class="go" href="result.html#choose">Choose your program</a>'),
+      states=[("missing", "Missing answer"), ("thanks", "Sent"), ("already", "Already answered")])
 
 subj = [("English", 612, 8), ("Science", 548, 6), ("Mathematics", 571, 7), ("Filipino", 655, 9), ("Social Studies", 530, 6), ("ESM Competency", 566, 7)]
 sbars = "".join(f'<div class="subj"><div class="h"><span>{n}</span><span><b class="mono">{s}</b><span style="color:#5f6662"> · stanine {t}</span></span></div><div class="t"><span style="width:{round((s - 200) / 6)}%"></span></div></div>' for n, s, t in subj)
@@ -557,8 +580,9 @@ phone("result", "Result", f"""<p class="eyebrow">SKSU TPT · Schedule 1 · relea
     row("BS Information Technology", "ACCESS · cut-off 500", '<span class="dot g"></span>2nd choice'),
     row("BS Criminology", "Isulan · cut-off 480", '<span class="dot g"></span>3rd choice'),
     row("41 other programs", "", "", "#cutoffs")) + f"""
-<div class="ghead">By subject</div>{sbars}<small>Scores are as given by the SKSU Testing Center. 500 is the average.</small>""",
-      cta=("#choose", "Choose your program"), extra='<a class="back" href="../docs/result-pdf.html">Save result as PDF</a>',
+<div class="ghead">By subject</div>{sbars}<small>Scores are as given by the SKSU Testing Center. 500 is the average.</small>
+<small>Before you choose, answer the 10-statement exam survey.</small>""",
+      cta=("survey.html", "Choose your program"), extra='<a class="back" href="../docs/result-pdf.html">Save result as PDF</a>',
       overlays=modal("cutoffs", "info", "", "Programs you qualify for", plist(row("BS Civil Engineering", "Isulan", "530"), row("BS Information Technology", "ACCESS", "500"), row("BS Criminology", "Isulan", "480"), row("BS Agriculture", "Tacurong", "450")) + '<small>Cut-off = lowest overall score that qualifies.</small>', '<a class="back" href="#">Close</a>')
       + modal("choose", "info", "", "Choose your program", '<div class="plist" style="margin:0">' + row("BS Civil Engineering", "Isulan · cut-off 530 · your score 584", "1st choice", "#chosen", "on", RADIO) + row("BS Information Technology", "ACCESS · cut-off 500 · your score 584", "2nd choice", "#chosen", "", RADIO) + '</div><small>The campus registrar contacts you about enrolment.</small>', '<a class="go" href="#chosen">Confirm</a><a class="back" href="#">Cancel</a>')
       + toast("chosen", "ok", OK, "BS Civil Engineering chosen", "The Isulan registrar will contact you."),
@@ -697,6 +721,7 @@ ICONS = {
     "cashier": '<path d="M4 7h16v12H4z"/><path d="M8 7V4h8v3M12 11v4M10 13h4"/>',
     "rooms": '<path d="M4 21V4h11v17M15 8h5v13M8 8h3M8 12h3M8 16h3"/>',
     "search": '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+    "survey": '<path d="M9 5h11M9 12h11M9 19h11"/><path d="m3 5 1.5 1.5L7 4M3 12l1.5 1.5L7 11M3 19l1.5 1.5L7 18"/>',
     "landing": '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8M8 16h5"/>',
     "chair": '<path d="M9 11l3 3 8-8"/><path d="M4 6h7M4 12h3M4 18h9"/>',
     "support": '<path d="M4 5h16v11H8l-4 4z"/><path d="M9 9h6M9 12h4"/>',
@@ -707,7 +732,7 @@ NAV = [(None, [("dashboard", "Dashboard")]),
        ("Applicants", [("applications", "Applications"), ("cashier", "Cashier counters"), ("support", "Support"), ("messages", "Announcements")]),
        ("Exam", [("schedules", "Exam schedules"), ("exam-slots", "Exam slots"), ("checkin", "Check-in"), ("scores", "Import scores"), ("results", "Results")]),
        ("Reports", [("reports", "Reports"), ("exports", "Downloads")]),
-       ("Management", [("campuses", "Campuses and programs"), ("rooms", "Rooms"), ("staff", "Staff and roles"), ("landing", "Landing page")]),
+       ("Management", [("campuses", "Campuses and programs"), ("rooms", "Rooms"), ("staff", "Staff and roles"), ("landing", "Landing page"), ("survey", "Survey")]),
        ("System", [("email", "Email and SMS"), ("system", "System status"), ("audit", "Activity logs")])]
 
 
@@ -1228,17 +1253,54 @@ admin("system", "System status", f"""<div class="kpis">
 <div class="panel"><div class="head"><h2>Backups</h2></div>{table(["When", "What", "Size", ""], [("Today 2:00 AM", "Database and uploads", "6.2 GB", B("ok", "Done")), ("Yesterday 2:00 AM", "Database and uploads", "6.1 GB", B("ok", "Done"))])}</div>""",
       overlays=BELL_POP)
 
-reps = [("Registrations by day", "Sign-ups and submissions per day, by campus"), ("Applicant list", "Every field, filterable, for the registrar"), ("Program demand", "1st, 2nd and 3rd choices per campus and program"), ("Payments", "Approved, rejected and waiting, with reviewer and time"), ("Seat plan per room", "Printable list for proctors, by exam slot and room"), ("Attendance", "Scored and absent per exam slot, from the score import"), ("Score distribution", "Standard scores and stanines per subject"), ("Ranking per program", "Examinees ranked within each program choice"), ("Qualified students", "Who meets each program cut-off"), ("Survey answers", "What examinees said about exam day")]
+reps = [("Registrations by day", "Sign-ups and submissions per day, by campus"), ("Applicant list", "Every field, filterable, for the registrar"), ("Program demand", "1st, 2nd and 3rd choices per campus and program"), ("Payments", "Approved, rejected and waiting, with reviewer and time"), ("Seat plan per room", "Printable list for proctors, by exam slot and room"), ("Attendance", "Scored and absent per exam slot, from the score import"), ("Score distribution", "Standard scores and stanines per subject"), ("Ranking per program", "Examinees ranked within each program choice"), ("Qualified students", "Who meets each program cut-off"), ("Survey answers", "The 10 exam statements: counts per answer, comments; Excel in the office format")]
 admin("reports", "Reports", f"""<div class="row"><div class="panel grow"><div class="head"><h2>Where applicants drop off · Schedule 1</h2></div>
 {funnel([("Signed up", 16408), ("Submitted", 12287), ("Paid and approved", 9471), ("Picked an exam slot", 8844), ("Took the exam", 8990 - 146), ("Scored", 8844 - 6)])}</div>
 <div class="panel grow"><div class="head"><h2>Most wanted programs · 1st choice</h2><a href="report-view.html" style="font-size:13px">All 56 →</a></div>
 {hbars([(n, c, v) for n, c, v in prog])}</div></div>
 <div class="panel"><div class="head"><h2>Overall score distribution · Schedule 1</h2><span class="muted" style="font-size:13px">9,088 examinees · each bar is 50 points, one stanine band</span></div>{histogram()}</div>
-""" + table(["Report", "What it shows", ""], [(f'<span class="ink">{r[0]}</span>', r[1], f'<span class="act">{btn("View", "report-view.html")} {btn("Excel", "exports.html#queued")}</span>') for r in reps]))
+""" + table(["Report", "What it shows", ""], [(f'<span class="ink">{r[0]}</span>', r[1], f'<span class="act">{btn("View", "survey-results.html" if r[0] == "Survey answers" else "report-view.html")} {btn("Excel", "exports.html#queued")}</span>') for r in reps]))
 
 admin("report-view", "Ranking per program", f"""<div class="filters"><select><option>BS Civil Engineering · Isulan</option></select><select><option>1st choice only</option></select><span style="margin-left:auto;display:flex;gap:6px">{btn("Print")}{btn("Excel", "exports.html#queued")}</span></div>
 {table(["Rank", "Examinee no.", "Name", "Overall standard score", "Stanine", "Qualified"], [("1", '<span class="mono">500891</span>', "Rhea L. Sumagka", '<span class="mono">742</span>', "9", B("ok", "Yes")), ("2", '<span class="mono">500433</span>', "Kevin D. Alonto", '<span class="mono">701</span>', "9", B("ok", "Yes")), ("41", '<span class="mono">500214</span>', "Maria S. Dela Cruz", '<span class="mono">584</span>', "7", B("ok", "Yes")), ("180", '<span class="mono">501120</span>', "Joel P. Kamid", '<span class="mono">402</span>', "3", B("gray", "No"))])}""",
       active="reports", crumb='<a href="reports.html" class="muted">← Reports</a>')
+
+SURVEY_ROWS = [f'<tr><td class="drag" aria-label="Drag to reorder">⋮⋮</td><td class="mono muted">{i}</td><td class="ink">{q}</td><td><a class="switch on" href="#" aria-label="Question {i} on"></a></td><td>{btn("Edit", "#q-edit")}</td></tr>'
+               for i, q in enumerate(SURVEY_QS, 1)]
+SURVEY_ROWS.append('<tr><td></td><td class="mono muted">—</td><td class="ink">Comments and suggestions <span class="muted">(optional, free text)</span></td><td><a class="switch on" href="#" aria-label="Comments on"></a></td><td></td></tr>')
+admin("survey", "Survey", f"""<div class="head"><span class="muted"></span>{btn("Results", "survey-results.html")}{btn("Add question", "#q-add", "primary")}</div>
+<div class="sline"><label class="fdd"><small>School year</small><select aria-label="School year"><option>SY 2027–2028 · version 1</option><option>SY 2026–2027</option></select></label><span class="muted">1,204 answers so far · defaults from tptv3</span></div>
+<div class="setrow"><span>Required before choosing a program</span><a class="switch on" href="#" aria-label="Required before choosing a program"></a></div>
+<div class="setrow"><span>Answer scale</span><span class="muted">{" · ".join(SURVEY_SCALE)}</span></div>
+{table(["", "No.", "Statement", "On", ""], SURVEY_ROWS)}
+<small class="muted">Changing questions applies to new answers only; answers already given keep the question they answered.</small>""",
+      overlays=modal("q-edit", "info", "✎", "Edit statement 3", '<div class="fld"><label for="qe">Statement</label><textarea id="qe" rows="3">The signages in the testing site are visible and easy to follow.</textarea></div><div class="setrow"><span>Shown to students</span><a class="switch on" href="#" aria-label="Shown"></a></div>', btn("Cancel", "#") + btn("Save", "#q-locked", "primary"))
+      + modal("q-add", "info", "+", "Add a statement", '<div class="fld"><label for="qa">Statement</label><textarea id="qa" rows="3">The permit and exam-day instructions were clear.</textarea></div><small class="muted">It uses the same five-point scale and goes at the end. Drag it to move it.</small>', btn("Cancel", "#") + btn("Add", "#q-locked", "primary"))
+      + modal("q-locked", "warn", WARN, "1,204 students already answered this school year", '<p class="muted" style="margin:0">Saving starts version 2. Students who answer from now on see the new questions; the 1,204 answers keep version 1, and results show each version separately.</p>', btn("Cancel", "#") + btn("Save as version 2", "#q-saved", "primary"))
+      + toast("q-saved", "ok", OK, "Saved as version 2", "New answers use it. The change is in the activity log.") + BELL_POP,
+      states=[("q-edit", "Edit statement"), ("q-add", "Add statement"), ("q-locked", "Questions locked"), ("q-saved", "Saved")])
+
+
+def likert_bar(counts):
+    """Agree to disagree as one thin bar: two greens, grey for neutral, two reds."""
+    total = sum(counts)
+    return '<span class="lk">' + "".join(f'<i class="k{j}" style="width:{c / total * 100:.1f}%" title="{SURVEY_SCALE[j]}: {c:,}"></i>' for j, c in enumerate(counts)) + "</span>"
+
+
+def likert_avg(counts):
+    avg = sum((j + 1) * c for j, c in enumerate(counts)) / sum(counts)
+    return f"{avg:.2f} · {SURVEY_SCALE[round(avg) - 1]}"
+
+
+admin("survey-results", "Survey results", f"""<div class="head"><span class="muted"></span>{btn("Excel (office format)", "exports.html#queued", "primary")}</div>
+{fbar("Search comments", [("School year", ["SY 2027–2028 · version 1"]), ("Schedule", ["All schedules", "Schedule 1", "Schedule 2"]), ("Campus", ["All campuses", "Isulan", "ACCESS, Tacurong"])])}
+<div class="kpis"><div class="kpi"><span>Answers</span><b>1,204</b><small>of 1,298 with a result</small></div><div class="kpi"><span>With a comment</span><b>213</b></div></div>
+<div class="lklegend">""" + "".join(f'<span><i class="k{j}"></i>{o}</span>' for j, o in enumerate(SURVEY_SCALE)) + f"""</div>
+{table(["No.", "Statement", "Answers", "SA", "A", "N", "D", "SD", "Average (1 = Strongly Agree)"], [(f'<span class="mono muted">{i}</span>', f'<span class="ink">{q}</span>', likert_bar(c), *[f"{v:,}" for v in c], likert_avg(c)) for i, (q, c) in enumerate(zip(SURVEY_QS, SURVEY_COUNTS), 1)])}
+<small class="muted">The Excel has one row per statement with the count for each answer, the format the office submits.</small>
+<h2 style="margin:8px 0 0;font-size:16px">Comments</h2>
+{table(["When", "Campus", "Comment"], [('<span class="muted">Mar 14</span>', "Isulan", "The room was hot in the afternoon; please open the windows."), ('<span class="muted">Mar 14</span>', "ACCESS, Tacurong", "Clear instructions from the proctor. Thank you."), ('<span class="muted">Mar 15</span>', "Kalamansig", "The signs to the testing rooms were hard to find.")])}
+{pager(1, 3, 213)}""", active="reports", crumb='<a href="reports.html" class="muted">← Reports</a>')
 
 admin("exports", "Downloads", table(["File", "Asked by", "Status", ""], [
     ("applicants-2027.xlsx", "Admission Office · now", '<div class="meter"><div class="t"><span style="width:62%"></span></div><span class="mono">62%</span></div>', '<span class="spin"></span>'),
@@ -1442,17 +1504,18 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (P, "applicant/permit.html#making", "14a", "Making the PDF", "Built once, saved for next time.", True),
           (D, "docs/permit-pdf.html", "15", "Permit PDF", "A4 with letterhead, photo and verify QR.")]),
        ("After exam day", [
-          (P, "applicant/home.html#exam-done", "16", "Home: waiting for results", "Release date; optional survey."),
+          (P, "applicant/home.html#exam-done", "16", "Home: waiting for results", "Release date."),
           (P, "applicant/home.html#absent", "16b", "Home: absent", "Apply for Schedule 2 without paying again.", True),
           (P, "applicant/result-pending.html", "16c", "Waiting for results (detail)", "Release date and the exam taken.", True),
           (P, "applicant/result-pending.html#absent", "16a", "Marked absent", "No score in the file; apply for the next schedule or ask the office.", True),
-          (P, "applicant/survey.html", "17", "Survey", "Optional, one minute, can skip."),
           (D, "docs/email-results.html", "18", "Email: results out", "One button to the result."),
           (P, "applicant/home.html#result-out", "18b", "Home: result out", "Overall score and stanine; See result."),
           (P, "applicant/result.html", "19", "Result", "Overall score, stanine, plain meaning, each subject."),
           (P, "applicant/result.html#cutoffs", "19a", "Program cut-offs", "Qualified or not per choice.", True),
-          (P, "applicant/result.html#choose", "19b", "Choose a program", "Only programs they qualify for.", True),
-          (P, "applicant/result.html#chosen", "19c", "Program chosen", "The registrar contacts them.", True),
+          (P, "applicant/survey.html", "19b", "Exam survey", "The 10 tptv3 statements; needed before choosing.", True),
+          (P, "applicant/survey.html#missing", "19c", "Survey: missing answer", "All 10 are required; comments optional.", True),
+          (P, "applicant/result.html#choose", "19d", "Choose a program", "Only programs they qualify for.", True),
+          (P, "applicant/result.html#chosen", "19e", "Program chosen", "The registrar contacts them.", True),
           (P, "applicant/home.html#chosen", "19d", "Home: program chosen", "Done; result PDF.", True),
           (D, "docs/result-pdf.html", "20", "Result PDF", "Official copy with verify link.")]),
        ("Notifications and support", [
@@ -1779,7 +1842,7 @@ groups = [
     ("Applicant (phone)", ["applicant/splash.html", "applicant/welcome-1.html", "applicant/welcome-2.html", "applicant/welcome-3.html"] + [f"applicant/{k}.html" for k, _ in FLOW]),
     ("Emails and printouts", ["docs/sms.html", "docs/email-approved.html", "docs/email-rejected.html", "docs/email-results.html", "docs/permit-pdf.html", "docs/result-pdf.html", "docs/seat-plan.html"]),
     ("Proctor (phone)", ["proctor/rooms.html", "proctor/checkin.html", "proctor/summary.html"]),
-    ("Admin", [f"admin/{k}.html" for k in ["dashboard", "search", "support", "support-ticket", "messages", "email", "system", "landing", "chair", "rooms", "cashier", "setup-1", "setup-2", "setup-3", "setup-4", "setup-5", "applications", "applicant", "payments", "schedules", "exam-slots", "checkin", "scores", "results", "result-detail", "reports", "report-view", "exports", "campuses", "staff", "audit", "account"]]),
+    ("Admin", [f"admin/{k}.html" for k in ["dashboard", "search", "support", "support-ticket", "messages", "email", "system", "landing", "survey", "survey-results", "chair", "rooms", "cashier", "setup-1", "setup-2", "setup-3", "setup-4", "setup-5", "applications", "applicant", "payments", "schedules", "exam-slots", "checkin", "scores", "results", "result-detail", "reports", "report-view", "exports", "campuses", "staff", "audit", "account"]]),
 ]
 flows = [("Applicant, start to result", "public/landing.html"), ("Payment review", "admin/payments.html"), ("Exam day", "proctor/rooms.html"), ("Scores to release", "admin/scores.html")]
 

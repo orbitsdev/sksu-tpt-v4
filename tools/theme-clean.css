@@ -233,3 +233,13 @@ tr.expand td{height:auto;padding-top:0;background:#fff}
 .pages span{color:var(--muted);padding:0 4px}
 .fbar .search{padding-left:36px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 12px center}
 .cmain>.fbar,.cmain>.pager{grid-column:1/-1}
+
+/* survey: settings line, drag handle, agree-to-disagree bars */
+.sline{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+td.drag{cursor:grab;color:var(--muted);width:24px;letter-spacing:-2px}
+.lk{display:flex;width:160px;height:8px;border-radius:4px;overflow:hidden;gap:2px;background:#fff}
+.lk i,.lklegend i{display:block;height:100%}
+.lk .k0,.lklegend .k0{background:#0f5132}.lk .k1,.lklegend .k1{background:#5fa77f}.lk .k2,.lklegend .k2{background:#c8ccc9}
+.lk .k3,.lklegend .k3{background:#e58b80}.lk .k4,.lklegend .k4{background:#b42318}
+.lklegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.lklegend span{display:flex;align-items:center;gap:6px}.lklegend i{width:10px;height:10px;border-radius:2px}

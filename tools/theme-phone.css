@@ -260,3 +260,16 @@ body.phone-page{background:#e9ebea;background-image:none}
 .phone.app .hvar{display:none;position:absolute;left:0;right:0;top:92px;bottom:80px;background:#fff;overflow:auto;z-index:5}
 .phone.app .hvar:target{display:flex;flex-direction:column}
 .phone.app .hvar .appb{padding-bottom:24px}
+
+/* survey statements: the statement, then its five answers as a radio list */
+.phone .sq{margin:18px 0 6px;font-size:15px;line-height:1.45;color:#1f2321}
+.phone .sq b{font-weight:600;margin-right:4px}
+
+/* journey boards: every text readable on the light page (the old dark board left mint text behind) */
+body.boardpage{color:#3f4542}
+body.boardpage .intro,body.boardpage .kicker,body.boardpage .stagebar a,body.boardpage .note,body.boardpage .foot,body.boardpage small{color:#4b524e!important}
+body.boardpage h1,body.boardpage h2:not(.sec),body.boardpage .cap .t,body.boardpage a.fr .cap{color:#1a1f1c!important}
+body.boardpage .sec{color:#245c3e!important}
+body.boardpage .rules div{background:#fff;border:1px solid #dfe3e0;border-radius:10px;box-shadow:none;color:#3f4542!important}
+body.boardpage .rules b{color:#1a1f1c!important}
+body.boardpage .legend,body.boardpage .legend *{color:#3f4542}

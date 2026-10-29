@@ -56,7 +56,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Permit PDF | Headless Chrome per request | 19,209 Browsershot errors [Certain] | Built once on the queue, cached; wallet-style permit works offline |
 | Exam day | Paper lists | No attendance recorded; 635 registered with no result and no reason [Certain] | The score import marks anyone with a slot but no score as Absent; check-in is optional |
 | Results upload (Excel) | Imports scores computed by the Testing Center | Columns read by position; header row saved as a result; no checks; re-upload duplicates; file not kept [Certain] | Same idea, import not compute: Excel as it is, column matching, checks, preview of changes, approval, original file kept |
-| Survey + select courses before result | Gate to see the result | Forces a survey; second course pick duplicates choices [Certain] | Survey optional; choice of program happens after results, limited to programs they qualify for |
+| Survey + select courses before result | Gate to see the result | Forces a survey; second course pick duplicates choices [Certain] | Same 10 tptv3 statements (the office submits these results), required once after the result and before choosing a program; the admin can edit them per school year (new answers only); results report and Excel in the office format |
 | Reports (6 Livewire pages) | Lists and exports | Slow full-table queries, missing indexes [Certain] | Same reports plus funnel, attendance and survey; exports queued |
 | Emails | Approve/reject via Gmail SMTP | Gmail daily limit, no SMS, no log [Certain] | Mail API + SMS provider; templates; send log with resend |
 | Test and debug routes | Left in production | Serious security risk (details kept offline) [Certain] | **Dropped.** Never ship test routes; route list checked in CI |
@@ -380,3 +380,30 @@ v4 handles it in the same system:
 New role: **Program chair**. Sees only the transferee applicants for their own program, with the uploaded grades, and approves or declines. Every decision goes in the activity log.
 
 If the 1st-choice chairperson declines, the 2nd-choice chairperson gets a turn (the mockups show this). **Confirm with the office.**
+
+## 17. Exam survey
+
+The survey keeps tptv3's 10 statements word for word, because the office submits these results. Each new school year starts with them (copied from the last school year), and the admin can edit, add, reorder or switch off statements on the **Survey** page.
+
+| Rule | v4 |
+|---|---|
+| Scale | Strongly Agree · Agree · Neither Disagree nor Agree · Disagree · Strongly Disagree (stored 1–5, 1 = Strongly Agree, as in tptv3) |
+| When | After the result is released, before choosing a program (setting "Required before choosing a program", on by default) |
+| Answers | All statements required, comments and suggestions optional; once per student per school year |
+| Changing questions | Applies to new answers only. If anyone has answered this school year, saving starts a new version; answers keep the version they answered, and results show each version separately |
+| Results | Survey results report: count per answer, average, agree-to-disagree bar, comments with search; Excel with one row per statement and the count per answer (the office's format) |
+
+Default statements (tptv3):
+
+1. The pre-registration process is easy and convenient.
+2. The testing personnel (ex. examiners, proctors, peer helpers, security guards and staff) responds efficiently to the needs and concerns of the examinees.
+3. The signages in the testing site are visible and easy to follow.
+4. There are enough rooms and facilities to cater the examinees.
+5. The testing room is conducive and well-ventilated.
+6. The examinees are well-guided of the instructions and procedures before, during and after the examination.
+7. The test materials are readable, sufficient and in good condition.
+8. The duration of the test is adequate.
+9. The test items per subject are adequate and appropriate.
+10. The test questions are comprehensible.
+
+Plus "Comments and suggestions (optional)".

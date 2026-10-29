@@ -99,6 +99,13 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ One filter bar above each list: wide search, labelled dropdowns, Reset, Columns, rows per page (Applications, Support, Results, Exam slots, Activity log, Staff, Rooms, cashier Paid).
 - ✅ Applications: expand a row to see the applicant's steps (Submitted → Paid at cashier → Exam slot → Scored → Program chosen; transferees also show Chairperson approved) with quick actions.
 
+## Exam survey
+
+- ✅ The 10 tptv3 statements word for word and the same five-point scale, required after the result and before choosing a program (as in tptv3).
+- ✅ Admin **Survey** page (Management): edit, add, reorder or switch off statements per school year; saving after answers exist starts a new version.
+- ✅ **Survey results** report with counts, averages, comments and an Excel in the office's format.
+- ✅ Journey boards: all text readable on the light background.
+
 ## Docs
 
 - ✅ **UI rules** (new): when to use a page, dialog, drawer or step form; buttons; what happens after a click; errors; long-term rules.

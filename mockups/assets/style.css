@@ -827,6 +827,16 @@ tr.expand td{height:auto;padding-top:0;background:#fff}
 .fbar .search{padding-left:36px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 12px center}
 .cmain>.fbar,.cmain>.pager{grid-column:1/-1}
 
+/* survey: settings line, drag handle, agree-to-disagree bars */
+.sline{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+td.drag{cursor:grab;color:var(--muted);width:24px;letter-spacing:-2px}
+.lk{display:flex;width:160px;height:8px;border-radius:4px;overflow:hidden;gap:2px;background:#fff}
+.lk i,.lklegend i{display:block;height:100%}
+.lk .k0,.lklegend .k0{background:#0f5132}.lk .k1,.lklegend .k1{background:#5fa77f}.lk .k2,.lklegend .k2{background:#c8ccc9}
+.lk .k3,.lklegend .k3{background:#e58b80}.lk .k4,.lklegend .k4{background:#b42318}
+.lklegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.lklegend span{display:flex;align-items:center;gap:6px}.lklegend i{width:10px;height:10px;border-radius:2px}
+
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
    No gradients, glows, pills on every row or cards inside cards. ===== */
@@ -1088,3 +1098,16 @@ body.phone-page{background:#e9ebea;background-image:none}
 .phone.app .hvar{display:none;position:absolute;left:0;right:0;top:92px;bottom:80px;background:#fff;overflow:auto;z-index:5}
 .phone.app .hvar:target{display:flex;flex-direction:column}
 .phone.app .hvar .appb{padding-bottom:24px}
+
+/* survey statements: the statement, then its five answers as a radio list */
+.phone .sq{margin:18px 0 6px;font-size:15px;line-height:1.45;color:#1f2321}
+.phone .sq b{font-weight:600;margin-right:4px}
+
+/* journey boards: every text readable on the light page (the old dark board left mint text behind) */
+body.boardpage{color:#3f4542}
+body.boardpage .intro,body.boardpage .kicker,body.boardpage .stagebar a,body.boardpage .note,body.boardpage .foot,body.boardpage small{color:#4b524e!important}
+body.boardpage h1,body.boardpage h2:not(.sec),body.boardpage .cap .t,body.boardpage a.fr .cap{color:#1a1f1c!important}
+body.boardpage .sec{color:#245c3e!important}
+body.boardpage .rules div{background:#fff;border:1px solid #dfe3e0;border-radius:10px;box-shadow:none;color:#3f4542!important}
+body.boardpage .rules b{color:#1a1f1c!important}
+body.boardpage .legend,body.boardpage .legend *{color:#3f4542}

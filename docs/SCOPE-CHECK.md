@@ -32,7 +32,8 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 20 | Score import from the Testing Center Excel, with checks and preview | Old (import) + Asked | Keep |
 | 21 | Scheduled result release | New (old: a toggle) | Keep (simple) |
 | 22 | Qualification by cut-off + student chooses a program | New (from the v2 plan) | Confirm with the admission office |
-| 23 | Survey | Old (was a gate) | Keep, optional to answer |
+| 23 | Survey: tptv3's 10 statements, required after the result and before choosing a program | Old | Keep (the office submits these results) |
+| 23b | Survey questions editable per school year, with versions; results report and Excel in the office format | Asked | Keep |
 | 24 | Notifications: in-app, email, SMS per event | Asked (old had 2 emails) | Keep; SMS needs a budget |
 | 25 | Notification preferences for students | New | **Cut** |
 | 26 | Message blasts, templates, send log, resend | New | Optional (keep the send log) |
