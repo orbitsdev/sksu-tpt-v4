@@ -434,3 +434,9 @@ header.top:before,.ctop:before{content:"";position:absolute;inset:0;z-index:-1;p
 .tptable th{color:#000;font:700 12px 'Times New Roman',Georgia,serif;letter-spacing:0;text-transform:none;border-radius:0!important}
 .tptable th:first-child,.tptable th:last-child{border-radius:0!important}
 .tpinfo .kv span{color:#222}
+
+/* release plan dialog */
+.plan{display:flex;flex-direction:column;gap:14px;max-width:560px}
+.planopt{align-items:flex-start!important}.planopt span{display:flex;flex-direction:column}.planopt small{color:var(--muted);font-size:12px;font-weight:400}
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.checklist li:before{content:"○";display:inline-block;width:20px;color:var(--muted)}.checklist li.ok:before{content:"✓";color:var(--deep-2)}
