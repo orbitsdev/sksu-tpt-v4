@@ -972,6 +972,9 @@ main:has(#info:target) .ptabs a[data-pane="info"],main:has(#settings:target) .pt
 .roomrow{display:grid!important;grid-template-columns:18px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid #edf0ee;margin:0}
 .roomrow:first-child{border-top:0;background:#fafbfa}
 
+/* row actions stay quiet text on hover too (no box appearing); only the row tints */
+tbody tr:hover td .act .btn{border-color:transparent;background:transparent;color:var(--deep-2);text-decoration:underline;text-underline-offset:3px}
+
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
    No gradients, glows, pills on every row or cards inside cards. ===== */
