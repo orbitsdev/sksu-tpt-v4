@@ -149,7 +149,6 @@ th.sort a:hover i{color:var(--muted)}
 /* pages of 25 under long lists */
 .pager{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;font-size:13px}
 .pager>span:last-child{display:flex;gap:6px}
-.panel>.pager{padding:10px 16px}
 
 /* date range and money fields */
 .range{display:inline-flex;align-items:center;gap:6px}
@@ -195,45 +194,29 @@ th.sort a:hover i{color:var(--muted)}
 .schedpick .menu a.on span{font-weight:600}
 .guideline{margin:-4px 0 0;font-size:13px;color:var(--muted)}.guideline a{color:var(--deep-2)}
 
-/* lists use the full width; roomy rows */
-.shell main{max-width:none;background:#fff}
-.shell main table td{height:64px}
-.ini{background:#eef1ef;color:var(--ink)}
+/* lists: one plain white panel like Import scores; a light filter row; quiet footer */
+.panel.list{gap:12px}
+.filters .search{flex:1 1 220px;max-width:340px;padding-left:34px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 10px center}
+.filters .range{display:flex;gap:6px;align-items:center}
+.fright{margin-left:auto;display:flex;gap:6px}
+.pager{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.pager>span:last-child{display:flex;gap:6px}
+.cmain>.panel.list{grid-column:1/-1}
 
-/* one filter bar above a list: wide search, labelled dropdowns, Reset, Columns, rows per page */
-.fbar{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;padding:8px;border:1px solid var(--line);border-radius:12px;background:#fafbfa}
-.fbar .search{flex:1 1 280px;min-width:220px;height:48px;border:1px solid var(--line);border-radius:8px;background:#fff}
-.fdd{display:flex;flex-direction:column;justify-content:center;gap:0;min-width:150px;padding:4px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
-.fdd small{font-size:11px;color:var(--muted)}
-.fdd select{border:0;padding:0;height:22px;background:transparent;font-weight:500;color:var(--ink);outline:none}
-.fdd.small{min-width:0;justify-content:center}
-.fdd .range{display:flex;gap:6px;align-items:center}.fdd .range input{border:0;padding:0;height:22px;background:transparent}
-.freset{align-self:center;padding:0 10px;font-size:13px;color:var(--muted)}
-.fright{margin-left:auto;display:flex;gap:8px}
-.fbtn{display:flex;align-items:center;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px}
+/* the applicant's steps, as a quiet vertical list (drawer and applicant page) */
+.vsteps{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.vsteps li{display:flex;flex-direction:column;color:#a3a8a4;font-size:14px}
+.vsteps li b{font-weight:500}.vsteps li small{font-size:12px;color:var(--muted)}
+.vsteps li.done{color:var(--ink)}.vsteps li.now b{font-weight:700;color:var(--ink)}
 
-/* row menu, expand chevron, expanded steps */
-.kebab{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:18px}
-.kebab:hover{background:#f1f2f1;color:var(--ink)}
-.chev{display:inline-grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);border-radius:99px;color:var(--muted);text-decoration:none}
-.chev.open{transform:rotate(90deg);color:var(--ink)}
-tr.open td{border-bottom:0}
-tr.expand td{height:auto;padding-top:0;background:#fff}
-.expandin{display:flex;align-items:center;gap:16px;padding:10px 12px 14px;border-left:2px solid var(--line)}
-.stepsline{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:13px}
-.stepsline>i{color:#c4c8c5;font-style:normal}
-.stp2{display:flex;flex-direction:column;color:#a3a8a4}.stp2 b{font-weight:500}.stp2 small{font-size:12px;color:var(--muted)}
-.stp2.done{color:var(--ink)}.stp2.now b{font-weight:700;color:var(--ink)}
-.xacts{margin-left:auto;display:flex;gap:6px}
-
-/* pager: a sentence, then page numbers */
-.pager{display:flex;justify-content:space-between;align-items:center;padding:12px 4px}
-.pages{display:flex;gap:4px;align-items:center}
-.pages a{display:grid;place-items:center;min-width:32px;height:32px;border-radius:8px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:13px}
-.pages a.on{background:var(--deep-2);border-color:var(--deep-2);color:#fff}
-.pages span{color:var(--muted);padding:0 4px}
-.fbar .search{padding-left:36px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 12px center}
-.cmain>.fbar,.cmain>.pager{grid-column:1/-1}
+/* collapsible sidebar: an icon rail on wide screens, a drawer on phones */
+.sbtoggle{display:grid;place-items:center;width:36px;height:36px;margin-right:4px;border:0;border-radius:8px;background:none;color:#fff;cursor:pointer}
+.sbtoggle:hover{background:rgba(255,255,255,.12)}
+body.side-collapsed nav.side{width:64px;padding:12px 8px}
+body.side-collapsed nav.side .grp,body.side-collapsed nav.side .lbl,body.side-collapsed nav.side .count,body.side-collapsed nav.side .sidenote{display:none}
+body.side-collapsed nav.side a{justify-content:center;padding:10px 0}
+body.side-collapsed nav.side .grp+a{margin-top:10px}
+@media (max-width:900px){body.side-open nav.side{display:flex;position:fixed;top:0;left:0;bottom:0;z-index:70;width:260px;overflow:auto;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}}
 
 /* survey: settings line, drag handle, agree-to-disagree bars */
 .sline{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
@@ -244,3 +227,134 @@ td.drag{cursor:grab;color:var(--muted);width:24px;letter-spacing:-2px}
 .lk .k3,.lklegend .k3{background:#e58b80}.lk .k4,.lklegend .k4{background:#b42318}
 .lklegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
 .lklegend span{display:flex;align-items:center;gap:6px}.lklegend i{width:10px;height:10px;border-radius:2px}
+
+/* status tabs above a work list: one click, the counts are the to-do list; active = underline */
+.stabs{display:flex;flex-wrap:wrap;gap:4px 20px;border-bottom:1px solid var(--line);margin:-4px 0 4px}
+.stabs a{padding:8px 0;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--muted);text-decoration:none;font-size:14px;white-space:nowrap}
+.stabs a span{color:var(--muted);font-variant-numeric:tabular-nums;margin-left:4px}
+.stabs a.on{color:var(--ink);font-weight:600;border-bottom-color:var(--deep-2)}
+.stabs a:hover{color:var(--ink)}
+/* select mode: checkboxes and the bulk bar only after "Select" */
+.panel.list .selcol{display:none}
+.panel.list.selecting .selcol{display:table-cell}
+.panel.list th .selcol,.panel.list.selecting th .selcol{display:inline}
+.panel.list:not(.selecting) th:first-child:has(.selcol){display:none}
+.panel.list:not(.selecting) .bulkbar{display:none}
+tr[data-href]{cursor:pointer}
+
+/* page tabs: one page, two jobs. The first pane shows by default; a #target pane replaces it */
+.ptabs{display:flex;gap:24px;border-bottom:1px solid var(--line);margin-top:-8px}
+.ptabs a{padding:10px 0;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--muted);text-decoration:none;font-weight:500}
+.ptabs a:first-child,main:has(.pane:target) .ptabs a:first-child{color:var(--muted);border-bottom-color:transparent}
+main:not(:has(.pane:target)) .ptabs a:first-child{color:var(--ink);border-bottom-color:var(--deep-2)}
+.pane:not(:first-of-type){display:none}
+.pane:target{display:block}
+main:has(.pane:target) .pane:first-of-type:not(:target){display:none}
+main:has(#roles:target) .ptabs a[data-pane="roles"]{color:var(--ink);border-bottom-color:var(--deep-2)}
+main:has(#years:target) .ptabs a[data-pane="years"]{color:var(--ink);border-bottom-color:var(--deep-2)}
+.pane{display:flex;flex-direction:column;gap:16px}
+
+/* list details: count line, filter extras, aligned row actions */
+.fmore,.fclear{font-size:13px;color:var(--deep-2);white-space:nowrap;align-self:center}
+.morefilters{display:none;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.morefilters:target{display:flex}
+.factive{display:none;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+.factive b{color:var(--ink)}
+.factive:target{display:flex}
+.panel.list td:last-child{text-align:right;white-space:nowrap}
+.panel.list .act{display:inline-flex;gap:18px;justify-content:flex-end;align-items:center}
+.panel.list td .num,.panel.list td.num{font-variant-numeric:tabular-nums}
+main:has(#auto:target) .ptabs a[data-pane="auto"],main:has(#templates:target) .ptabs a[data-pane="templates"],main:has(#log:target) .ptabs a[data-pane="log"]{color:var(--ink);border-bottom-color:var(--deep-2)}
+
+/* setup line (euphoria SetupLine): one slim white line under the title while setup is unfinished */
+.setupline{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;padding:10px 12px 10px 18px;border:1px solid var(--line);border-radius:14px;background:#fff;font-size:14px}
+.setupline.st{display:none}.setupline.st:target{display:flex}
+.setupline b{font-weight:600;white-space:nowrap}
+.setupline .dots{display:inline-flex;gap:5px}
+.setupline .dots i{width:8px;height:8px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.setupline .dots i.d{background:var(--deep-2);box-shadow:none}.setupline .dots i.n{box-shadow:inset 0 0 0 1.5px var(--deep-2)}
+.setupline .cnt{color:var(--muted);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.setupline .nx em{font-style:normal;font-weight:600}
+.setupline .sh{color:var(--muted);font-size:13px}
+.setupline .grow{flex:1}
+/* setup checklist page */
+.srows{display:flex;flex-direction:column}
+.srow{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #edf2ef}.srow:last-child{border-bottom:0}
+.srow i{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font:600 12px var(--sans);font-style:normal;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line-2);flex:none}
+.srow.done i{background:var(--deep-2);color:#fff;box-shadow:none}.srow.next i{color:var(--deep-2);box-shadow:inset 0 0 0 1.5px var(--deep-2)}
+.srow b{display:block;font-weight:500}.srow.next b{font-weight:700}.srow small{font-size:12px;color:var(--muted)}
+.srow .grow{flex:1}
+/* guide button and dialog (euphoria GuideButton / GuideDialog) */
+.btn.ghost{border-color:transparent;background:none;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.btn.ghost:hover{color:var(--ink);background:#f1f2f1}
+.guide{max-height:60vh;overflow:auto;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.55}
+.guide h4{margin:10px 0 2px;font-size:15px;color:var(--ink)}.guide h4:first-child{margin-top:0}
+.guide p{margin:0;color:var(--text)}
+.guide ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.guide ul.ex{margin:0;padding:0 0 0 12px;list-style:none;border-left:2px solid var(--line);color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.dialog:has(.guide){width:560px}
+nav.side .off{margin-left:auto;font-size:11px;color:var(--muted)}
+
+/* Student app editor: the form on the left, a sticky phone preview of the real app on the right */
+.appedit{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start}
+.appform{display:flex;flex-direction:column;gap:16px;min-width:0}
+.apppreview{position:sticky;top:16px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px}
+.apppreview .device{position:relative;width:390px;height:780px;padding:12px;border-radius:52px;background:#1b1d1c;box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.apppreview .device iframe{width:366px;height:756px;border:0;border-radius:40px;background:#fff;display:block}
+.apppreview .cam{position:absolute;top:22px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#0d0e0e;z-index:1}
+.apppreview .home{position:absolute;bottom:20px;left:50%;width:120px;height:4px;margin-left:-60px;border-radius:4px;background:#1b1d1c;z-index:1}
+@media (max-width:1300px){.appedit{grid-template-columns:1fr}.apppreview{position:static}}
+.hlink{color:#e3f9ec;font-size:13px;text-decoration:none;white-space:nowrap}.hlink:hover{text-decoration:underline}
+main:has(#info:target) .ptabs a[data-pane="info"],main:has(#settings:target) .ptabs a[data-pane="settings"]{color:var(--ink);border-bottom-color:var(--deep-2)}
+/* the office's announcement on the student Home and the landing page */
+.announce{margin:0 0 4px;padding:10px 12px;border-radius:10px;background:#f4f6f5;font-size:14px;color:#1f2321}
+.pub-announce{margin:0;border-radius:0;text-align:center}
+.pinstall{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:24px 32px;border-top:1px solid var(--line)}
+.pinstall h2{margin:0 0 4px;font-size:20px}.pinstall p{margin:0;color:var(--muted)}
+.pinstall-how{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+
+/* step rail can be hidden: a compact line stays above the form */
+.railtarget{display:none}
+.railmini{display:none;font-size:14px;color:var(--muted)}.railmini b{color:var(--ink)}.railmini a{color:var(--deep-2)}
+.railhide{margin:8px 0 0 12px;font-size:13px;color:var(--muted)}
+#rail-min:target~.railmini{display:block}
+#rail-min:target~.railwrap{grid-template-columns:1fr}
+#rail-min:target~.railwrap .step-rail{display:none}
+/* privacy and terms page */
+.legal{max-width:760px;margin:0 auto;padding:32px 24px 64px;display:flex;flex-direction:column;gap:8px;line-height:1.6}
+.legal h1{margin:0}.legal h2{margin:24px 0 4px}.legal h3{margin:16px 0 0;font-size:16px}
+.legal p,.legal li,.legal dd{color:#3f4542}
+.legaltabs{display:flex;gap:20px;border-bottom:1px solid var(--line);margin:8px 0}
+.legaltabs a{padding:8px 0;margin-bottom:-1px;border-bottom:2px solid transparent;color:var(--muted);text-decoration:none}
+.legaltabs a.on{color:var(--ink);border-bottom-color:var(--deep-2)}
+.legaldl{display:grid;grid-template-columns:180px 1fr;gap:6px 16px;margin:4px 0}.legaldl dt{font-weight:600;color:var(--ink)}.legaldl dd{margin:0}
+@media(max-width:600px){.legaldl{grid-template-columns:1fr}}
+.consent{font-size:13px;color:#3f4542}
+
+/* cashier counter: verify the person, take the cash, give change, write the OR */
+.ctop .guidebtn{color:#e3f9ec;margin-left:auto}.ctop .guidebtn:hover{background:rgba(255,255,255,.12);color:#fff}
+.ctally{color:#e3f9ec;font-size:13px;margin-left:16px}
+.crow>span:first-child{display:flex;flex-direction:column}.crow b{font-weight:500}
+.crow .mono.sub{font-size:12px;color:var(--muted)}
+.clisthead select{height:32px}
+.cperson{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.cphoto{width:96px;height:96px;border-radius:8px;font-size:12px}
+.cperson b{display:block;font-size:22px;font-weight:600;color:var(--ink)}
+.cperson span{display:block;font-size:14px}
+.camount,.cchange{display:flex;justify-content:space-between;align-items:baseline}
+.camount span,.cchange span{color:var(--muted);font-size:14px}
+.camount b{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums}
+.cchange b{font-size:30px;font-weight:700;color:var(--deep-2);font-variant-numeric:tabular-nums}
+.quick{display:flex;gap:6px;margin-top:6px}.quick .btn.on{border-color:var(--ink);font-weight:600}
+.cright .seg span{padding:8px 14px}
+.cdone{display:none;flex-direction:column;gap:14px}
+.cdone:target{display:flex}
+.cright:has(.cdone:target) .cform{display:none}
+.cform{display:flex;flex-direction:column;gap:16px}
+.cdone .camount b{font-size:40px;color:var(--deep-2)}
+.ctell{margin:0;padding:10px 12px;border-radius:10px;background:#f4f6f5}
+.cdone-acts{display:flex;gap:8px;justify-content:flex-end}
+.cnotice{display:none;flex-direction:column;gap:4px;padding:12px 14px;border-radius:10px;border-left:3px solid var(--line-2);background:#f7f8f7;font-size:14px}
+.cnotice:target{display:flex}
+.cnotice.bad{border-left-color:var(--bad)}.cnotice.warn{border-left-color:#d4a017}
+.cnotice b{color:var(--ink)}.cnotice .btn{align-self:flex-start;margin-top:4px}

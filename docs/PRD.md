@@ -383,12 +383,12 @@ v4 handles it in the same system:
 |---|---|---|
 | Schedule type | Freshmen | Transferees (set when the schedule is created) |
 | Apply | Online: 3 program choices | Online or encoded by staff: 2 choices, plus current school and current course, and the transcript or certificate of grades |
-| Approval before paying | — | The program chairperson or dean of the 1st-choice program approves (slot available, grades OK) or declines with a reason |
+| Approval before paying | — | The program chairperson or the college dean of the 1st-choice program approves (slot available, grades OK) or declines with a reason, online or marked "evaluated in person" when the student brings documents; the approver's name and role are saved |
 | Pay | Cashier (online later, if turned on) | Cashier only |
 | Exam | Exam slots by campus and date | One exam day and venue, assigned automatically after payment |
 | Examinee no., permit, results, choosing a program | Same | Same |
 
-New role: **Program chair**. Sees only the transferee applicants for their own program, with the uploaded grades, and approves or declines. Every decision goes in the activity log.
+New role: **Program chair / Dean** (a chair covers one program, a dean every program in the college). Sees only the transferee applicants for their own program, with the uploaded grades, and approves or declines. Every decision goes in the activity log.
 
 If the 1st-choice chairperson declines, the 2nd-choice chairperson gets a turn (the mockups show this). **Confirm with the office.**
 
@@ -418,3 +418,17 @@ Default statements (tptv3):
 10. The test questions are comprehensible.
 
 Plus "Comments and suggestions (optional)".
+
+
+## Privacy and consent
+
+- Public page `privacy.html` has two parts: **Privacy notice** (who we are, what we collect, why, who can see it, service providers, how long, security, rights, cookies, minors, changes) and **Terms of use** (one account per person, true information with the paper form's certification wording, keep the permit to yourself, no abuse of Support, the office may cancel false applications). It follows the Data Privacy Act of 2012 (RA 10173).
+- Consent: an unticked, required checkbox at sign-up and on the Review step ("I have read the Privacy notice and the Terms of use"). Store the notice **version and the time** of consent with the account; a new version asks again.
+- Privacy requests come through Support (topic "Privacy request") or the DPO's email. System status shows the data-retention rule and the next clean-up date.
+- Questions for the Data Protection Officer: retention period for applications, results and photos; whether applicants under 18 need a parent or guardian's consent; the DPO's name and contact.
+
+## Lists, filters and guidance
+
+- Every admin and cashier list uses one pattern (`list_page`): muted count and page actions on the title line, status tabs with counts when the list has statuses, one filter line (a search box that says exactly what it searches plus at most two selects), the table in one white panel, and a "1–25 of N" footer. Rows show the one action that fits the row plus View; rare or risky actions sit under "···".
+- Home location filter (Province → Municipality or city) sits behind "More filters" on Applications, Results and Survey results. The student form records the address as Province → Municipality or city → Barangay (lists, not free text) plus an optional street, so the filter and the "Applicants by home town" report are accurate.
+- Guidance like euphoria: a setup line under page titles while a new school year is unfinished (with a Setup checklist page), a Guide button on complex pages (what it's for, how it works, examples), and the step rail on long forms. Staff can hide any of it; My account → Guides turns it back on.

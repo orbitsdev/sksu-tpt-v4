@@ -54,7 +54,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 41 | Admin bell: new questions, finished imports, failed sends | New | Keep (small) |
 | 42 | Results import reads the Testing Center Excel as it is: picks the sheet, joins two header rows, ignores extra columns, remembers the column match | Old (Excel upload) | Keep (handles a new layout each year) |
 | 43 | Transferee test (2nd semester) in the same system: a schedule is set to Freshmen or Transferees; transferees give 2 choices plus current school and course; the program chairperson or dean approves before payment; cashier payment only; one exam day and venue | Asked (today it is a paper walk-in form) | Keep |
-| 44 | Program chair login: sees only their program's transferee applicants, approves or declines with a reason | Asked (part of #43) | Keep, small |
+| 44 | Program chair / Dean login: a chair sees one program, a dean every program in the college; approves or declines with a reason, or marks "evaluated in person"; the approver's name and role are saved | Asked (part of #43) | Keep, small |
 | 45 | Payment methods per school year: cashier always on; online receipt upload + admin review as a switch, **off for now** | Asked (no online payment yet) | Keep the switch; build online later |
 | 46 | Details locked after approval; changes only through a support request or an admin, with a reason | Asked | Keep |
 | 47 | Exam guide times shown wherever an exam day appears | Asked | Keep |

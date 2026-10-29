@@ -114,6 +114,20 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ Results import doc: Excel as it is, absent rule.
 - ✅ PRD aligned with every mockup.
 
+## Calmer lists and guidance
+
+- ✅ One list pattern everywhere: status tabs with counts, one filter line, the table in one white panel, "1–25 of N".
+- ✅ Rows show View plus the one action that fits (Remind, Pick slot, Resend permit, See remarks, Reply); rare actions under "···".
+- ✅ Applications: click a row to see the person's steps; checkboxes only after "Select".
+- ✅ Collapsible sidebar (icon rail, remembered; a drawer on phones).
+- ✅ Setup line, Setup checklist page, Guide buttons, hideable step rail; My account → Guides.
+- ✅ Student app editor (Home · Info · Settings) with a live phone preview; "Preview the student app" link.
+- ✅ Staff and roles split into Staff | Roles tabs; Exam schedules and Email and SMS use tabs.
+- ✅ Program chair or College dean approves transferees, online or "evaluated in person".
+- ✅ Cashier counter: photo to check the face, cash received with quick buttons, change shown big, success in the same panel.
+- ✅ Home address as Province → Municipality or city → Barangay; "Applicants by home town" report; location filter behind More filters.
+- ✅ Privacy notice and Terms of use; required consent at sign-up and on Review; Support topic "Privacy request".
+
 ## Decided
 
 - ✅ **Student app = installable web app (PWA).** Students install it from the website (Android: Install; iPhone: Share → Add to Home Screen). No APK, no Expo Go, no store accounts. One system for phones and computers.
