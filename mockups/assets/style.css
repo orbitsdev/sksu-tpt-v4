@@ -1085,6 +1085,19 @@ header.top:before,.ctop:before{content:"";position:absolute;inset:0;z-index:-1;p
 .pdfpanel>div{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
 .pdfpanel .meter{max-width:420px}
 
+/* progress: green fill, % at the end; a slow stripe while work runs; a check when done */
+.meter .t span{background:var(--deep-2)}
+.meter .num{font-size:12px;color:var(--muted);min-width:36px;text-align:right}
+.meter.done .num,.donemark{color:var(--deep-2);font-weight:600}
+@media (prefers-reduced-motion:no-preference){
+  .meter.run .t span{background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.22) 0 8px,transparent 8px 16px);background-size:22px 22px;animation:stripe .9s linear infinite}
+  @keyframes stripe{to{background-position:22px 0}}
+  .skel{background:linear-gradient(90deg,#eef1ef 0%,#f8f9f8 40%,#eef1ef 80%);background-size:300% 100%;animation:sh 1.4s ease-in-out infinite}
+}
+/* row actions: every visible action reads as a link, the PDF one gets a small download mark */
+td .act .btn{color:var(--deep-2)}
+td .act a[href*="result-pdf"]:before{content:"↓";margin-right:5px;font-weight:600}
+
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
    No gradients, glows, pills on every row or cards inside cards. ===== */
