@@ -967,6 +967,11 @@ main:has(#info:target) .ptabs a[data-pane="info"],main:has(#settings:target) .pt
 .dialog:has(.campchecks){width:600px;max-height:88vh;overflow:auto}
 .fld label.chkrow{text-transform:none;letter-spacing:0;font-weight:400;font-size:14px;color:var(--ink)}
 
+/* room checklist in the Add exam slot dialog */
+.roomlist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;max-height:220px;overflow:auto}
+.roomrow{display:grid!important;grid-template-columns:18px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid #edf0ee;margin:0}
+.roomrow:first-child{border-top:0;background:#fafbfa}
+
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
    No gradients, glows, pills on every row or cards inside cards. ===== */
