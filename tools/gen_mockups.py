@@ -1574,12 +1574,12 @@ admin("survey-results", "Survey results", f"""<div class="head"><span class="mut
 {table(["When", "Campus", "Comment"], [('<span class="muted">Mar 14</span>', "Isulan", "The room was hot in the afternoon; please open the windows."), ('<span class="muted">Mar 14</span>', "ACCESS, Tacurong", "Clear instructions from the proctor. Thank you."), ('<span class="muted">Mar 15</span>', "Kalamansig", "The signs to the testing rooms were hard to find.")])}
 {pager(1, 3, 213)}""", active="reports", crumb='<a href="reports.html" class="muted">← Reports</a>')
 
-admin("exports", "Downloads", table(["File", "Asked by", "Status", ""], [
-    ("applicants-2027.xlsx", "Admission Office · now", '<div class="meter"><div class="t"><span style="width:62%"></span></div><span class="mono">62%</span></div>', '<span class="spin"></span>'),
-    ("ranking-civil-eng-isulan.xlsx", "Admission Office · 10 min ago", B("ok", "Ready · 84 KB"), btn("Download", "#")),
-    ("payments-jan.xlsx", "Cashier 1 · yesterday", B("ok", "Ready · 1.2 MB"), btn("Download", "#")),
-    ("attendance-mar14.xlsx", "Testing Center · Mar 14", B("bad", "Failed · timed out"), btn("Try again", "#retry"))]) + '<span class="muted">Files are kept for 7 days.</span>',
-      overlays=inmain("empty", empty("file", "No downloads yet", "Exports you start from any list land here and stay for 7 days.", btn("Go to reports", "reports.html"))) + toast("queued", "info", INFO, "Building your file", "It will appear here in a minute. You can keep working.") + toast("retry", "info", INFO, "Trying again", "attendance-mar14.xlsx is back in the queue."),
+admin("exports", "Downloads", table(["File", "What is in it", "Asked by", "Status", ""], [
+    ('<span class="ink">Results · Schedule 1</span><span class="sub">results-schedule-1-sy2027.xlsx</span>', "All scored · 9,088 rows", "You · now", '<div class="meter"><div class="t"><span style="width:62%"></span></div><span class="num">62%</span></div>', '<span class="spin"></span>'),
+    ('<span class="ink">Results · Schedule 1 · BS Civil Engineering, Isulan</span><span class="sub">results-schedule-1-bsce-isulan.xlsx</span>', "Qualified for 1st choice · 412 rows", "You · 10 min ago", B("ok", "Ready · 84 KB"), btn("Download", "#")),
+    ('<span class="ink">Payments · Isulan counter 1</span><span class="sub">payments-isulan-1-jan.xlsx</span>', "January · 412 payments", "Cashier 1 · yesterday", B("ok", "Ready · 1.2 MB"), btn("Download", "#")),
+    ('<span class="ink">Office summary · Schedule 1</span><span class="sub">office-summary-schedule-1.xlsx</span>', "Campus × program counts", "Ana R. · Mar 20", B("bad", "Failed · timed out"), btn("Try again", "#retry"))]) + '<span class="muted">Files are kept for 7 days.</span>',
+      overlays=inmain("empty", empty("file", "No downloads yet", "Exports you start from any list land here and stay for 7 days.", btn("Go to reports", "reports.html"))) + toast("queued", "info", INFO, "Building Results · Schedule 1", "It will appear here in a minute. You can keep working.") + toast("retry", "info", INFO, "Trying again", "attendance-mar14.xlsx is back in the queue."),
       states=[("queued", "Export queued"), ("retry", "Retry"), ("empty", "Empty")])
 
 camp = [("ACCESS, Tacurong", 22, "4,343"), ("Isulan", 14, "1,884"), ("Tacurong", 9, "1,663"), ("Kalamansig", 5, "731"), ("Bagumbayan", 2, "128"), ("Palimbang", 2, "94"), ("Lutayan", 2, "93")]
