@@ -1083,6 +1083,7 @@ def setup(n, body, nxt):
 setup(1, f"""<h2>Basics</h2>{hint("You add its exam schedules (1st, 2nd, 3rd) on the next step.")}
 <div class="formgrid"><div class="fld"><label for="n2">School year</label><select id="n2"><option>2028–2029</option><option>2029–2030</option></select>{hint("Shown to applicants as “SKSU TPT · SY 2028–2029”.")}</div>
 <div class="fld"><label for="n3">Exam fee</label><span class="money"><span>₱</span><input id="n3" inputmode="decimal" value="275.00"></span>{hint("Applicants see this on the payment step.")}</div>
+<div class="fld"><label for="n4">First examinee number</label><input id="n4" inputmode="numeric" maxlength="6" value="600001">{hint("6 digits. Numbers then count up by one as payments are recorded. SY 2027–2028 used 500001 to 509733.")}</div>
 </div><h3 style="margin:8px 0 0;font-size:15px">Payment methods</h3><div class="setrow"><span>At an SKSU cashier</span><span class="muted">Always on</span></div><div class="setrow"><span>Online, with receipt upload</span><a class="switch" href="#" aria-label="Online payment with receipt upload"></a></div><small class="hint">Turn on when the office has a GCash or bank account. Students then upload a receipt and an admin checks it in Payment review.</small>
 <label class="check"><input type="checkbox" checked>Copy campuses, programs, rooms, staff and message templates from SY 2027–2028</label>""", btn("Next: schedules", "setup-2.html", "primary"))
 setup(2, f"""<h2>Schedules</h2>
