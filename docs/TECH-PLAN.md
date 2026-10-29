@@ -19,8 +19,8 @@ What SKSU TPT v4 is built with, and why. It follows euphoria's stack (already ru
 | Result PDFs | **barryvdh/laravel-dompdf** | Light engine (no hidden browser); built before release by the queue |
 | Cache, sessions, queue | **Redis** | Takes load off MySQL on peak days; runs the PDF and message queues |
 | Queue monitor | Laravel Horizon | See jobs (PDFs, emails, imports), retry failed ones |
-| Email | SMTP from the university address, or a mail service | **Decide** (official sender) |
-| SMS | A Philippine SMS provider (e.g. Semaphore) | **Decide** (provider and budget); can start with email + in-app only |
+| Email | tptv3 today: Gmail SMTP as sksutpt@gmail.com (about 500 emails a day). For v4: a mail service (e.g. Amazon SES, about $0.10 per 1,000) or the university's Google Workspace address (about 2,000 a day) | **Decide** (official sender); a plain Gmail can't email 9,000 students in one day |
+| SMS | tptv3 has **no SMS**. v4 starts with in-app + email; an SMS provider (e.g. Semaphore) can be added later | **Decide** later (budget) |
 
 ## 2. How it fits together
 
