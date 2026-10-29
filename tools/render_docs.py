@@ -46,7 +46,7 @@ await mermaid.run({{ querySelector: ".mermaid" }});
 </html>
 """
 
-for name, title in [("PRD", "PRD and flows"), ("SCOPE-CHECK", "Scope check"), ("FORMS-AND-PAYMENTS", "Forms and payments"), ("RESULTS-IMPORT", "Results import"), ("UI-RULES", "UI rules"), ("CHANGES", "Changes"), ("RESULTS-RELEASE", "Results release plan"), ("TECH-PLAN", "Tech plan"), ("ARCHITECTURE", "How it is put together"), ("BUDGET", "What to buy and budget")]:
+for name, title in [("PRD", "PRD and flows"), ("SCOPE-CHECK", "Scope check"), ("FORMS-AND-PAYMENTS", "Forms and payments"), ("RESULTS-IMPORT", "Results import"), ("UI-RULES", "UI rules"), ("CHANGES", "Changes"), ("RESULTS-RELEASE", "Results release plan"), ("TECH-PLAN", "Tech plan"), ("ARCHITECTURE", "How it is put together"), ("BUDGET", "What to buy and budget"), ("DATABASE", "Database design")]:
     md = (DOCS / f"{name}.md").read_text(encoding="utf-8")
     (DOCS / f"{name}.html").write_text(PAGE.format(title=title, md=json.dumps(md).replace("</", "<\\/")), encoding="utf-8")
 print("rendered")
