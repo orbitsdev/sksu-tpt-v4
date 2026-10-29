@@ -39,18 +39,18 @@ Checked against tptv3's Livewire validation rules and migrations, and the live s
 ### Payment (`PaymentSection.php`)
 
 - **Today:** a reference number (unique) and 1+ proof files (jpeg/png/pdf, no size limit). `paid_at = now()` is the upload time, not the payment time [Certain].
-- **v4:** payment method, reference or OR number (unique per season and method), amount, date paid, one proof image (shrunk). Or no form at all when the cashier records it.
+- **v4:** payment method, reference or OR number (unique per school year and method), amount, date paid, one proof image (shrunk). Or no form at all when the cashier records it.
 
 ## 2. Records each step creates
 
 | Step | Records | Application status |
 |---|---|---|
 | Sign in | users | — |
-| Start | applications (season, round) | draft |
+| Start | applications (school year, schedule) | draft |
 | Forms | applicant_profiles, schools, program_choices, uploads (photo, Form 138, ID) | draft |
 | Submit | application_events | submitted |
 | Pay (upload) | payments (method, ref, amount, paid_on), uploads (receipt) | payment_review |
-| Pay (cashier) or approve | payments (recorded_by, or_no) + examinee_no from the season counter | approved |
+| Pay (cashier) or approve | payments (recorded_by, or_no) + examinee_no from the school year counter | approved |
 | Reject payment | payments.status = rejected, reason; notification | payment_rejected |
 | Pick a day | seat_assignments (day, room, seat) | scheduled |
 | Exam day | check_ins | present / absent |
@@ -79,14 +79,14 @@ Scholars and indigent applicants may be exempt.
 
 **Checks built in:**
 
-- Reference and OR numbers are unique per season, so the same receipt can't be used twice.
+- Reference and OR numbers are unique per school year, so the same receipt can't be used twice.
 - Amount must equal the fee; underpaid payments go to review with a flag.
 - Two reviewers can't decide the same payment (row lock).
 - **Reconciliation:** the reviewer can import the day's GCash or Landbank statement (CSV). Matching references are approved in bulk, and the rest stay for manual review. [Guessing] Whether SKSU can export these statements needs the accounting office.
 
 **Rejection and resubmission:** the reason comes from a fixed list plus a note. The applicant gets a text and email and can resend from the same screen. Nothing else is lost.
 
-**Refunds:** recorded by an admin with a reason (paid twice, round cancelled); the money goes back through the cashier. The status stays correct and the Payments report shows it.
+**Refunds:** recorded by an admin with a reason (paid twice, schedule cancelled); the money goes back through the cashier. The status stays correct and the Payments report shows it.
 
 **Trade-offs:**
 

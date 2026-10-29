@@ -16,7 +16,7 @@ This repo holds the planning work for rebuilding the SKSU Admission Test (TPT) s
 | Folder | What it is |
 |---|---|
 | `mockups/` | 71 linked HTML pages with every state (forms, dialogs, toasts, loading, empty, errors). Generated; don't edit by hand. |
-| `mockups/*-JOURNEY-MOCKUP.html` | Journeys for admin (the whole season), applicant (phone app), cashier and proctor |
+| `mockups/*-JOURNEY-MOCKUP.html` | Journeys for admin (the whole school year), applicant (phone app), cashier and proctor |
 | `docs/` | PRD, scope check, forms and payments, results import, CSV findings (each `.md` also has a readable `.html` with the diagrams drawn) |
 | `tools/` | `gen_mockups.py` builds every mockup page. `base.css`, `theme*.css` hold the styles. `render_docs.py` turns the docs into HTML. `tpt-scores-template.csv` is the score import template. |
 | `assets/brand/` | Official SKSU seal, logo and campus photo from sksu.edu.ph. `SOURCES.md` lists the links and colours. |
@@ -52,13 +52,13 @@ States are `modal(...)`, `toast(...)`, `drawer(...)` and `inmain(...)`, opened b
 
 ## Open questions for the admission office
 
-1. What are the "three schedules": three exam rounds a year, or something else?
+1. What are the "three schedules": three exam schedules a year, or something else?
 2. Confirm date-only scheduling. What are the real report and start times?
 3. Exam fee, payment accounts, and whether cashiers will use the system.
 4. Cut-off scores per program, and the official stanine labels.
-5. Testing Center CSV columns (the template is in `tools/tpt-scores-template.csv`).
+5. Testing Center Excel columns (the template is in `tools/tpt-scores-template.xlsx`).
 6. SMS provider and budget.
-7. Can absent examinees move to the next round for free?
+7. Can absent examinees move to the next schedule for free?
 8. Which documents are required (Form 138, valid ID), and which personal fields (tribe, religion) are needed under the Data Privacy Act?
 
 ## Old system (still to do)

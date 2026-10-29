@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#0b4d2c;--deep-2:#006b34;--mint:#5fd4a0;--mint-tint:#e8f7ef;--mint-line:#c5ead6;
+  --gold:#f2c200;--gold-tint:#fff8d6;--gold-ink:#3a2c00;--ink:#14231a;--muted:#5b6b61;--line:#dfe7e2;--bg:#f5faf7;
+  --red:#c62828;--red-tint:#fdecec;--blue:#1d6fb8;--violet:#6b4bb8;--cash:#a87900;--sys:#6b7a71;
+  --grey-tint:#eef1ef;--wire:#8fa89a;--hot:#006b34;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 Geist,system-ui,sans-serif}
+a{color:var(--deep-2)}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#062e19,#0b4d2c 45%,#006b34);box-shadow:inset 0 -3px 0 var(--gold);color:#fff}
+.top .in{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.top img{width:38px;height:38px;border-radius:99px;background:#fff}
+.wm{font-family:Oswald,sans-serif;text-transform:uppercase;line-height:1}
+.wm b{display:block;font-size:17px;letter-spacing:.04em}.wm span{font-size:11px;letter-spacing:.18em;color:var(--gold)}
+.top h1{margin:0 0 0 6px;font:600 16px Geist,sans-serif;opacity:.95}
+.top .sp{flex:1}
+.walk{display:flex;gap:6px;align-items:center}
+.walk button{height:34px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;font:600 13px Geist,sans-serif;cursor:pointer}
+.walk button.primary{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.walk button:disabled{opacity:.4;cursor:default}
+.walk .count{font-size:12px;opacity:.8;min-width:64px;text-align:center}
+.top .back{color:#e3f9ec;font-size:13px}
+
+/* legend */
+.legend{max-width:1280px;margin:0 auto;padding:12px 16px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.legend .lab{color:var(--muted);font-size:12px;margin-right:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:99px;border:1px solid var(--line);background:#fff;font:500 12px Geist,sans-serif;color:var(--ink);cursor:pointer}
+.chip i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.chip.on{border-color:var(--deep-2);box-shadow:0 0 0 2px var(--mint-line)}
+.chip.dec i{transform:rotate(45deg);border-radius:1px}
+
+/* layout */
+.wrap{max-width:1280px;margin:0 auto;padding:12px 16px 40px;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+.scroller{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:12px}
+.diagram{position:relative;min-width:780px;padding:20px 72px 28px}
+.grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:44px;row-gap:34px}
+svg.wires{position:absolute;left:0;top:0;z-index:1;pointer-events:none;overflow:visible}
+
+.phase{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:6px}
+.phase b{font:600 13px Oswald,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--deep);background:#fff;padding-right:8px}
+.phase .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:99px;background:var(--deep);color:var(--gold);font:600 12px Oswald,sans-serif}
+.phase:after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* nodes */
+.node{position:relative;justify-self:center;width:100%;max-width:240px;text-align:left;border:1.5px solid var(--line);border-left:5px solid var(--c);background:#fff;border-radius:10px;padding:8px 10px 9px;cursor:pointer;font:inherit;color:inherit;transition:box-shadow .15s,transform .15s,opacity .2s}
+.node:hover{box-shadow:0 3px 12px rgba(11,77,44,.14);transform:translateY(-1px)}
+.node .who{display:block;font:600 10.5px Geist,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.node .t{display:block;font-weight:600;font-size:13.5px;margin-top:1px}
+.node .s{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.node .new{position:absolute;bottom:-9px;right:8px;background:var(--gold);color:var(--gold-ink);font:700 10px Geist,sans-serif;padding:2px 6px;border-radius:99px}
+.node.dec{--c:#a87900;border:1.5px solid var(--gold);background:var(--gold-tint);text-align:center;max-width:200px;border-radius:999px;padding:9px 14px}
+.node.dec .t:before{content:"◆ ";color:#c99a00}
+.node.end{border-style:dashed;border-color:#f3c4c4;border-left:5px solid var(--red);background:var(--red-tint)}
+.node.sel{box-shadow:0 0 0 3px var(--mint),0 6px 18px rgba(11,77,44,.18)}
+.dim .node:not(.lit){opacity:.28}
+.a-admin{--c:var(--deep-2)}.a-applicant{--c:var(--blue)}.a-cashier{--c:var(--cash)}.a-proctor{--c:var(--violet)}.a-system{--c:var(--sys)}.a-end{--c:var(--red)}
+.L{grid-column:1}.C{grid-column:2}.R{grid-column:3}
+
+/* wires */
+.wire{fill:none;stroke:var(--wire);stroke-width:1.6}
+.wire.loop{stroke-dasharray:5 4}
+.halo{fill:none;stroke:#fff;stroke-width:6}
+.wire.hot{stroke:var(--hot);stroke-width:2.4}
+.elab{font:600 11px Geist,sans-serif;fill:var(--muted);paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:schedule}
+.elab.hot{fill:var(--hot)}
+
+/* panel */
+.panel{position:sticky;top:76px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;max-height:calc(100vh - 92px);overflow:auto}
+.panel .empty{color:var(--muted);text-align:center;padding:30px 6px}
+.panel .empty b{color:var(--ink)}
+.panel .empty .h{display:block;color:var(--ink);font-size:15px;font-weight:600;margin-bottom:4px}
+.panel .who{font:600 11px Geist,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.panel h2{margin:2px 0 8px;font-size:19px;line-height:1.25}
+.panel p{margin:0 0 12px}
+.panel h3{margin:14px 0 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.status{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;background:var(--mint-tint);color:var(--deep);font:600 12px Geist,sans-serif;border:1px solid var(--mint-line)}
+.badge.from{background:var(--grey-tint);color:var(--muted);border-color:var(--line)}
+.panel ul{margin:0;padding-left:18px}.panel li{margin:3px 0}
+.links a{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;margin-top:6px;text-decoration:none;font-weight:500}
+.links a:hover{background:var(--mint-tint);border-color:var(--mint-line)}
+.links a:after{content:"Open →";color:var(--deep-2);font-size:12px;white-space:nowrap}
+.better{background:var(--mint-tint);border:1px solid var(--mint-line);border-radius:8px;padding:9px 11px;font-size:13px;margin-top:12px}.better b{display:block;color:var(--deep);font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.note{background:var(--gold-tint);border:1px solid #f0dc8a;border-radius:8px;padding:9px 11px;font-size:13px;margin-top:12px}
+.goes{display:flex;flex-direction:column;gap:6px}
+.goes button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 11px;font:inherit;cursor:pointer}
+.goes button:hover{background:var(--mint-tint)}
+.goes small{color:var(--muted)}
+.close{display:none}
+
+@media (max-width:980px){
+  .wrap{grid-template-columns:1fr}
+  .panel{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:30;max-height:62vh;border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18);transform:translateY(105%);transition:transform .25s}
+  .panel.open{transform:none}
+  .close{display:block;position:absolute;top:10px;right:12px;border:0;background:var(--grey-tint);width:30px;height:30px;border-radius:99px;font-size:16px;cursor:pointer}
+  .top h1{display:none}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <img src="assets/sksu-seal.png" alt="SKSU seal">
+  <div class="wm"><b>Sultan Kudarat</b><span>State University</span></div>
+  <h1>Admission test: admin flow</h1>
+  <span class="sp"></span>
+  <div class="walk">
+    <button id="prev" type="button">‹ Back</button>
+    <span class="count" id="count"></span>
+    <button id="next" type="button" class="primary"></button>
+  </div>
+  <a class="back" href="index.html">All pages</a>
+</div></header>
+
+<div class="legend" id="legend">
+  <span class="lab">Who does it (click to highlight):</span>
+  <button class="chip" data-actor="admin" type="button"><i style="background:var(--deep-2)"></i>Admin</button>
+  <button class="chip" data-actor="applicant" type="button"><i style="background:var(--blue)"></i>Applicant</button>
+  <button class="chip" data-actor="cashier" type="button"><i style="background:var(--cash)"></i>Cashier</button>
+  <button class="chip" data-actor="proctor" type="button"><i style="background:var(--violet)"></i>Proctor</button>
+  <button class="chip" data-actor="system" type="button"><i style="background:var(--sys)"></i>System (automatic)</button>
+  <button class="chip dec" data-actor="dec" type="button"><i style="background:var(--gold)"></i>Decision</button>
+</div>
+
+<div class="wrap">
+  <div class="scroller"><div class="diagram" id="diagram">
+    <svg class="wires" id="wires"><defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8fa89a"/></marker>
+      <marker id="arrow-hot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#006b34"/></marker>
+    </defs><g id="wire-g"></g></svg>
+    <div class="grid" id="grid"></div>
+  </div></div>
+  <aside class="panel" id="panel" aria-live="polite"></aside>
+</div>
+
+<script>
+// Phases are header rows. Each node sits in column L, C or R on a numbered grid row.
+const PHASES = [
+  { row: 1, n: 1, title: "Set up the school year" },
+  { row: 8, n: 2, title: "Apply and pay" },
+  { row: 14, n: 3, title: "Exam slot and permit" },
+  { row: 18, n: 4, title: "Exam day" },
+  { row: 20, n: 5, title: "Results" },
+];
+
+const NODES = [
+  // 1 · Set up
+  { id: "season", row: 2, col: "C", actor: "admin", t: "Create the school year", s: "School year, fee, requirements",
+    what: "Create the school year (for example 2027–2028): its exam fee and requirements. Copy campuses, programs and rooms from last school year to save time.",
+    status: ["", "School year: Not published"], links: [["Setup step 1: Basics", "admin/setup-1.html"], ["School years list", "admin/schedules.html"]] },
+  { id: "rounds", row: 3, col: "C", actor: "admin", t: "Add the schedules", s: "One or more, Freshmen or Transferees",
+    what: "Each schedule is for Freshmen or Transferees and has its own registration dates, exam day(s), seats, scores and result date. Add as many as the school year needs.",
+    links: [["Setup step 2: Schedules", "admin/setup-2.html"], ["Schedule details", "admin/schedules.html#round"]] },
+  { id: "campus", row: 4, col: "C", actor: "admin", t: "Campuses and programs", s: "What's offered + cut-off scores",
+    what: "Choose which of the 7 campuses and which programs are open this school year. Each program gets a cut-off score, which is used later to show who qualifies.",
+    links: [["Setup step 3: Campuses and programs", "admin/setup-3.html"], ["Campuses and programs page", "admin/campuses.html"]] },
+  { id: "rooms", row: 5, col: "C", actor: "admin", t: "Rooms and seats", s: "Reused every school year",
+    what: "Rooms belong to a campus and stay from school year to school year. Each room has its number of exam seats. Add them one by one.",
+    links: [["Rooms", "admin/rooms.html"]] },
+  { id: "days", row: 6, col: "C", actor: "admin", t: "Exam slots", s: "Campus + date + rooms = seats",
+    what: "An exam slot is one campus on one date with the rooms used that day. Its seats are the total of those rooms. Report and start times (7:30 / 8:00 AM) are only a guide printed on the permit.",
+    bullets: ["AM/PM sittings stay off unless a day overflows.", "Applicants see seats left per slot."],
+    links: [["Setup step 4: Exam slots and rooms", "admin/setup-4.html"], ["Exam slots page", "admin/exam-slots.html"]] },
+  { id: "open", row: 7, col: "C", actor: "admin", t: "Publish registration", s: "Not public until you press Publish",
+    what: "Finishing setup never makes anything public. The admin presses Publish for a schedule; students then see the Apply button during its registration dates. Unpublish any time to pause: nobody can start or submit, and anyone already in keeps their progress and seat.",
+    bullets: ["Same as tptv3's Activate / Deactivate examination.", "Registration still closes by itself on the close date."],
+    status: ["Schedule: Not published", "Schedule: Published"],
+    links: [["Setup step 5: Review and publish", "admin/setup-5.html"], ["Publish a schedule", "admin/schedules.html#publish"], ["Unpublish a schedule", "admin/schedules.html#unpublish"]] },
+
+  // 2 · Apply and pay (same as tptv3, plus the cashier counter)
+  { id: "apply", row: 9, col: "C", actor: "applicant", t: "Applies and submits", s: "Profile, school, documents, 3 programs",
+    what: "Signs in with Google or an email link. Fills in about you, school, documents (2×2 photo, Form 138, valid ID) and 3 program choices, then submits. Same steps as tptv3.",
+    status: ["Draft", "Submitted"], notify: "Applicant: “Application submitted” (in app, email)",
+    links: [["About you", "applicant/apply-personal.html"], ["School and documents", "applicant/apply-school.html"], ["Programs", "applicant/apply-programs.html"], ["Review and submit", "applicant/apply-review.html"]] },
+  { id: "ask", row: 9, col: "R", actor: "applicant", t: "Asks the office a question", s: "Any time, from the app", isNew: true,
+    note: "New: tptv3 has no way to ask. Listed in docs/SCOPE-CHECK.",
+    what: "From Notifications, the applicant picks a topic (payment, application, exam slot, result, other) and writes the question. One open question at a time, so the office isn't flooded.",
+    links: [["Ask a question", "applicant/notifications.html#ask"], ["Question sent", "applicant/notifications.html#asked"]] },
+  { id: "answer", row: 10, col: "R", actor: "admin", t: "Office answers", s: "Reply goes to the app and email",
+    what: "New questions appear in the admin bell and in Messages, oldest first. The admin answers from the applicant's page, where the application, payment and history are on screen. The reply goes in the history.",
+    notify: "Applicant: “Reply from the admission office” (in app, email)",
+    links: [["Open questions", "admin/messages.html"], ["Answer on the applicant's page", "admin/applicant.html#q"], ["Reply the applicant sees", "applicant/notifications.html#reply"], ["Admin bell", "admin/messages.html#q-open"]] },
+  { id: "transferee", row: 10, col: "L", actor: "admin", t: "Transferee schedule: chairperson approves", s: "Then pay at the cashier", isNew: true,
+    note: "New: today a paper walk-in form signed by the chairperson.",
+    what: "Only on a schedule set for transferees (2nd semester). The applicant picks 2 programs and uploads their grades. The program chairperson of the 1st choice approves (slot available, grades OK) or declines with a reason; a decline passes to the 2nd choice. Approved applicants pay ₱275 at the cashier.",
+    status: ["Submitted", "Chairperson approved"], notify: "Applicant: approved or declined, with the reason (in app, email)",
+    links: [["Program chair page", "admin/chair.html"], ["Waiting for the chairperson", "applicant/payment-chair.html"], ["Transferee schedule form", "admin/schedules.html#round-t"]] },
+  { id: "pay", row: 10, col: "C", actor: "dec", t: "How do they pay?",
+    what: "Online with a receipt upload (as in tptv3), or at the cashier counter (new)." },
+  { id: "cashier", row: 11, col: "L", actor: "cashier", t: "Pays at the cashier counter", s: "OR no. typed in, approved at once", isNew: true,
+    what: "The only new step. The cashier finds the applicant by name or code, types the official receipt number and presses Enter. It counts as approved straight away, so there's nothing to review.",
+    bullets: ["Each OR number can only be used once.", "Already paid and not found are caught."],
+    status: ["Submitted", "Approved"], links: [["Cashier console", "cashier/console.html"], ["Paid", "cashier/console.html#done"]] },
+  { id: "upload", row: 11, col: "C", actor: "applicant", t: "Uploads the receipt", s: "Reference no. + receipt",
+    what: "Pays online or at a bank, then enters the reference number and uploads the receipt. Same as tptv3's payment section.",
+    status: ["Submitted", "For review"], notify: "Applicant: “Receipt received” (in app, email)",
+    links: [["Payment screen", "applicant/payment.html"], ["Waiting for review", "applicant/payment-waiting.html"]] },
+  { id: "check", row: 12, col: "C", actor: "dec", t: "Admin approves?",
+    what: "Same as tptv3's View payment: the admin sees the application, photo, documents and receipt on one screen, then approves or sends it back with remarks. The reference must be unused. Two admins can't decide the same one.",
+    links: [["Payment review queue", "admin/payments.html"], ["One applicant", "admin/applicant.html"], ["Two reviewers conflict", "admin/payments.html#conflict"]] },
+  { id: "payreject", row: 12, col: "R", actor: "admin", t: "Sent back with remarks", s: "Student fixes that part and sends again",
+    what: "The admin picks what to fix (receipt, photo, details or documents), a reason, and types remarks. The applicant fixes that part and sends it again. Nothing else is lost. If the schedule closes first, they can apply for the next one.",
+    status: ["For review", "Sent back"], notify: "Applicant: the remarks (in app, email, SMS)",
+    links: [["Send back dialog", "admin/payments.html#reject"], ["What the applicant sees", "applicant/payment-rejected.html"], ["Email", "docs/email-rejected.html"]] },
+  { id: "approved", row: 13, col: "C", actor: "system", t: "Approved: examinee no. issued", s: "From the school year counter",
+    what: "Same as tptv3: approval issues the examinee number. In v4 the number comes from a counter, so two people never get the same one.",
+    status: ["For review", "Approved"], notify: "Applicant: “Payment approved, exam no. 500214” (in app, email, SMS)",
+    links: [["Approved toast", "admin/payments.html#approved"], ["Approval email", "docs/email-approved.html"]] },
+
+  // 4 · Exam slot and permit
+  { id: "pick", row: 15, col: "C", actor: "applicant", t: "Picks an exam slot", s: "Campus + date with seats left",
+    what: "Chooses an exam slot (campus and date). Room and seat are not chosen. One self-service change is allowed until the schedule's cut-off; after that, staff move them with a reason.",
+    bullets: ["Applicants who don't pick can be auto-assigned by the admin."],
+    links: [["Pick a slot screen", "applicant/seat.html"], ["Admin: move to another slot", "admin/applicant.html#move"]] },
+  { id: "seat", row: 16, col: "C", actor: "system", t: "Room and seat assigned", s: "Locked, never double-booked",
+    what: "The system fills rooms in order and locks the seat so two people never get the same one.",
+    status: ["Approved", "Scheduled"], links: [["Seat plan", "docs/seat-plan.html"]] },
+  { id: "permit", row: 17, col: "C", actor: "system", t: "Permit ready", s: "In the app + PDF with QR",
+    what: "The permit lives in the app (works offline) and as a PDF with a QR code. It shows the room, seat, report time and what to bring.",
+    notify: "Applicant: “Exam slot booked, permit ready”, then a reminder the day before at 5 PM (in app, email, SMS)",
+    links: [["Permit in the app", "applicant/permit.html"], ["Permit PDF", "docs/permit-pdf.html"]] },
+
+  // 5 · Exam day
+  { id: "exam", row: 19, col: "C", actor: "applicant", t: "Takes the exam", s: "Shows the permit at the door",
+    what: "Same as tptv3: the examinee goes to the room on the permit and takes the test. Nobody needs to scan anything.",
+    links: [["Permit", "applicant/permit.html"], ["Seat plan", "docs/seat-plan.html"]] },
+  { id: "checkin", row: 19, col: "R", actor: "proctor", t: "Check-in at the door", s: "Optional · off by default", isNew: true,
+    note: "Optional: tptv3 has no proctor.",
+    what: "Optional. If the office turns it on for a schedule, the proctor scans each permit on a phone. It works without signal and warns about the wrong room or a second scan. Absences still come from the score import.",
+    links: [["Turn it on", "admin/checkin.html"], ["Admin live monitor", "admin/checkin.html#live"], ["Proctor phone", "proctor/checkin.html"]] },
+
+  // 6 · Results
+  { id: "import", row: 21, col: "C", actor: "admin", t: "Import Testing Center Excel", s: "Scores are never computed",
+    what: "Upload the Testing Center's Excel as it is. Columns are matched by name, then every row is checked against who has an exam slot: not registered, duplicates, out of range. The system never computes scores; it saves them exactly as given.",
+    links: [["Import scores", "admin/scores.html"], ["Match columns", "admin/scores.html#map"], ["Excel template", "docs/tpt-scores-template.xlsx"]] },
+  { id: "absent", row: 22, col: "L", actor: "system", t: "Absent", s: "Has a slot, no score",
+    what: "Anyone with an exam slot but no score in the file is marked absent when the scores are approved. If the setting allows, they can take a later schedule without paying again.",
+    status: ["Scheduled", "Absent"], notify: "Applicant: “Marked absent”, with Apply for the next schedule (in app, email)",
+    links: [["What the applicant sees", "applicant/result-pending.html#absent"], ["Setting", "admin/schedules.html"]] },
+  { id: "approve", row: 22, col: "C", actor: "admin", t: "Check and approve scores", s: "Original file kept",
+    what: "Preview what changes, then approve. The original file and your approval are kept. Applicants still can't see anything.",
+    status: ["Scheduled", "Scored"], links: [["Approve dialog", "admin/scores.html#commit"], ["Results list", "admin/results.html"]] },
+  { id: "declare", row: 23, col: "C", actor: "admin", t: "Publish the results", s: "Now or at a set date; can be hidden again",
+    what: "Publish now, or set the date and time (for example Apr 20, 9:00 AM). Like tptv3's Show / Hide results switch, the admin can hide them again; emails and texts already sent stay sent.",
+    status: ["Scored", "Released"], links: [["Publish on a date", "admin/results.html"], ["Publish confirm", "admin/results.html#release"], ["Hide results", "admin/results.html#hide"], ["Sending progress", "admin/results.html#releasing"]] },
+  { id: "sent", row: 24, col: "C", actor: "system", t: "Results sent to everyone", s: "In app, email, SMS",
+    what: "Every examinee gets the result. The delivery report shows what failed, with resend.",
+    notify: "Applicant: “Results released” (in app, email, SMS)",
+    links: [["Delivery report", "admin/results.html#report"], ["Results email", "docs/email-results.html"], ["Text messages", "docs/sms.html"]] },
+  { id: "choose", row: 25, col: "C", actor: "applicant", t: "Sees result, chooses a program", s: "Only programs they qualify for",
+    what: "Sees their scores, stanine and the programs they qualify for (by cut-off), then chooses one. The survey is optional.",
+    links: [["Result screen", "applicant/result.html"], ["Result PDF", "docs/result-pdf.html"], ["Survey", "applicant/survey.html"]] },
+  { id: "reports", row: 26, col: "C", actor: "admin", t: "Reports, then the next schedule", s: "Downloads, activity log",
+    what: "Every report and download, plus the activity log. The next schedule starts again at “Publish registration”.",
+    links: [["Reports", "admin/reports.html"], ["Downloads", "admin/exports.html"], ["Activity log", "admin/audit.html"]] },
+];
+
+// [from, to, label, how, offset]. how: down (default) | side (same row) | drop (down the source column, into the target's side) | loopL / loopR (around the outside)
+const EDGES = [
+  ["season", "rounds"], ["rounds", "campus"], ["campus", "rooms"], ["rooms", "days"], ["days", "open"], ["open", "apply"],
+  ["apply", "pay"], ["apply", "ask", "", "side"], ["apply", "transferee", "Transferees"], ["transferee", "cashier"], ["ask", "answer"], ["pay", "cashier", "At the counter"], ["pay", "upload", "Online / bank"],
+  ["upload", "check"], ["check", "payreject", "Fix", "side"], ["check", "approved", "Approve"],
+  ["payreject", "upload", "Sends again", "loopR", 30], ["cashier", "approved", "", "drop"],
+  ["approved", "pick"], ["pick", "seat"], ["seat", "permit"], ["permit", "exam"], ["exam", "checkin", "", "sideDash"],
+  ["exam", "import"], ["import", "absent", "No score"], ["import", "approve", "Has a score"],
+  ["absent", "pick", "Next schedule", "loopL", 22],
+   ["approve", "declare"], ["declare", "sent"], ["sent", "choose"], ["choose", "reports"],
+  ["reports", "open", "Next schedule", "loopL", 48],
+];
+
+const ORDER = ["season", "rounds", "campus", "rooms", "days", "open", "apply", "ask", "answer", "transferee", "pay", "upload", "check", "payreject", "cashier", "approved",
+  "pick", "seat", "permit", "exam", "checkin", "import", "absent", "approve", "declare", "sent", "choose", "reports"];
+
+// What each step fixes compared with tptv3 (from the audit of the live system).
+const BETTER = {
+  season: "tptv3 needed new code, routes and a new database every year. Here a school year is just data you create.",
+  days: "tptv3 split seats in half for AM/PM in the code. Here each slot uses real rooms with real seat counts.",
+  open: "Same Activate / Deactivate idea, but two schedules can never be open by mistake, and the close date stops registration by itself.",
+  apply: "Clear fields with limits shown, autosave, and the photo is shrunk on the phone (tptv3 kept photos up to 100 MB: 26 GB). One application per schedule, so a student can apply again next schedule (tptv3 allowed one per account).",
+  ask: "tptv3 has no way to ask the office inside the system. Here the question and answer sit on the applicant's page.",
+  upload: "The same reference number can't be used twice.",
+  cashier: "No receipt photo to check: the OR number is the proof, and each one can only be used once.",
+  check: "Two admins can't decide the same application. Every approve or reject is logged with who, when and the remarks.",
+  approved: "tptv3 took the highest number + 1 on text, so two admins could issue the same examinee number. Here it comes from a locked counter.",
+  pick: "tptv3 counted seats, then saved with no lock, so slots overfilled (357 errors). Here the seat is locked while it's taken.",
+  permit: "tptv3 built the PDF on every click (19,209 errors). Here it's built once, and the app copy works offline.",
+  absent: "tptv3 recorded nobody as absent, so 635 people had no result and no reason. Here absent is recorded at the score import.",
+  import: "tptv3 read columns by position, saved the header row as a result, and doubled everything on a re-upload. Here columns are matched by name, every row is checked, changes are shown before saving, and the file is kept.",
+  declare: "Same Show / Hide switch as tptv3, plus a set date and time.",
+  sent: "tptv3 sent 2 emails through Gmail (daily limit, no record). Here every email and text is logged and can be resent.",
+  choose: "The survey is optional, and only programs the student qualifies for are offered.",
+  reports: "An activity log of who did what (tptv3 had none). Big exports run in the background so the site stays fast.",
+};
+
+const ACTOR = { admin: "Admin", applicant: "Applicant", cashier: "Cashier", proctor: "Proctor", system: "System, automatic", dec: "Decision", end: "End" };
+const byId = Object.fromEntries(NODES.map(n => [n.id, n]));
+const grid = document.getElementById("grid");
+const wireG = document.getElementById("wire-g");
+const panel = document.getElementById("panel");
+const diagram = document.getElementById("diagram");
+let selected = null, actorFilter = null;
+
+// All text here is fixed page content, escaped by esc(); the fragment is parsed in the target's context (HTML or SVG).
+function setMarkup(el, markup) {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  el.replaceChildren(range.createContextualFragment(markup));
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+function renderGrid() {
+  const parts = PHASES.map(p => `<div class="phase" style="grid-row:${p.row}"><span class="n">${p.n}</span><b>${esc(p.title)}</b></div>`);
+  for (const n of NODES) {
+    const cls = n.actor === "dec" ? "dec" : n.actor === "end" ? "end a-end" : `a-${n.actor}`;
+    parts.push(`<button type="button" class="node ${cls} ${n.col}" style="grid-row:${n.row}" data-id="${n.id}">`
+      + (n.isNew ? '<span class="new">NEW</span>' : "")
+      + (n.actor !== "dec" ? `<span class="who">${ACTOR[n.actor]}</span>` : "")
+      + `<span class="t">${esc(n.t)}</span>` + (n.s ? `<span class="s">${esc(n.s)}</span>` : "") + "</button>");
+  }
+  setMarkup(grid, parts.join(""));
+}
+
+function box(id) {
+  const el = grid.querySelector(`[data-id="${id}"]`), d = diagram.getBoundingClientRect(), r = el.getBoundingClientRect();
+  const x = r.left - d.left, y = r.top - d.top;
+  return { l: x, r: x + r.width, t: y, b: y + r.height, cx: x + r.width / 2, cy: y + r.height / 2 };
+}
+
+function route(a, b, how, off) {
+  const g = grid.getBoundingClientRect(), d = diagram.getBoundingClientRect();
+  const gl = g.left - d.left, gr = g.right - d.left;
+  if (how === "side" || how === "sideDash") return a.cx < b.cx ? [[a.r, a.cy], [b.l, b.cy]] : [[a.l, a.cy], [b.r, b.cy]];
+  if (how === "drop") return a.cx < b.cx ? [[a.cx, a.b], [a.cx, b.cy], [b.l, b.cy]] : [[a.cx, a.b], [a.cx, b.cy], [b.r, b.cy]];
+  if (how === "loopL") { const x = gl - off; return [[a.l, a.cy], [x, a.cy], [x, b.cy], [b.l, b.cy]]; }
+  if (how === "loopR") { const x = gr + off; return [[a.r, a.cy], [x, a.cy], [x, b.cy], [b.r, b.cy]]; }
+  if (Math.abs(a.cx - b.cx) < 2) return [[a.cx, a.b], [a.cx, b.t]];
+  const my = a.b + Math.min(16, (b.t - a.b) / 2);
+  return [[a.cx, a.b], [a.cx, my], [b.cx, my], [b.cx, b.t]];
+}
+
+function labelPoint(pts, how) {
+  if (how === "loopL" || how === "loopR") {
+    const [p, q] = [pts[1], pts[2]];
+    return [p[0] + (how === "loopL" ? -6 : 6), (p[1] + q[1]) / 2, how === "loopL" ? "end" : "start", true];
+  }
+  if (pts.length === 2) {
+    const [p, q] = pts;
+    return p[1] === q[1] ? [(p[0] + q[0]) / 2, p[1] - 7, "middle"] : [p[0] + 7, q[1] - 6, "start"];
+  }
+  const [p, q] = [pts[2], pts[3]];
+  return [p[0] + 7, (p[1] + q[1]) / 2 + 4, "start"];
+}
+
+function drawWires() {
+  const svg = document.getElementById("wires");
+  svg.setAttribute("width", diagram.scrollWidth);
+  svg.setAttribute("height", diagram.scrollHeight);
+  const out = [];
+  for (const [from, to, label, how, off] of EDGES) {
+    const pts = route(box(from), box(to), how, off || 0);
+    const d = "M" + pts.map(p => p.join(" ")).join(" L");
+    const hot = selected === from || selected === to;
+    const loop = how === "loopL" || how === "loopR" || how === "sideDash";
+    out.push(`<path class="halo" d="${d}"/><path class="wire${loop ? " loop" : ""}${hot ? " hot" : ""}" d="${d}" marker-end="url(#${hot ? "arrow-hot" : "arrow"})"/>`);
+    if (label) {
+      const [x, y, anchor, vertical] = labelPoint(pts, how);
+      const rot = vertical ? ` transform="rotate(-90 ${x} ${y})"` : "";
+      const a = vertical ? "middle" : anchor;
+      const yy = vertical ? y + (how === "loopL" ? 0 : 8) : y;
+      out.push(`<text class="elab${hot ? " hot" : ""}" x="${x}" y="${yy}" text-anchor="${a}"${rot}>${esc(label)}</text>`);
+    }
+  }
+  setMarkup(wireG, out.join(""));
+}
+
+function badge(s, cls = "") { return s ? `<span class="badge ${cls}">${esc(s)}</span>` : ""; }
+
+function showPanel(id) {
+  const n = byId[id];
+  const color = n.actor === "dec" ? "var(--cash)" : n.actor === "end" ? "var(--red)" : `var(--${{ admin: "deep-2", applicant: "blue", cashier: "cash", proctor: "violet", system: "sys" }[n.actor]})`;
+  const outs = EDGES.filter(e => e[0] === id);
+  const status = n.status ? `<h3>Status</h3><div class="status">${n.status[0] ? badge(n.status[0], "from") + " →" : ""} ${badge(n.status[1])}</div>` : "";
+  setMarkup(panel, `<button class="close" type="button" aria-label="Close">×</button>
+    <div class="who" style="--c:${color}">${ACTOR[n.actor]}</div>
+    <h2>${esc(n.t)}</h2><p>${esc(n.what)}</p>
+    ${n.bullets ? `<ul>${n.bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
+    ${status}
+    ${n.notify ? `<h3>Who gets told</h3><p style="margin:0">${esc(n.notify)}</p>` : ""}
+    ${n.links ? `<h3>See the screen</h3><div class="links">${n.links.map(([t, h]) => `<a href="${h}">${esc(t)}</a>`).join("")}</div>` : ""}
+    ${BETTER[id] ? `<div class="better"><b>Better than tptv3</b>${esc(BETTER[id])}</div>` : ""}
+    ${n.note ? `<div class="note">${esc(n.note)}</div>` : ""}
+    ${outs.length ? `<h3>What comes next</h3><div class="goes">${outs.map(([, to, label]) => `<button type="button" data-go="${to}">${label ? `<small>${esc(label)} → </small>` : ""}${esc(byId[to].t)}</button>`).join("")}</div>` : ""}`);
+  panel.classList.add("open");
+}
+
+function emptyPanel() {
+  panel.classList.remove("open");
+  setMarkup(panel, `<div class="empty"><span class="h">Click any box</span>to see who does it, what happens, the status change, who gets told, and the screen.<br><br>Or press <b>Start walk-through</b> to go step by step.</div>`);
+}
+
+function select(id, scroll) {
+  selected = id;
+  grid.querySelectorAll(".node").forEach(el => el.classList.toggle("sel", el.dataset.id === id));
+  drawWires(); showPanel(id); updateWalk();
+  if (scroll) grid.querySelector(`[data-id="${id}"]`).scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+}
+
+function updateWalk() {
+  const i = ORDER.indexOf(selected);
+  document.getElementById("count").textContent = i < 0 ? `${ORDER.length} steps` : `Step ${i + 1} / ${ORDER.length}`;
+  document.getElementById("prev").disabled = i <= 0;
+  document.getElementById("next").textContent = i < 0 ? "Start walk-through ›" : i === ORDER.length - 1 ? "Start again" : "Next ›";
+}
+
+function setActor(a) {
+  actorFilter = actorFilter === a ? null : a;
+  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.actor === actorFilter));
+  grid.classList.toggle("dim", !!actorFilter);
+  grid.querySelectorAll(".node").forEach(el => el.classList.toggle("lit", byId[el.dataset.id].actor === actorFilter));
+}
+
+grid.addEventListener("click", e => { const el = e.target.closest(".node"); if (el) select(el.dataset.id, false); });
+panel.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]");
+  if (go) select(go.dataset.go, true);
+  if (e.target.closest(".close")) panel.classList.remove("open");
+});
+document.getElementById("legend").addEventListener("click", e => { const c = e.target.closest(".chip"); if (c) setActor(c.dataset.actor); });
+document.getElementById("next").addEventListener("click", () => {
+  const i = ORDER.indexOf(selected);
+  select(ORDER[i >= ORDER.length - 1 ? 0 : i + 1], true);
+});
+document.getElementById("prev").addEventListener("click", () => { const i = ORDER.indexOf(selected); if (i > 0) select(ORDER[i - 1], true); });
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") document.getElementById("next").click();
+  if (e.key === "ArrowLeft") document.getElementById("prev").click();
+});
+
+renderGrid(); emptyPanel(); updateWalk(); drawWires();
+new ResizeObserver(drawWires).observe(diagram);
+if (document.fonts) document.fonts.ready.then(drawWires);
+</script>
+</body>
+</html>

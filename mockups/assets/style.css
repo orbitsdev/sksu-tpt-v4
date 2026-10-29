@@ -578,3 +578,154 @@ a.fr{align-items:flex-start}a.fr .cap{letter-spacing:0;text-transform:none;flex-
 .cinfo-strip{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 24px;align-items:center;padding:10px 16px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:13px;color:var(--muted)}.cinfo-strip b{color:var(--ink)}.cinfo-strip a{margin-left:auto;color:var(--deep-2)}
 .infogrid{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px}.cmain>.panel{grid-column:1/-1}
 .cmain>.kpis.cstats{grid-template-columns:repeat(4,1fr)}.cstats .kpi:first-child{background:#fff;border-color:var(--line)}.cstats .kpi:first-child b{font-size:24px;color:var(--ink)}
+/* cashier applicants: initials + clickable rows */
+.cwho2{display:flex;align-items:center;gap:10px}.cwho2 .sub{margin-top:1px}
+.ini{flex:none;width:34px;height:34px;border-radius:99px;background:var(--mint-tint);color:var(--deep);display:grid;place-items:center;font-weight:600;font-size:12px}
+table.crows tbody tr{cursor:pointer}table.crows td:last-child{text-align:right}
+.cshell~.inmain{left:0}
+.seg a{padding:6px 12px;font-size:13px;color:var(--muted);border-left:1px solid var(--line);text-decoration:none;display:flex;align-items:center}.seg a:first-child{border-left:0}.seg a.on{color:var(--deep-2)}.seg a:hover:not(.on){color:var(--ink);background:#f7faf8}
+/* campus cards act as a picker */
+a.ctile{text-decoration:none;color:inherit;gap:4px;transition:border-color .15s,box-shadow .15s}a.ctile:hover{border-color:var(--green-line)}
+a.ctile.on{border-color:var(--deep-2);box-shadow:inset 0 0 0 1px var(--deep-2),0 1px 3px rgba(11,77,44,.08);background:var(--mint-tint)}
+a.ctile .ct{font:600 15px var(--sans);color:var(--ink)}a.ctile .cn{font:600 18px var(--sans);color:var(--ink)}
+.chkrow{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink)}.chkrow input{width:16px;height:16px;margin:0;accent-color:var(--deep-2)}
+.modal select,.modal input{max-width:100%}
+.ask{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border:1px solid var(--mint-line);border-radius:14px;background:var(--mint-tint);text-decoration:none;color:#212121}.ask b{font-size:14px;color:var(--deep)}.ask span{font-size:13px;color:#545454}.phone textarea,.modal textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;padding:10px;font:14px var(--sans)}
+.abell{position:relative;display:grid;place-items:center;width:34px;height:34px;border-radius:99px;color:var(--ink)}.abell:hover{background:#f2f6f3}.abell svg{width:20px;height:20px}.abell i{position:absolute;top:2px;right:2px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--bad);color:#fff;font:600 10px/16px var(--sans);font-style:normal;text-align:center;box-sizing:border-box}
+.bellpop{display:none;position:fixed;inset:0;z-index:60}.bellpop:target{display:block}.bellpop .scrim{position:absolute;inset:0}.bellpop .pop{position:absolute;top:118px;right:150px;width:380px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.14);overflow:hidden}.pophead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}.pophead a{font-size:13px;color:var(--deep-2)}.pi{display:flex;gap:10px;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #edf2ef;text-decoration:none;color:var(--ink)}.pi:hover{background:#f7faf8}.pi span{display:flex;flex-direction:column;gap:2px}.pi b{font-weight:500;font-size:14px}.pi small,.pi time{font-size:12px;color:var(--muted)}.pi time{flex:none}.pi.unread b:before{content:"";display:inline-block;width:7px;height:7px;border-radius:99px;background:var(--deep-2);margin-right:7px;vertical-align:2px}.popfoot{display:block;text-align:center;padding:10px;font-size:13px;color:var(--deep-2)}@media(max-width:700px){.bellpop .pop{right:16px}}
+
+/* ---------- clean pass (loaded last): the euphoria rules.
+   Stat cards are white with a grey label and a dark number; colour only for meaning.
+   Selected things are shown by text weight or an underline, never a tinted box with a border. */
+
+/* stat cards */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+.kpi,.kpi:first-child,.cstats .kpi:first-child{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;box-shadow:none;gap:2px;min-width:0}
+.kpi>span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi b,.kpi:first-child b,.kpi.act b{font:600 26px var(--sans);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:4px}
+.kpi b.neg{color:var(--bad)}
+.kpi small{font-size:12px;color:var(--muted)}
+.kpi u,.kpi:first-child u{display:inline;margin:0;padding:0;background:none;color:var(--deep-2);font-weight:500;text-decoration:underline;text-underline-offset:2px}
+
+/* sidebar: selected = dark bold text on a neutral grey, no green box */
+nav.side a.on{background:#f1f2f1;color:var(--ink);font-weight:600;box-shadow:none}
+nav.side a.on svg{color:var(--deep-2)}
+nav.side a:hover{background:#f6f7f6}
+
+/* tabs: plain text, underline under the selected one */
+.tabsbar a.on,.tabsbar.rounds a.on{background:none;color:var(--ink);font-weight:600;border-bottom-color:var(--deep-2)}
+
+/* segmented filters: grey track, selected is white */
+.seg{background:#f1f2f1;border:0;border-radius:8px;padding:3px;gap:2px}
+.seg span,.seg a{border:0!important;border-radius:6px;padding:5px 12px;color:var(--muted)}
+.seg .on,.seg a.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.seg a:hover:not(.on){background:transparent;color:var(--ink)}
+
+/* campus cards: selected = darker border only */
+a.ctile.on{background:#fff;box-shadow:none;border-color:var(--ink)}
+
+/* header: solid university green, the open schedule as plain text */
+header.top{background:var(--deep)}
+.top .pill.ok{background:none;border:0;padding:0;color:#e3f9ec;font-size:13px;text-decoration:none}
+.top .pill.ok:hover{text-decoration:underline}
+
+/* small toggles (This schedule / Whole school year): selected = grey chip, dark text */
+.tabs span,.tabs a{border-radius:6px;padding:5px 12px;color:var(--muted);background:none}
+.tabs .on{background:#f1f2f1;color:var(--ink);font-weight:600}
+
+/* bar lists and the funnel: compact rows, even digits, the drop as plain grey text */
+.hbars{gap:12px}
+.hb{grid-template-columns:150px 1fr 56px 52px}
+.hb b{font:600 13px var(--sans);font-variant-numeric:tabular-nums}
+.hb .drop{border:0;padding:0;border-radius:0;text-align:left;color:var(--muted);font:12px var(--sans);font-variant-numeric:tabular-nums}
+.hb .t span{background:var(--deep-2)}
+
+/* step rail for long forms (euphoria StepRail): steps on the left, the form on the right */
+.railwrap{display:grid;grid-template-columns:250px minmax(0,1fr);gap:24px;align-items:start}
+.railbody{display:flex;flex-direction:column;gap:16px;min-width:0}
+.step-rail{position:sticky;top:16px;display:flex;flex-direction:column;gap:2px}
+.step-rail a{position:relative;display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;color:var(--ink);font-size:14px;text-decoration:none}
+.step-rail a:not(:last-child):after{content:"";position:absolute;left:23px;top:calc(50% + 15px);width:1.5px;height:calc(100% - 28px);background:var(--line-2)}
+.step-rail a.done:not(:last-child):after{background:var(--deep-2)}
+.step-rail i{display:grid;flex:none;place-items:center;width:24px;height:24px;border-radius:50%;font:600 12px var(--sans);font-style:normal;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line-2);background:#fff}
+.step-rail small{display:block;font-size:12px;font-weight:400;color:var(--muted)}
+.step-rail a.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08),0 0 0 1px var(--line);font-weight:600}
+.step-rail a.on i{color:var(--deep-2);box-shadow:inset 0 0 0 1.5px var(--deep-2)}
+.step-rail a.done i{color:#fff;background:var(--deep-2);box-shadow:none}
+@media(max-width:900px){.railwrap{grid-template-columns:1fr}.step-rail{position:static;flex-direction:row;overflow-x:auto}.step-rail a:after{display:none}.step-rail small{display:none}}
+
+/* ---------- calm pass: fewer colours, fewer boxes, softer numbers */
+/* status: grey chip; the dot is green when done or good, red for a real problem, grey otherwise */
+.b,.b.ok,.b.warn,.b.bad,.b.info,.b.gray,.b.vio{background:#f1f2f1;color:var(--ink);font-weight:500;border:0;border-radius:99px;padding:2px 10px 2px 8px;display:inline-flex;align-items:center;gap:6px}
+.b:before{content:"";width:6px;height:6px;border-radius:99px;background:#a3aaa6;flex:none}
+.b.ok:before{background:#16a34a}.b.bad:before{background:#dc2626}.b.warn:before,.b.info:before,.b.vio:before{background:#a1a1aa}
+.b.bad{color:var(--bad)}
+.hero .b.ok{background:#f1f2f1;color:var(--ink)}
+.st{display:inline-flex;align-items:center;gap:6px;padding:2px 10px 2px 8px;border-radius:99px;background:#f1f2f1;color:var(--ink);font-size:12px;font-weight:500;white-space:nowrap}
+.st:before{content:"";width:6px;height:6px;border-radius:99px;background:#a3aaa6}
+.st.live:before{background:#16a34a}.st.bad{color:var(--bad)}.st.bad:before{background:#dc2626}
+.tabsbar.rounds .st{margin-left:6px}
+
+/* numbers: sans with even digits; mono only for codes */
+.num{font-family:var(--sans);font-variant-numeric:tabular-nums}
+td .mono:not(.ink){font-family:var(--sans);font-variant-numeric:tabular-nums}
+
+/* one compact setting row */
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
+.setrow:first-child{border-top:0}
+
+/* meters: thin neutral bar, red only when full */
+.meter .t{height:4px;background:#eef0ee}
+.meter .t span,.meter .t span.hi{height:4px;background:#8a948f}
+.meter .t span.full{background:var(--bad)}
+.meter .num{white-space:nowrap;min-width:110px;font-size:13px;color:var(--ink)}
+
+/* selected rows and chips: neutral */
+.chip.on{background:#f1f2f1;border-color:transparent;color:var(--ink);font-weight:600}
+.queue a.on{background:#f1f2f1;box-shadow:inset 3px 0 0 var(--ink)}
+
+/* admin inputs: grey borders, normal size (the big rounded fields are for the phone app) */
+body:not(.phone-page):not(.boardpage) .fld input,body:not(.phone-page):not(.boardpage) .fld select{height:38px;border:1px solid var(--line-2);border-radius:8px;font:14px var(--sans);padding:0 12px}
+body:not(.phone-page):not(.boardpage) .fld textarea{border:1px solid var(--line-2)}
+input:focus,select:focus,textarea:focus{outline:2px solid #9aa5a0;outline-offset:1px}
+
+
+/* phone permit: the card never shrinks under the page */
+.wallet{flex-shrink:0}
+
+/* proctor phone: same header and font as the student app */
+.pro{font-family:var(--round)}
+.pro .ph{background:#fff;border-bottom:1px solid var(--line);color:var(--ink)}
+
+/* journey boards: light, like every other page */
+body.boardpage{background:#f6f8f7;color:var(--ink)}
+body.boardpage{background:#f6f8f7}
+body.boardpage .crumbs a,body.boardpage .cap a{color:var(--deep-2)}
+body.boardpage .intro,body.boardpage .stagebar a{color:var(--muted)}
+body.boardpage .sec{color:var(--deep)}
+body.boardpage a.fr .cap,body.boardpage .cap .t,body.boardpage .legend .cap .t{color:var(--ink)}
+body.boardpage a.fr .cap .n{background:#e9ecea;color:var(--muted)}
+body.boardpage a.fr .cap .n.state{background:transparent;border:1px solid var(--line-2);color:var(--muted)}
+body.boardpage .rules,body.boardpage .rules b{color:var(--ink)}
+
+/* a small neutral label next to a name (Transferees, Transferee): no dot, no colour */
+.tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:99px;background:#f1f2f1;color:var(--muted);font-size:12px;font-weight:500;white-space:nowrap;vertical-align:1px}
+.sidenote{display:block;margin:12px 12px 0;color:var(--muted);font-size:12px}
+td .act{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}td{vertical-align:middle}
+
+/* cashier counter: waiting list on the left, the selected person is recorded on the right */
+.clist{display:flex;flex-direction:column;border-top:1px solid var(--line);margin:0 -28px -28px}
+.clisthead{display:flex;justify-content:space-between;align-items:center;padding:12px 28px;font-size:13px}
+.crow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 28px;border-top:1px solid #edf2ef;text-decoration:none;color:var(--ink)}
+.crow:hover{background:#f7f8f7}.crow.on{background:#f1f2f1}
+.crow>.sub{font-size:12px;color:var(--muted);text-align:right}
+
+/* callouts: only real warnings and problems keep a colour; information is plain text */
+.alertbox.info,.alertbox.ok{background:none;border:0;padding:0;color:var(--muted)}
+
+/* applicant app: the picked card or schedule is marked by a dark border, not a mint box */
+.ses.on,.phone.app .ses.on{background:#fff;border:1.5px solid var(--ink)}
+.ses.off{opacity:.45;pointer-events:none}
+
+/* short table cells (dates, counts, status) stay on one line */
+td .num,td .st,td .act{white-space:nowrap}

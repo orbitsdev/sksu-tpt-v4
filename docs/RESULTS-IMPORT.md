@@ -1,6 +1,6 @@
 # Results import: how tptv3 does it and how v4 will
 
-**Decision:** v4 does **not** compute scores. The SKSU Testing Center computes them; v4 imports their CSV, checks it, shows what changes, and publishes on approval.
+**Decision:** v4 does **not** compute scores. The SKSU Testing Center computes them; v4 imports their Excel file, checks it, shows what changes, and publishes on approval.
 
 ## How tptv3 imports scores [Certain]
 
@@ -21,9 +21,9 @@ Code: `app/Imports/ExaminationResultImport.php` and `app/Http/Livewire/Admin/App
 7. No check against attendance. Absent examinees and missing answer sheets look the same (the 635 gap).
 8. The 2026 file didn't fit this importer: it has name, standard score, stanine and label per subject, ESM, an overall score, and a second table glued on at columns 32–33. Hence the hand-written scripts in `docs/` (`clean_csv.php`, `find_missing_results.php` …) and the Feb 2026 migration adding `esm_*` and `preferred_program`.
 
-## v4 CSV template
+## v4 Excel template
 
-One header row, UTF-8, comma-separated. Download it from the Scores import page: `tpt-scores-template.csv`.
+One header row, sheet "Result". Download it from the Import scores page: `tpt-scores-template.xlsx` (a CSV with the same columns also works).
 
 ```csv
 examinee_no,name,english_ss,english_stanine,science_ss,science_stanine,math_ss,math_stanine,filipino_ss,filipino_stanine,social_studies_ss,social_studies_stanine,esm_ss,esm_stanine,overall_ss,overall_stanine
@@ -33,7 +33,12 @@ examinee_no,name,english_ss,english_stanine,science_ss,science_stanine,math_ss,m
 - `name` is only used to double-check the match; the key is `examinee_no`.
 - The qualitative label ("Above Average") isn't imported. It comes from the stanine, which matched 1:1 across all of the 2026 data.
 - The preferred program isn't imported; it already lives on the application.
-- The 2026 file's own headers ("Examinee Number", "English · Standard Score" …) are recognised through **column matching**, so the Testing Center can keep their usual export.
+- The Testing Center's own Excel is accepted **as it is** (.xlsx or CSV), so they keep their usual export even when the layout changes from year to year:
+  - **Sheet:** the sheet with the examinee numbers is picked ("Result" in 2026); the admin can choose another.
+  - **Two header rows** (subject, then Standard Score / Stanine) are read together as "English · Standard Score".
+  - **Column matching:** each column is matched by its header name, never by position. The admin checks the match once; it is remembered for next year.
+  - **Extra columns** (the Qualitative Interpretation, the Preferred Program, the stray list at columns 32–33 in 2026) are set to Ignore.
+  - **A required column missing** (examinee number, or a subject's score) stops the import with a plain message. Nothing is saved.
 
 ## v4 import rules
 
@@ -41,12 +46,11 @@ examinee_no,name,english_ss,english_stanine,science_ss,science_stanine,math_ss,m
 |---|---|
 | Excel quirks: UTF-8 BOM, `;` separators, quoted names with commas, Windows line endings | Handled |
 | Examinee number written by Excel as 5.0021E+05, or with spaces | Normalised; anything else that isn't 6 digits is flagged ("letter O instead of zero") |
-| Not registered for this round | Flagged; not imported |
+| Not registered for this schedule | Flagged; not imported |
 | Same examinee twice | Flagged; neither row imported until fixed |
 | Score outside 200–800, stanine outside 1–9, or stanine not matching the score band | Flagged |
-| Checked in on exam day but missing from the file | Listed as "present, no score" |
-| In the file but marked absent | Flagged |
-| Two tables side by side (the 2026 layout) | Rejected with a plain message and the template |
+| Has an exam slot but missing from the file | Marked absent on approve (check-in is optional; with it on, a checked-in person with no score is flagged instead) |
+| Two tables side by side (the 2026 layout) | The extra columns are ignored in Match columns |
 | Re-upload | Compared with what's in the system: new, changed, unchanged. Only approved changes are saved |
 | Approval | One transaction. The original file, uploader, time, counts and approver go in `score_imports` and the activity log |
 | Publish | A separate step with a scheduled time; students and SMS notified |
