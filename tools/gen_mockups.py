@@ -102,6 +102,11 @@ def filters(search, selects=(), right="", extra="", more=False, showing=""):
     return line
 
 
+def plist_admin(items):
+    """Two or three plain choices inside an admin dialog: a title and a muted line each."""
+    return '<div class="choices">' + "".join(f'<label class="chkrow choice"><input type="radio" name="c"{" checked" if i == 0 else ""}> <span><b>{t}</b><small>{d}</small></span></label>' for i, (t, d) in enumerate(items)) + "</div>"
+
+
 def rowact(view, more="#menu", action=None):
     """Row actions, all visible as quiet text: View, at most one action that fits the row, then ··· for rare or risky ones."""
     act = f'<a class="btn" href="{action[1]}">{action[0]}</a> ' if action else ""
@@ -181,7 +186,7 @@ def guide_modal(key):
     return modal("guide", "info", "", f"Guide · {title}", body, btn("Close", "#"))
 
 
-GUIDE_BTN = '<a class="btn ghost guidebtn" href="#guide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg>Guide</a>'
+GUIDE_BTN = '<a class="btn ghost guidebtn" href="#guide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5c3-1.5 6-1.5 10 1 4-2.5 7-2.5 10-1V19c-3-1.5-6-1.5-10 1-4-2.5-7-2.5-10-1z"/><path d="M12 6.5V20"/></svg>Guide</a>'
 
 
 def list_page(*parts, count="", actions=""):
@@ -1389,26 +1394,52 @@ admin("scores", "Import scores", f"""{rounds_bar(1)}{rail(SCORE_STEPS, 3, f'''<d
       + modal("commit", "warn", WARN, "Approve 9,088 scores?", '<p class="muted" style="margin:0">They are saved exactly as in the file. Students cannot see them until you publish. The file and your approval go in the activity log.</p>', btn("Cancel", "#") + btn("Approve", "results.html#committed", "primary")),
       states=[("rail-min", "Steps hidden"), ("uploading", "Uploading"), ("checking", "Checking rows"), ("bg", "Running in background"), ("summary", "Import summary"), ("map", "Match columns"), ("missing", "Required column missing"), ("wrongsched", "Wrong schedule's file"), ("commit", "Approve confirm")])
 
-RESULTS_NOT_PREPARED = ('<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted">0 of 9,088 ready · scores approved Apr 18. Prepare them before you publish.</span></div><span>' + btn("Prepare result PDFs", "#before", "primary") + '</span></div>')
+RESULTS_NOT_PREPARED = ('<div class="tipline"><b>Recommended:</b> prepare the PDFs before you publish. If thousands of students open and download at the same moment while PDFs are still being made, the website slows down or stops. Prepared files are only handed out, so results day stays fast. It takes about 1 to 1.5 hours; overnight is best.</div><div class="pdfpanel"><div><b>Result PDFs</b><span class="muted">0 of 9,088 ready · scores approved Apr 18. Prepare them before you publish.</span></div><span>' + btn("Prepare result PDFs", "#before", "primary") + '</span></div>')
 RESULTS_PDF_LIST = list_page(stabs([("All", "9,088"), ("Ready", "6,210"), ("Preparing", "2,876"), ("Failed", "2")]),
     table(["Examinee", "Overall standard score", "Result PDF", ""], [
-        (two('<span class="ink">Maria S. Dela Cruz</span>', "509712"), '<span class="num">584</span>', '<span class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
-        (two('<span class="ink">Datu R. Mamalinta</span>', "509713"), '<span class="num">512</span>', '<span class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
-        (two('<span class="ink">Princess A. Lumabao</span>', "509714"), '<span class="num">661</span>', '<span class="st">Preparing…</span>', ""),
-        (two('<span class="ink">Norhana P. Sali</span>', "509715"), '<span class="num">547</span>', '<span class="st">Waiting</span>', ""),
+        (two('<span class="ink">Maria S. Dela Cruz</span>', "509712"), '<span class="num">584</span>', '<span id="pdfs1" class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
+        (two('<span class="ink">Datu R. Mamalinta</span>', "509713"), '<span class="num">512</span>', '<span id="pdfs2" class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
+        (two('<span class="ink">Princess A. Lumabao</span>', "509714"), '<span class="num">661</span>', '<span id="pdfs3" class="st">Preparing…</span>', ""),
+        (two('<span class="ink">Norhana P. Sali</span>', "509715"), '<span class="num">547</span>', '<span id="pdfs4" class="st">Waiting</span>', ""),
         (two('<span class="ink">Abdul R. Kanakan</span>', "509716"), '<span class="num">498</span>', '<span class="st bad">Failed</span>', rowact(None, "", ("Retry", "#")))]),
     pager(1, 25, "9,088"))
-RESULTS_BAR = ('<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><b><span data-count="6210">6,210</span> of 9,088</b> ready · preparing one by one in the background · about 25 min left</span><div class="meter run"><div class="t"><span style="width:68%"></span></div><span class="num">68%</span></div></div><span style="display:flex;gap:8px;align-items:center">' + btn("Pause", "#") + '</span></div>'
+PDF_DEMO = """<script>
+(function () {
+  // Mockup only: replays PDF preparing over ~10 seconds when the "Preparing PDFs" state opens.
+  var total = 9088, ms = 10000, timer = null;
+  var flips = [[0.15, 1], [0.35, 2], [0.6, 3], [0.85, 4]];
+  function el(id) { return document.getElementById(id); }
+  function setRow(i, ready) { var r = el("pdfs" + i); if (!r) return; r.textContent = ready ? "Ready" : (i === 3 ? "Preparing…" : "Waiting"); r.className = ready ? "st live" : "st"; }
+  function run() {
+    if (!el("pdfn")) return;
+    clearInterval(timer);
+    var start = Date.now(), meter = el("pdfmeter");
+    meter.className = "meter run";
+    for (var i = 1; i <= 4; i++) setRow(i, false);
+    timer = setInterval(function () {
+      var t = Math.min(1, (Date.now() - start) / ms), done = Math.round(total * t);
+      el("pdfn").textContent = done.toLocaleString("en-US");
+      el("pdfbar").style.width = (t * 100).toFixed(1) + "%";
+      el("pdfpct").textContent = Math.round(t * 100) + "%";
+      el("pdfleft").textContent = t < 1 ? "about " + Math.max(1, Math.round((1 - t) * 75)) + " min left" : "all done";
+      flips.forEach(function (f) { if (t >= f[0]) setRow(f[1], true); });
+      if (t >= 1) { clearInterval(timer); meter.className = "meter done"; }
+    }, 100);
+  }
+  function check() { if (location.hash === "#before") run(); }
+  window.addEventListener("hashchange", check); check();
+})();
+</script>"""
+RESULTS_BAR = ('<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><b><span id="pdfn">6,210</span> of 9,088</b> ready · preparing one by one in the background · <span id="pdfleft">about 25 min left</span></span><div class="meter run" id="pdfmeter"><div class="t"><span id="pdfbar" style="width:68%"></span></div><span class="num" id="pdfpct">68%</span></div></div><span style="display:flex;gap:8px;align-items:center">' + btn("Pause", "#") + '</span></div>'
                '<div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st">Not released</span><label for="rel">Release on</label><input id="rel" type="datetime-local" value="2027-04-20T09:00"></span>'
                '<span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + '<a class="btn primary disabled" aria-disabled="true" title="Waiting for result PDFs">Publish now</a>' + '</span></div><label class="chkrow"><input type="checkbox" checked> Publish when the PDFs are ready (if the release date has passed)</label>')
-admin("results", "Results", f"""{rounds_bar(1)}<div class="head"><span class="muted"></span>{btn("Hide results", "#hide")}</div>
-<p class="guideline"><span class="st live">Published</span> Apr 20, 9:00 AM</p>
+admin("results", "Results", f"""{rounds_bar(1)}<div class="head"><span class="muted"></span><span class="pubnote">Visible to students<small>since Apr 20, 9:00 AM</small></span><a class="switch on" href="#hide" aria-label="Results visible to students: turn off to hide"></a></div>
 <div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><span class="donemark">✓</span> 9,088 of 9,088 ready · one per examinee, in the official layout</span><div class="meter done"><div class="t"><span style="width:100%"></span></div><span class="num">100%</span></div></div><span style="display:flex;gap:8px">{btn("Preview one", "../docs/result-pdf.html")}{btn("Prepare again", "#pdf-rebuild")}</span></div>
-{list_page(stabs([("All scored", "9,088"), ("Qualified, 1st choice", "5,102"), ("Qualified, 2nd or 3rd", "1,112"), ("Not qualified", "2,874"), ("Absent", "635")]), filters("Name or examinee no.", [("Campus", ["Any campus", "Isulan", "ACCESS, Tacurong"]), ("Program", ["Any program (type to search)", "BS Civil Engineering", "BS Nursing"]), ("Result PDF", ["Any PDF status", "Ready", "Preparing", "Failed"])], more=True, right=btn("Export (Excel)", "exports.html#queued"), showing="Showing <b>412</b> · Qualified for 1st choice · BS Civil Engineering"),
-table(["Examinee", "1st choice", "Overall standard score", "Stanine", "Result PDF", ""], [(two(f'<span class="ink">{nm}</span>', no), two(pr, cp), f'<span class="num">{sc}</span>', stn, '<span class="st live">Ready</span>', rowact("result-detail.html", "", ("Open PDF", "../docs/result-pdf.html"))) for no, nm, pr, cp, sc, stn in [
+{list_page(stabs([("All scored", "9,088"), ("Qualified, 1st choice", "5,102"), ("Qualified, 2nd or 3rd", "1,112"), ("Not qualified", "2,874"), ("Absent", "635"), ("Hidden from student", "3")]), filters("Name or examinee no.", [("Campus", ["Any campus", "Isulan", "ACCESS, Tacurong"]), ("Program", ["Any program (type to search)", "BS Civil Engineering", "BS Nursing"])], more=True, right=btn("Export (Excel)", "exports.html#queued"), showing="Showing <b>412</b> · Qualified for 1st choice · BS Civil Engineering"),
+table(["Examinee", "1st choice", "Overall", "Stanine", "Result PDF", ""], [(two(f'<span class="ink">{nm}</span>', no), two(pr, cp), f'<span class="num">{sc}</span>', stn, ('<span class="st">Hidden from student</span>' if nm == "Jerome T. Abas" else '<span class="st live">Ready</span>'), rowact("result-detail.html", "#rowmenu", ("Show again", "#") if nm == "Jerome T. Abas" else ("Open PDF", "../docs/result-pdf.html"))) for no, nm, pr, cp, sc, stn in [
     ("500214", "Maria S. Dela Cruz", "BS Civil Engineering", "Isulan", "584", "7"), ("500176", "Datu R. Mamalinta", "BS Fisheries", "Palimbang", "512", "6"),
-    ("500198", "Princess A. Lumabao", "BS Accountancy", "ACCESS, Tacurong", "661", "9"), ]],
-    sortable=("Examinee", "Overall standard score"), active=("Overall standard score", "desc")),
+    ("500198", "Princess A. Lumabao", "BS Accountancy", "ACCESS, Tacurong", "661", "9"), ("500231", "Jerome T. Abas", "BS Nursing", "ACCESS, Tacurong", "603", "8"), ]],
+    sortable=("Examinee", "Overall"), active=("Overall", "desc")),
 pager(1, 25, "9,088"))}""",
       overlays=inmain("none", empty("list", "No scores for Schedule 2 yet", "Import the Testing Center Excel after exam day.", btn("Import scores", "scores.html", "primary")))
       + modal("pdf-rebuild", "info", "", "Prepare all result PDFs again?", '<p class="muted" style="margin:0">Use this only if the PDF layout or a signatory changed. 9,088 PDFs are rebuilt one by one in the background (about 1 hour). Students keep downloading the current ones until each new one is ready.</p>', btn("Cancel", "#") + btn("Prepare again", "#", "primary"))
@@ -1417,7 +1448,15 @@ pager(1, 25, "9,088"))}""",
       + inmain("notyet", RESULTS_NOT_PREPARED)
       + inmain("listloading", skel_table(6, 5))
       + toast("pdf-open", "info", '<span class="spin"></span>', "Opening Maria S. Dela Cruz's result PDF", "It is already prepared, so it opens in a second.")
-      + inmain("before", RESULTS_BAR + RESULTS_PDF_LIST)
+      + inmain("before", RESULTS_BAR + RESULTS_PDF_LIST) + PDF_DEMO
+      + menu("rowmenu", [("Hide this student's result", "#hide-one", "", "e.g. a score under review"), ("Correct a score", "result-detail.html#fix", "", "Saved as given; PDF rebuilt")])
+      + modal("hide-one", "warn", WARN, "Hide Maria S. Dela Cruz's result?", '<div class="fld"><label for="ho">Reason (for the activity log)</label><select id="ho"><option>Score under review with the Testing Center</option><option>Identity check needed</option><option>Other</option></select></div><p class="muted" style="margin:0">She sees: “Your result is under review. Please contact the Guidance and Testing Center.” Her PDF can’t be downloaded until you show it again.</p>', btn("Cancel", "#") + btn("Hide her result", "#hidden-one", "primary"))
+      + toast("hidden-one", "ok", OK, "Result hidden for Maria S. Dela Cruz", "Show it again from her row any time. Logged with your reason.")
+      + modal("pub-early", "warn", WARN, "PDFs are not ready yet (6,210 of 9,088)", '<p class="muted" style="margin:0">Publishing now is allowed, but not recommended: students who open their result will ask for PDFs that are still being made, and the website can slow down.</p>' + plist_admin([("Wait until all PDFs are ready", "Publish happens by itself when they are (recommended)"), ("Publish now, screen only", "Students see their result; the PDF button says “available soon” until theirs is ready")]), btn("Cancel", "#") + btn("Publish now, screen only", "#", "danger"))
+      + inmain("pdf-busy", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><b>5,402 of 9,088</b> ready · <b>paused by itself</b>: the website is busy (registration is open). It continues when it is quiet.</span><div class="meter"><div class="t"><span style="width:59%"></span></div><span class="num">59%</span></div></div><span>' + btn("Continue anyway", "#before") + '</span></div>')
+      + inmain("pdf-outdated", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted">9,087 of 9,088 ready · <b>1 outdated</b>: Maria S. Dela Cruz’s score was corrected at 2:05 PM. Her new PDF is being made; she sees the new score on screen already.</span></div></div>')
+      + inmain("pdf-nophoto", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted">9,088 of 9,088 ready · <b>3 without a photo</b> (photo missing or unreadable). Their PDF shows “Photo on file at the Guidance and Testing Center”.</span></div><span>' + btn("See the 3", "#") + '</span></div>')
+      + inmain("pdf-resumed", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><b>7,120 of 9,088</b> ready · the server restarted at 1:12 AM and <b>continued where it stopped</b>. Nothing was made twice.</span><div class="meter run"><div class="t"><span style="width:78%"></span></div><span class="num">78%</span></div></div></div>')
       + inmain("pdf-failed", '<div class="setrow"><span>Result PDFs: <b>9,086 of 9,088</b> ready · <span style="color:var(--bad)">Build failed for 2</span> (500231, 500655)</span>' + btn("Retry", "#before") + '</div>' + RESULTS_BAR.split('</div>', 1)[1])
       + modal("release", "info", "", "Release plan · Schedule 1", '<div class="plan"><div class="fld"><label>When</label><label class="chkrow planopt"><input type="radio" name="when"> <span><b>Now</b></span></label><label class="chkrow planopt"><input type="radio" name="when" checked> <span><b>At a set time</b><small>Apr 20, 9:00 AM</small></span></label></div><div class="fld"><label>Notify students</label><label class="chkrow planopt"><input type="radio" name="notify" checked> <span><b>In waves (recommended)</b><small>9,088 students in 6 waves of about 1,500, every 5 minutes · over 30 minutes</small></span></label><label class="chkrow planopt"><input type="radio" name="notify"> <span><b>All at once</b></span></label><label class="chkrow"><input type="checkbox"> Go campus by campus (ACCESS first)</label></div><div class="fld"><label>Full result PDF</label><label class="chkrow planopt"><input type="radio" name="pdf" checked> <span><b>Ready at release (recommended)</b><small>All 9,088 PDFs are built</small></span></label><label class="chkrow planopt"><input type="radio" name="pdf"> <span><b>Allow downloads 1 hour after release</b></span></label><label class="chkrow planopt"><input type="radio" name="pdf"> <span><b>Off for now (screen only)</b><small>Students see their result; the PDF comes later</small></span></label></div><div class="fld"><label>Before you release</label><ul class="checklist"><li class="ok">Scores approved</li><li class="ok">Result PDFs ready · 9,088 of 9,088</li><li class="ok">Release time set · Apr 20, 9:00 AM</li><li>Server boost for results day <span class="muted">(ask IT; optional)</span></li></ul></div><p class="muted" style="margin:0">Results on screen are served from a ready copy, so many students can open them at once. You can hide the results again, but messages already sent stay sent.</p></div>', btn("Cancel", "#") + btn("Release as planned", "#live", "primary"))
       + inmain("live", '<div class="panel"><div class="head"><h2>Release in progress · Schedule 1</h2><span class="st live">Live</span></div><div class="kpis"><div class="kpi"><span>Notices sent</span><b>3 of 6 waves</b><small>4,544 of 9,088 students</small></div><div class="kpi"><span>Opened their result</span><b data-count="3912">3,912</b></div><div class="kpi"><span>PDF downloads</span><b data-count="1207">1,207</b></div><div class="kpi"><span>Server</span><b>Busy · 62%</b><small>From System status</small></div></div><div style="display:flex;gap:8px"><a class="btn" href="#released">Pause notifications</a><a class="btn" href="#pdf-paused">Pause PDF downloads</a></div></div>')
@@ -1427,7 +1466,7 @@ pager(1, 25, "9,088"))}""",
       + modal("releasing", "info", '<span class="spin"></span>', "Sending 9,088 emails… 2,310 sent", '<div class="progress"><span style="width:25%"></span></div><p class="muted" style="margin:0">Safe to close. This keeps going in the background.</p>', btn("Close", "#released"))
       + toast("released", "ok", OK, "Results released", "Emails and texts are going out. See the delivery report.")
       + modal("report", "info", "", "Results released · delivery", '<div class="kpis"><div class="kpi"><span>In app</span><b>9,088</b></div><div class="kpi"><span>Email delivered</span><b>9,051</b></div><div class="kpi"><span>Text delivered</span><b>8,967</b></div></div><div class="kv"><span>Email bounced</span><span>37 · mailbox full or wrong address</span><span>Text failed</span><span>121 · number not in service</span></div>' + hint("Failed ones can be fixed and resent from Messages."), btn("Open send log", "email.html") + btn("Done", "#", "primary")),
-      states=[("listloading", "List loading"), ("pdf-open", "Opening a PDF"), ("notyet", "PDFs not prepared yet"), ("pdf-rebuild", "Prepare PDFs again"), ("before", "Before release: date and Publish now"), ("date-ok", "Date saved"), ("none", "Empty: no scores yet"), ("report", "Delivery report"), ("committed", "After approve"), ("release", "Release plan"), ("live", "Release in progress"), ("pdf-paused", "PDF downloads paused"), ("pdf-failed", "PDFs: build failed for 2"), ("hide", "Hide results"), ("hidden", "Hidden"), ("releasing", "Sending progress"), ("released", "Released")])
+      states=[("rowmenu", "Row ··· menu"), ("hide-one", "Hide one student's result"), ("hidden-one", "Hidden for one"), ("pub-early", "Publish before PDFs are ready"), ("pdf-busy", "PDFs paused: site busy"), ("pdf-outdated", "1 PDF outdated after a correction"), ("pdf-nophoto", "PDFs without a photo"), ("pdf-resumed", "Server restarted: continued"), ("listloading", "List loading"), ("pdf-open", "Opening a PDF"), ("notyet", "PDFs not prepared yet"), ("pdf-rebuild", "Prepare PDFs again"), ("before", "Before release: date and Publish now"), ("date-ok", "Date saved"), ("none", "Empty: no scores yet"), ("report", "Delivery report"), ("committed", "After approve"), ("release", "Release plan"), ("live", "Release in progress"), ("pdf-paused", "PDF downloads paused"), ("pdf-failed", "PDFs: build failed for 2"), ("hide", "Hide results"), ("hidden", "Hidden"), ("releasing", "Sending progress"), ("released", "Released")])
 
 admin("result-detail", "Result · 500214 Maria S. Dela Cruz", table(["Subject", "Raw", "Standard score", "Stanine"], [(n, '<span class="mono">' + str(r) + "</span>", f'<span class="mono">{s}</span>', t) for (n, s, t), r in zip(subj, [44, 29, 28, 43, 29, 26])]) + f'<div style="display:flex;gap:8px">{btn("Result PDF", "../docs/result-pdf.html")}{btn("Correct a score", "#fix")}</div>',
       active="results", crumb='<a href="results.html" class="muted">← Results</a>',
