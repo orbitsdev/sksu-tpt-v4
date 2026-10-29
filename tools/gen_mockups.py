@@ -751,7 +751,7 @@ phone("profile", "My account", """<h1 class="gh">Account</h1>
       + toast("photo-ok", "ok", OK, "Photo updated", "Your permit shows the new photo.")
       + modal("history", "info", "", "History", plist(row("Exam slot booked", "Isulan, Room 4, seat 27", "Jan 13"), row("Payment recorded", "Isulan cashier · OR 0048190 · examinee no. 500214", "Jan 12"), row("Application submitted", "", "Jan 11"), row("Signed in with Google", "", "Jan 11")), '<a class="back" href="#">Close</a>')
       + modal("before", "info", "", "Before approval", '<p style="margin:0">Until the cashier records your payment, your details stay editable.</p>' + plist(row("Personal details", "", "Edit", "apply-personal.html"), row("School", "", "Edit", "apply-school.html"), row("Programs", "", "Edit", "apply-programs.html"), row("2×2 ID photo", "", "Change", "#photo")), '<a class="back" href="#">Close</a>'),
-      states=[("before", "Before approval: editable"), ("photo", "Change photo"), ("photo-ok", "Photo saved"), ("history", "History")])
+      states=[("pdfmenu", "Result PDFs menu"), ("pdf-rebuild", "Prepare PDFs again"), ("before", "Before approval: editable"), ("photo", "Change photo"), ("photo-ok", "Photo saved"), ("history", "History")])
 
 
 # support: a small ticket system with limits (one open request, 5 per school year)
@@ -1383,11 +1383,11 @@ admin("scores", "Import scores", f"""{rounds_bar(1)}{rail(SCORE_STEPS, 3, f'''<d
       + modal("commit", "warn", WARN, "Approve 9,088 scores?", '<p class="muted" style="margin:0">They are saved exactly as in the file. Students cannot see them until you publish. The file and your approval go in the activity log.</p>', btn("Cancel", "#") + btn("Approve", "results.html#committed", "primary")),
       states=[("rail-min", "Steps hidden"), ("uploading", "Uploading"), ("checking", "Checking rows"), ("bg", "Running in background"), ("summary", "Import summary"), ("map", "Match columns"), ("missing", "Required column missing"), ("wrongsched", "Wrong schedule's file"), ("commit", "Approve confirm")])
 
-RESULTS_BAR = ('<div class="setrow"><span>Result PDFs: <b><span data-count="6210">6,210</span> of 9,088</b> ready · building in the background</span><span class="muted">Publish opens when all are ready</span></div>'
+RESULTS_BAR = ('<div class="setrow"><span>Result PDFs: <b><span data-count="6210">6,210</span> of 9,088</b> ready · building in the background</span><span style="display:flex;gap:8px;align-items:center"><span class="muted">Started when the scores were approved</span>' + btn("Pause", "#") + '</span></div>'
                '<div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st">Not released</span><label for="rel">Release on</label><input id="rel" type="datetime-local" value="2027-04-20T09:00"></span>'
                '<span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + '<a class="btn primary disabled" aria-disabled="true" title="Waiting for result PDFs">Publish now</a>' + '</span></div><label class="chkrow"><input type="checkbox" checked> Publish when the PDFs are ready (if the release date has passed)</label>')
-admin("results", "Results", f"""{rounds_bar(1)}<div class="head"><span class="muted"></span>{btn("Hide results", "#hide")}</div>
-<p class="guideline"><span class="st live">Published</span> Apr 20, 9:00 AM</p>
+admin("results", "Results", f"""{rounds_bar(1)}<div class="head"><span class="muted"></span><span class="mwrap">{btn("Result PDFs ▾", "#pdfmenu")}{menu("pdfmenu", [("Preview a result PDF", "../docs/result-pdf.html", "", "Maria S. Dela Cruz · 500214"), ("Prepare PDFs again", "#pdf-rebuild", "", "Only if the layout changed"), ("Pause PDF downloads", "#pdf-paused", "", "Students still see the result on screen")])}</span>{btn("Hide results", "#hide")}</div>
+<p class="guideline"><span class="st live">Published</span> Apr 20, 9:00 AM · result PDFs ready (9,088)</p>
 {list_page(stabs([("All scored", "9,088"), ("Qualified for 1st choice", "6,214"), ("Not qualified", "2,874"), ("Absent", "635")]), filters("Name or examinee no.", [("Campus", ["Any campus", "Isulan", "ACCESS, Tacurong"]), ("Program", ["Any program (type to search)", "BS Civil Engineering", "BS Nursing"])], more=True, right=btn("Export (Excel)", "exports.html#queued"), showing="Showing <b>412</b> · Qualified for 1st choice · BS Civil Engineering"),
 table(["Examinee", "1st choice", "Overall standard score", "Stanine", ""], [(two(f'<span class="ink">{nm}</span>', no), two(pr, cp), f'<span class="num">{sc}</span>', stn, rowact("result-detail.html", "")) for no, nm, pr, cp, sc, stn in [
     ("500214", "Maria S. Dela Cruz", "BS Civil Engineering", "Isulan", "584", "7"), ("500176", "Datu R. Mamalinta", "BS Fisheries", "Palimbang", "512", "6"),
@@ -1395,6 +1395,7 @@ table(["Examinee", "1st choice", "Overall standard score", "Stanine", ""], [(two
     sortable=("Examinee", "Overall standard score"), active=("Overall standard score", "desc")),
 pager(1, 25, "9,088"))}""",
       overlays=inmain("none", empty("list", "No scores for Schedule 2 yet", "Import the Testing Center Excel after exam day.", btn("Import scores", "scores.html", "primary")))
+      + modal("pdf-rebuild", "info", "", "Prepare all result PDFs again?", '<p class="muted" style="margin:0">Use this only if the PDF layout or a signatory changed. 9,088 PDFs are rebuilt one by one in the background (about 1 hour). Students keep downloading the current ones until each new one is ready.</p>', btn("Cancel", "#") + btn("Prepare again", "#", "primary"))
       + toast("committed", "ok", OK, "9,088 scores approved", "Release is set for Apr 20, 9:00 AM.")
       + toast("date-ok", "ok", OK, "Release date saved", "Results go out by themselves on Apr 20, 9:00 AM.")
       + inmain("before", RESULTS_BAR)
