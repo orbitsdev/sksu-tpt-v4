@@ -1121,6 +1121,14 @@ td .act a[href*="result-pdf"]:before{content:"";display:inline-block;width:14px;
 @media(max-width:640px){.igcols{grid-template-columns:1fr}}
 .pinstall-how{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 
+/* whole-page states sit inside the page area: below the header, beside the sidebar (collapsed or not) */
+.shell main,.cshell main{position:relative}
+.inmain{position:absolute;inset:0;top:0;left:0;right:0;bottom:auto;min-height:100%;padding:56px 28px 28px;z-index:30}
+.cshell~.inmain,.cmain .inmain{left:0}
+.modal.shown{display:flex}
+.planopt{display:flex!important;align-items:center!important;gap:10px}.planopt input{margin:0;flex:none}
+.railbody .kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
    No gradients, glows, pills on every row or cards inside cards. ===== */

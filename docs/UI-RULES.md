@@ -28,7 +28,7 @@ Never a dialog on top of a dialog. Never a step form for something done every da
 |---|---|
 | Save, add, edit | Dialog closes, toast "Saved", the list shows the change |
 | Approve, reject, publish, void | Confirm dialog that says who is affected and whether it can be undone → toast → the change is in the record's history and the activity log |
-| Anything sent to students (reject remarks, reply, announcement) | Confirm shows how many people and which channels (app, email, SMS) |
+| Anything sent to students (reject remarks, reply, announcement) | Confirm shows how many people and which channels (app and email; SMS later) |
 | Long jobs (import, sending 600 messages, big exports) | Progress bar, "Run in background", the bell tells you when it's done |
 | Something two staff could do at once (approve the same payment) | The second person gets "Already approved by Ana at 9:02" and nothing is saved twice |
 

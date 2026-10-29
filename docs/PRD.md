@@ -12,11 +12,11 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 |---|---|---|
 | 1 | Keep every function the old TPT performs; how each one works is ours to improve. | The user's mandate. |
 | 2 | **A schedule is a day**: campus + date. The applicant picks campus and date, and the system assigns room and seat. Report and start times (for example 7:30 / 8:00 AM) are a guide printed on the permit, not a bookable slot. | It works like the Civil Service exam. It's simpler and matches how SKSU runs test days [Likely]. |
-| 3 | **No morning/afternoon.** One exam session per exam day, with one guide report time and start time. If two groups are ever needed, the office adds two exam slots on the same day with different guide times. | tptv3 hard-coded AM/PM, which split each day's seats in half (`slots / 2`); the office wants it removed. |
+| 3 | **No morning/afternoon.** One exam session per exam day, with one guide report time and start time. There is **one exam slot per campus per day**; to fit more students, add rooms or another day (two slots on the same day would bring back morning/afternoon). | tptv3 hard-coded AM/PM, which split each day's seats in half (`slots / 2`); the office wants it removed. |
 | 4 | **School years and schedules are data, never code.** A school year has one or more exam schedules, each marked Freshmen or Transferees, each with its own registration, exam day(s), seats, scores and release. | tptv3 has year-specific routes, templates and database names. |
 | 5 | **For now, payment is at an SKSU cashier only**: the cashier records the OR no., the application is approved at once and the examinee number is issued. Online payment with a receipt upload and admin review is a **later switch per school year** ("Payment methods"), off by default. | The office has no online payment yet (user, 29 Oct). The online path stays designed so it can be turned on without new code. |
 | 6 | Notifications are a core module: in-app and email per event in v1; SMS later (tptv3 has no SMS). | The user said notifying students is important. |
-| 7 | Stack: Laravel 12, Inertia, Vue 3, Tailwind 4, Nuxt UI or shadcn-vue, Pest, MySQL 8, Redis, queue worker. | The same stack as the team's euphoria v2 and the earlier tpt-recreate-v2 attempt. |
+| 7 | Stack: Laravel 13, Inertia 3, Vue 3, TypeScript, shadcn-vue + Tailwind 4, Pest, MySQL 8, Redis, queue (Horizon). See TECH-PLAN.md. | Chosen for TPT's goals (clean, fast, optimized). |
 | 8 | Look: SKSU deep green, mint and gold, the official seal, light mode. Applicant screens are a native-style mobile app; admin follows euphoria v2 admin patterns. | User feedback in this session. |
 
 ---
@@ -31,7 +31,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Schedule days | Campus + date + rooms → seats; guide times | `admin/exam-slots` |
 | Applicants and applications | Google sign-in; profile, school, 3 program choices (2 for transferees); one status per application (see the status list in section 7) | `applicant/*`, `admin/applications`, `admin/applicant` |
 | Uploads | Only what is used: 2×2 ID photo (for the permit), and the payment receipt only when online payment is turned on; transferees add their grades for the chairperson. Compressed on the phone; reviewer can ask for a new one | `applicant/apply-*`, `admin/applicant#photo` |
-| Payments | Cashier records the OR number (instant), or upload and review; duplicate-reference guard | `admin/cashier`, `admin/payments` |
+| Payments | Cashier records the OR number (instant) = approved. Online upload and review is a school-year switch, **later (off for now)**; duplicate-reference guard when on | `admin/cashier`, `admin/payments` |
 | Permits | Examinee number from the school-year counter; wallet-style permit and PDF with QR; public verify page | `applicant/permit`, `docs/permit-pdf`, `public/verify` |
 | Exam day | Optional, off by default: offline QR check-in on the proctor's phone, information only. Absent is decided by the score import | `proctor/*`, `admin/checkin` |
 | Results import | Upload the Testing Center Excel as it is → match columns → checks → preview changes → approve → publish; every file kept unchanged | `admin/scores`, `admin/results` |
@@ -58,7 +58,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Results upload (Excel) | Imports scores computed by the Testing Center | Columns read by position; header row saved as a result; no checks; re-upload duplicates; file not kept [Certain] | Same idea, import not compute: Excel as it is, column matching, checks, preview of changes, approval, original file kept |
 | Survey + select courses before result | Gate to see the result | Forces a survey; second course pick duplicates choices [Certain] | Same 10 tptv3 statements (the office submits these results), required once after the result and before choosing a program; the admin can edit them per school year (new answers only); results report and Excel in the office format |
 | Reports (6 Livewire pages) | Lists and exports | Slow full-table queries, missing indexes [Certain] | Same reports plus funnel, attendance and survey; exports queued |
-| Emails | Approve/reject via Gmail SMTP | Gmail daily limit, no SMS, no log [Certain] | Mail service (no Gmail daily limit); templates; send log with resend; SMS provider later |
+| Emails | Approve/reject via Gmail SMTP | Gmail daily limit, no SMS, no log [Certain] | Mail service (no Gmail daily limit); templates; send log with resend; SMS later (no SMS in v1). |
 | Test and debug routes | Left in production | Serious security risk (details kept offline) [Certain] | **Dropped.** Never ship test routes; route list checked in CI |
 | One-off PHP scripts in `docs/` | Manual DB fixes | Each school year needs hand fixes [Certain] | **Dropped.** Admin screens cover every fix, with a reason and audit |
 
@@ -91,7 +91,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Walk-in on exam day | Proctor can't add people. The campus admin can seat a walk-in only if they're approved and unscheduled, into an empty seat; it's logged. |
 | Duplicate registration | Detector flags same name + birth date or same mobile. A flag only: staff cancel the newer application if it is the same person. No merge. |
 | Late payment | Registration close blocks new payments; an admin can extend one applicant with a reason, or roll them to the next schedule. |
-| A date overflows | Add rooms, or add another exam slot (another day, or the same day with a later guide time). |
+| A date overflows | Add rooms to that exam slot, or add another day. |
 | Wrong room at the door | The scan says which room to send them to. |
 | Lost permit | The permit lives in the app and works offline; the proctor can also search by name. |
 | Score correction | Upload a fixed Excel file (the screen shows what changes), or correct one score with a reason; the old value is kept. |
@@ -125,45 +125,7 @@ Every send is logged with delivery status and can be resent.
 
 ## 7. Data model
 
-```mermaid
-erDiagram
-    SCHOOL_YEAR ||--o{ SCHEDULE : has
-    SCHOOL_YEAR ||--o{ PROGRAM_OFFERING : offers
-    CAMPUS ||--o{ PROGRAM : has
-    CAMPUS ||--o{ ROOM : has
-    PROGRAM ||--o{ PROGRAM_OFFERING : "offered as"
-    SCHEDULE ||--o{ EXAM_SLOT : has
-    EXAM_SLOT }o--|| CAMPUS : at
-    EXAM_SLOT ||--o{ SCHEDULE_DAY_ROOM : uses
-    ROOM ||--o{ SCHEDULE_DAY_ROOM : "used in"
-    USER ||--o{ APPLICATION : files
-    APPLICATION }o--|| SCHOOL_YEAR : for
-    APPLICATION }o--|| SCHEDULE : takes
-    APPLICATION ||--o{ PROGRAM_CHOICE : ranks
-    APPLICATION ||--o{ UPLOAD : has
-    APPLICATION ||--o{ PAYMENT : has
-    APPLICATION ||--o| SEAT_ASSIGNMENT : gets
-    SEAT_ASSIGNMENT }o--|| SCHEDULE_DAY_ROOM : in
-    APPLICATION ||--o| CHECK_IN : "marked at"
-    APPLICATION ||--o{ SCORE : has
-    SCHEDULE ||--o{ SCORE_IMPORT : has
-    SCORE_IMPORT ||--o{ SCORE : loads
-    APPLICATION ||--o{ APPLICATION_EVENT : history
-    APPLICATION ||--o{ NOTIFICATION : receives
-    USER ||--o{ AUDIT_LOG : acts
-```
-
-Key rules:
-
-- `applications`: one per (user, schedule), and only one in progress at a time. The account and profile are reused, so a new application is prefilled from the last one. Rejected, absent or past-season applicants can apply again in a later schedule or school year [needs office confirmation: retakes after a result]. `status` enum; `examinee_no` INT, unique per school year, from `seasons.next_examinee_no` locked in the approval transaction.
-- `seat_assignments`: unique (schedule_day_room, seat) and unique (application). Assigned under `SELECT … FOR UPDATE`.
-- `schedule_days`: campus, date, `report_at` and `starts_at` (guide). No sitting/batch column.
-- `scores`: imported exactly as the Testing Center gives them (standard score and stanine per subject and overall). v4 never computes scores. `score_imports` keeps every uploaded file, who and when; a re-import shows what changes before approval.
-- `program_offerings`: school year, program, `cutoff` INT, `is_board` bool.
-- `payments`: `method` (cashier | upload), `or_no` or `reference_no` unique per school year, `recorded_by`.
-- Every FK is indexed; dates are DATE or DATETIME; no year in any table name, route or file name.
-
----
+See **DATABASE.md** (tables, fields, indexes, transactions and real-world scenarios).
 
 ### Application statuses
 
@@ -254,7 +216,7 @@ stateDiagram-v2
 ```mermaid
 flowchart LR
     S1[New school year: basics, schedules, campuses, rooms, exam slots] --> S2[Open registration]
-    S2 --> S3[Payments: cashier + review queue]
+    S2 --> S3[Payments: cashier counter; online review later]
     S3 --> S4[Seats: picked or auto-assigned]
     S4 --> S5[Exam day; check-in optional]
     S5 --> S6[Import Testing Center Excel, check, approve; no score = absent]
@@ -271,13 +233,12 @@ flowchart TB
       A[Admin laptop]
       R[Proctor phone, offline]
     end
-    P & A & R --> N[nginx + PHP-FPM: Laravel 12 + Inertia]
+    P & A & R --> N[nginx + PHP-FPM: Laravel 13 + Inertia 3]
     N --> DB[(MySQL 8)]
     N --> RD[(Redis: cache, sessions, queue)]
     N --> Q[Queue worker: PDFs, image resize, mail, SMS, exports, backups]
     Q --> FS[(File storage)]
     Q --> MAIL[Mail API]
-    Q --> SMS[SMS provider]
     Q --> BK[(Off-site backups)]
 ```
 
@@ -304,10 +265,10 @@ flowchart TB
 |---|---|---|
 | 0 Lock down tptv3 | now | Test routes closed, repo private, backups running |
 | 1 Foundation | 1–2 | Schema above, seed from `tpt_october_2025`, CI with Pest |
-| 2 Apply and pay | 3–5 | Applicant can apply; cashier and upload paths work |
+| 2 Apply and pay | 3–5 | Applicant can apply; the cashier counter records payments (online upload stays off) |
 | 3 Schedule and permit | 6–7 | Days, rooms, locked seats, permit PDF and verify page |
 | 4 Exam day and results | 8–9 | Score import (absent from import), release, qualification; optional check-in |
-| 5 Notifications, reports, cut-over | 10 | Templates, SMS, reports; load test; switch DNS |
+| 5 Notifications, reports, cut-over | 10 | Email templates, reports; load test; switch the address (SMS later) |
 
 ## 11. Open questions for the admission office
 
@@ -323,7 +284,7 @@ flowchart TB
 
 ## 12. Admin UI rules
 
-1. **One page template**: title, one-line description and the page's primary action top-right; then the filter bar; then the content. Nothing else above the fold.
+1. **One page template**: title (no description line) and the page's primary action top-right; then the filter bar; then the content. Nothing else above the fold.
 2. **One focal point per page**: the main task is the biggest thing on the page (the dashboard's "Payments to review"). Everything else is smaller and greyer.
 3. **One card**: 12 px radius, 1 px border, white, no shadow, 20 px padding. No mixed card shapes on a page.
 4. **One table**: uppercase grey headers, 12 px vertical padding, row hover. Row actions are quiet until you hover (View in green text, ··· menu).
@@ -337,9 +298,9 @@ flowchart TB
 
 | As… | Friction found | Fixed in the mockups |
 |---|---|---|
-| A first-time applicant on a phone | Long scrolling form; unclear how to pay; birth date format; mockups looked like a shrunk website | Native app layout (status bar, big titles, floating tab bar, bottom sheets, sticky main button); GCash steps on the payment screen; date hint; autosave toast; wallet-style permit that works offline |
+| A first-time applicant on a phone | Long scrolling form; unclear how to pay; birth date format; mockups looked like a shrunk website | Native app layout (status bar, big titles, floating tab bar, bottom sheets, sticky main button); Pay-at-the-cashier screen with the code and pay-by date; date hint; autosave toast; wallet-style permit that works offline |
 | A first-time applicant | Didn't know when to come or what to bring | Permit and seat screen show "Report by 7:30 AM · exam starts 8:00 AM" and what to bring; reminder (app + email) the day before |
-| A registrar on a busy day | Too many equal boxes; no single thing to do first; dense rows with boxed buttons | One focal KPI with "Review now"; light sidebar; quiet row actions; global search with `/`; saved views; bulk actions |
+| A registrar on a busy day | Too many equal boxes; no single thing to do first; dense rows with boxed buttons | Dashboard numbers that drive the work ("Paid today", "Needs attention"); light sidebar; quiet row actions; global search with `/`; saved views; bulk actions |
 | A cashier | Every payment needed a photo and a second person | "Record a payment" at the counter: find the applicant, type the OR number, done |
 | A proctor at the door | Paper lists; no signal in some rooms | Optional offline check-in with big Here and Not here buttons (a note only); wrong-room and duplicate warnings |
 
@@ -376,7 +337,7 @@ The dashboard shows the schedule's seats (total, taken, left, open exam days) an
 - **Keep tptv3's permit format** (layout, wording and order of fields the office and proctors already know): see tptv3 `resources/views/applicant/permit.blade.php` and `resources/views/livewire/permit-layout.blade.php`. The v4 mockup permit is a placeholder for the data, not the final layout.
 - What changes is speed and cleanliness: the permit is built once when the exam slot is booked (not on every view), saved as a small PDF, cached on the phone so it opens without signal, and the QR verifies on the public page.
 
-- **Result paper:** keep tptv3's layout (result-pdf-2026.blade.php): letterhead, "Guidance and Testing Center", "SKSU TERTIARY PLACEMENT TEST RESULT", NAME OF EXAMINEE / EXAMINEE NUMBER / PREFERRED PROGRAM / DATE OF EXAMINATION, the SUBJECT · STANDARD SCORE · STANINE · QUALITATIVE INTERPRETATION table (English, Science, Mathematics, Filipino, Social Studies, ESM Competency Score, Overall Score), the Overall and ESM explanations, the cut-off scores per campus and program, and the three signatories (Prepared by, Interpreted by, Noted). v4 only makes it lighter (an HTML page saved as PDF by the phone) and adds the photo and a verify QR. Stanine words as in tptv3: 9 Outstanding, 8–7 Above Average, 6 High Average, 5 Middle Average, 4 Low Average, 3–2 Below Average, 1 Low.
+- **Result paper:** keep tptv3's layout (result-pdf-2026.blade.php): letterhead, "Guidance and Testing Center", "SKSU TERTIARY PLACEMENT TEST RESULT", NAME OF EXAMINEE / EXAMINEE NUMBER / PREFERRED PROGRAM / DATE OF EXAMINATION, the SUBJECT · STANDARD SCORE · STANINE · QUALITATIVE INTERPRETATION table (English, Science, Mathematics, Filipino, Social Studies, ESM Competency Score, Overall Score), the Overall and ESM explanations, the cut-off scores per campus and program, and the three signatories (Prepared by, Interpreted by, Noted). v4 builds it on the server (dompdf) before release, so students download a ready file, and adds the photo and a verify QR. Stanine words as in tptv3: 9 Outstanding, 8–7 Above Average, 6 High Average, 5 Middle Average, 4 Low Average, 3–2 Below Average, 1 Low.
 - **ESM rule (from tptv3's result):** the cut-off for Nursing, Midwifery, Medical Technology, Electronics/Civil/Computer Engineering, Computer Science, Fisheries, Biology, Accountancy, Management Accounting, Accounting Information Systems, Mathematics Education and Science Education is checked against the **ESM Competency Score**; every other program uses the **Overall Score**. Each program in Campuses and programs has "Cut-off based on: Overall score / ESM competency score" (pre-set to ESM for the programs above); the list shows it next to the cut-off ("530 · ESM"), and the student's result says which score each program used.
 - **Privacy policy:** tptv3's privacy-policy.blade.php was reviewed and is likely outdated (it only covers Google sign-in data, not the application, photo, payment, scores or who sees them). v4 uses its own RA 10173 notice and terms, marked "Draft — for review by the SKSU Data Protection Officer"; only the office contact (sksutpt@gmail.com) is taken from tptv3. tptv3's terms text lives in its database (terms.blade.php only prints it).
 
@@ -463,7 +424,7 @@ Scheduled maintenance: a date and time window plus a message; students see a not
 
 ## Decisions from the final gap check (29 Oct)
 
-- **Two exam slots on the same day and campus are allowed** (for example a later guide time); the form shows a note, not a block.
+- **One exam slot per campus per day** (a second one the same day would bring back morning/afternoon). The Add exam slot form blocks it with a plain message pointing to Add rooms.
 - **Super admin**: an Admin with the Super admin switch manages System, maintenance and staff roles. At least one super admin always exists.
 - **Voids**: a voided OR stays on the list as voided; the examinee number it issued is retired, never reused.
 - **Score corrections** are stored exactly as the Testing Center gives them (never recomputed); the student is notified and the result PDF is rebuilt; old and new values stay in the history.
@@ -508,8 +469,8 @@ Scheduled maintenance: a date and time window plus a message; students see a not
 
 - **On screen first:** the result screen shows the summary only: Qualified / Not qualified for your choices / Absent, overall standard score and stanine, the programs they qualify for, and the next step (survey, then choose a program; or apply in a later schedule / open a support request). It is light, so results day stays fast.
 - **Full result PDF, pre-built:** so the official tptv3 layout looks identical on every phone, the server builds each student's result PDF **in the background between Approve and Publish** (for example overnight). At release the student taps "Download full result (PDF)" and gets a ready file: nothing is built at peak time. A corrected score rebuilds only that student's PDF.
-- **How the PDFs are built:** a background queue with **1 worker**, one PDF at a time, low priority; it pauses by itself when the site is busy. A lightweight PDF engine (dompdf-style, not a headless browser) from the tptv3 layout: about **0.3–0.5 s and ~100 KB per PDF**, so **10,000 take about 1–1.5 hours and ~1 GB** on the 2-core server. The queue starts automatically when the scores are approved. Only a corrected score rebuilds a PDF (that student's). Publishing before all PDFs are ready turns into "prepare, then publish by itself when ready" (the default). Only a super admin can publish without PDFs, as an emergency, with a reason and typing PUBLISH (logged); students then see the result on screen and each PDF says "available soon".
-- **Admin Results page:** shows "Result PDFs: 9,088 of 9,088 ready" (while building: "6,210 of 9,088"). Publish now is disabled until all are ready; if some fail it shows "Build failed for 2 · Retry"; "Publish when the PDFs are ready" releases automatically once the release date has passed.
+- **How the PDFs are built:** a background queue with **1 worker**, one PDF at a time, low priority; it pauses by itself when the site is busy. A lightweight PDF engine (dompdf-style, not a headless browser) from the tptv3 layout: about **0.3–0.5 s and ~100 KB per PDF**, so **10,000 take about 1–1.5 hours and ~1 GB** on the 2-core server. The queue starts with one click on **Prepare result PDFs** (one student can be prepared early with **Prepare now**). Only a corrected score rebuilds a PDF (that student's). Publishing before all PDFs are ready turns into "prepare, then publish by itself when ready" (the default). Only a super admin can publish without PDFs, as an emergency, with a reason and typing PUBLISH (logged); students then see the result on screen and each PDF says "available soon".
+- **Admin Results page:** shows "Result PDFs: 9,088 of 9,088 ready" (while building: "6,210 of 9,088"). If PDFs aren't ready, the main button reads **Prepare, then publish**; if some fail it shows "Build failed for 2 · Retry"; "Publish when the PDFs are ready" releases automatically once the release date has passed.
 - **Release plan (admin, at Publish):** a calm dialog with defaults pre-chosen:
   - When: now, or at a set time.
   - Notify students: in waves (recommended; e.g. 9,088 students in 6 waves of ~1,500 every 5 minutes over 30 minutes, optionally campus by campus) or all at once.

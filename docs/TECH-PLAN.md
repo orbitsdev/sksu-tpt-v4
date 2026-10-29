@@ -131,7 +131,7 @@ Each phase ends with a working, tested part, shown to you before the next starts
 
 ## 6. To decide
 
-1. **Server:** new droplet now for a test copy, or later? (Recommended: a small test copy now, the full one before go-live.)
+1. **Server:** decided: the existing TPT server. When to set up the test site next to tptv3 (needs your go)?
 2. **Email sender:** the university address (admission@sksu.edu.ph?) and who sets up its mail access.
 3. **SMS:** start without SMS (email + in-app), or pick a provider and budget now?
 4. **Timeline:** when is the next school year's registration? That sets the go-live date.

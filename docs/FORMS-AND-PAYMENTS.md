@@ -95,7 +95,7 @@ Scholars and indigent applicants may be exempt.
 | Option | Good | Bad |
 |---|---|---|
 | Cashier records it | Instant, no fake receipts | Needs cashiers to use the system; queues at campuses |
-| Proof upload | Works from anywhere | Manual review; fake screenshots possible (reconciliation fixes this) |
+| Proof upload | Works from anywhere | Manual review; fake screenshots possible (later, when online payment is turned on) |
 | Payment gateway (PayMongo, Landbank ePayment) | Fully automatic | Fees, accreditation and procurement for a state university take time [Likely]. Phase 2 |
 
 ## 4. Gaps filled in this pass
@@ -109,5 +109,5 @@ Scholars and indigent applicants may be exempt.
 
 - Exact fee, merchant accounts, and whether cashiers will log in.
 - Which personal fields the office really needs (tribe, religion) under the Data Privacy Act.
-- Can the accounting office export GCash or Landbank statements for reconciliation?
+- (Cut for v1) Statement reconciliation with GCash/Landbank; revisit only if online payment is turned on.
 - Whether a payment gateway is allowed this year.

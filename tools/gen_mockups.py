@@ -240,6 +240,11 @@ def skel_table(rows=7, cols=5):
     return f'<div class="skt"><div class="sr sh">{head}</div>{body}</div>'
 
 
+def shown(dialog_html):
+    """A dialog drawn open on top of a page state (so the background matches the moment)."""
+    return dialog_html.replace('<div class="modal"', '<div class="modal shown"', 1)
+
+
 def inmain(iid, html):
     """A whole-page state (skeleton or empty) shown in place of the page body."""
     return f'<div class="inmain" id="{iid}"><a href="#" class="x" aria-label="Back to the page">×</a>{html}</div>'
@@ -254,7 +259,7 @@ def pubnav(active=""):
 
 
 doc("public/landing.html", "Home", f"""<div class="pub">{pubnav()}
-<p class="announce pub-announce">Cashier offices close at 12:00 noon on Saturdays. Bring your application code.</p>
+<p class="announce pub-announce">Isulan cashier is open on Saturdays, 8:00 AM to 12:00 noon.</p>
 <div class="pubmaint" id="maintenance"><img src="../assets/sksu-seal.png" alt="SKSU seal" width="64" height="64"><h1>SKSU TPT is under maintenance</h1><p>Back by 3:00 PM today. Your application is saved.</p><a href="#">Back to the page</a></div>
 <section class="phero"><div class="ptext">
 <p class="pkick">Guidance and Testing Center</p>
@@ -361,7 +366,7 @@ doc("public/error.html", "Error pages", f"""<div class="pub">{pubnav()}
 
 # ---------------------------------------------------------------- applicant pages
 FLOW = [("home", "Home"), ("apply-personal", "2 About you"), ("apply-school", "3 School"), ("apply-programs", "4 Programs"), ("apply-review", "5 Review and submit"),
-        ("payment", "6 Pay at the cashier"), ("payment-online", "6b Online payment"), ("payment-waiting", "6c Waiting for approval"), ("payment-rejected", "6d Sent back"),
+        ("payment", "6 Pay at the cashier"), ("payment-online", "6b Online payment (later)"), ("payment-waiting", "6c In review (later)"), ("payment-rejected", "6d Sent back"),
         ("seat", "8 Pick an exam slot"), ("permit", "9 Permit"), ("result-pending", "10 Waiting for results"), ("result", "11 Result"), ("survey", "12 Survey"),
         ("notifications", "Notifications"), ("support", "Support"), ("support-ticket", "Support request"), ("profile", "My account"),
         ("apply-t-school", "Transferee: school"), ("apply-t-programs", "Transferee: programs"), ("payment-chair", "Transferee: chairperson")]
@@ -531,17 +536,18 @@ HOME = {
         None, "Schedule 1 · registration closed"),
 }
 
-phone("home", "Home", '<p class="announce">Cashier offices close at 12:00 noon on Saturdays. Bring your application code.</p>' + home_view("Application submitted · Jan 11", 1,
-    '<div class="hero"><span class="lbl">Pay ₱275.00 at an SKSU cashier · show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl">The cashier records it and your examinee number appears here.</span></div>'
+phone("home", "Home", '<p class="announce">Isulan cashier is open on Saturdays, 8:00 AM to 12:00 noon.</p>' + home_view("Application submitted · Jan 11", 1,
+    '<div class="hero"><span class="lbl">Pay ₱275.00 at an SKSU cashier · show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl"><b>Pay by Feb 28.</b> The cashier records it and your examinee number appears here.</span></div>'
     + CASHIER_HOURS + plist(row("Where to pay", "Cashier offices per campus", "", "payment.html")),
     ("payment.html", "Show my code")),
       overlays="".join(home_state(k, v) for k, v in HOME.items()) + OFFLINE
       + home_state("maintenance", '<div class="maintscreen"><img src="../assets/sksu-seal.png" alt="SKSU seal" width="56" height="56"><h1 class="gh">SKSU TPT is under maintenance</h1><p>Back by 3:00 PM today. Your application is saved; nothing is lost.</p><small>Questions: Guidance and Testing Center, 0997 780 1758</small></div>')
       + home_state("apps-paused", '<p class="announce">New applications are paused for now. Check back later or ask the Guidance and Testing Center.</p>' + home_view("Not started", 0, '<p class="muted" style="margin:0">You can still sign in, see your status and keep your permit.</p>'))
+      + home_state("pay-closed", home_view("Payment window closed · Feb 28", 1, '<div class="hero"><span class="lbl">Your application closed because it wasn’t paid by Feb 28.</span><span class="lbl">You can apply in the next schedule; your details are filled in from this one.</span></div>' + plist(row("Apply for Schedule 2", "Registration Mar 1 – Apr 10", "", "apply-personal.html"), row("Ask the admission office", "If you paid and this is a mistake", "", "support.html"))))
       + home_state("maint-notice", '<p class="announce">SKSU TPT will be down Sat, Apr 18, 10:00–11:30 PM for maintenance.</p>' + home_view("Application submitted · Jan 11", 1, '<div class="hero"><span class="lbl">Pay ₱275.00 at an SKSU cashier · show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span></div>', ("payment.html", "Show my code"))),
       states=[("not-started", "Not started"), ("draft", "Draft"), ("chair", "Waiting for chairperson"), ("sent-back", "Sent back"), ("approved", "Approved: pick exam slot"),
               ("booked", "Exam slot picked"), ("exam-done", "Waiting for results"), ("result-out", "Result out"), ("chosen", "Program chosen"), ("absent", "Absent"),
-              ("closed", "Registration closed"), ("offline", "Offline"), ("maintenance", "Maintenance screen"), ("maint-notice", "Scheduled maintenance notice"), ("apps-paused", "Applications paused")])
+              ("closed", "Registration closed"), ("pay-closed", "Payment window closed"), ("offline", "Offline"), ("maintenance", "Maintenance screen"), ("maint-notice", "Scheduled maintenance notice"), ("apps-paused", "Applications paused")])
 
 phone("apply-personal", "About you", """<h1 class="gh">Personal details</h1>
 <div class="fld"><label class="cap" for="ln">Last name</label><input id="ln" value="Dela Cruz" autocomplete="family-name"></div>
@@ -623,12 +629,12 @@ phone("payment-chair", "Chairperson", """<p class="eyebrow">Transferee test · 2
       states=[("approved", "Approved: pay at the cashier"), ("declined", "Declined, with the reason")])
 
 phone("payment", "Payment", """<h1 class="gh">Pay at an SKSU cashier</h1>
-<div class="hero"><span class="lbl">Show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl">Maria S. Dela Cruz · ₱275.00</span></div>
+<div class="hero"><span class="lbl">Show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl">Maria S. Dela Cruz · ₱275.00 · <b>pay by Feb 28</b></span></div>
 <div class="ghead">Where to pay</div>""" + plist(
     row("Isulan Campus", "Cashier's Office, Admin Building", "Mon–Sat"),
     row("ACCESS Campus, Tacurong", "Cashier's Office, Main Gate", "Mon–Fri"),
     row("Kalamansig, Bagumbayan, Lutayan, Palimbang", "Campus cashier", "Mon–Fri")) + """
-<small>Open 8:00 AM – 5:00 PM (Saturday until 12:00 noon). Bring this code. After you pay, the cashier records it and you get your examinee number here.</small>""",
+<small>Pay by Feb 28. If you don’t, your application closes by itself and you can apply in the next schedule. Open 8:00 AM – 5:00 PM (Saturday until 12:00 noon). Bring this code. After you pay, the cashier records it and you get your examinee number here.</small>""",
       cta=("home.html", "Done"), back="apply-review.html",
       extra='<a class="mocklink" href="seat.html#approved">Mockup: cashier recorded the payment →</a><a class="mocklink" href="payment-online.html">Later: online payment screen →</a>',
       overlays=toast("submitted", "ok", OK, "Application submitted", "Next, pay at an SKSU cashier."),
@@ -645,7 +651,7 @@ phone("payment-online", "Online payment", """<span class="offtag">Online payment
       + toast("ref-used", "bad", BAD, "Reference number already used", "Another applicant sent this reference. Check your receipt."),
       states=[("uploading", "Uploading"), ("ref-used", "Reference already used")])
 
-phone("payment-waiting", "Waiting for approval", """<span class="offtag">Online payment (off for now)</span><h1 class="gh">Waiting for approval</h1><p>The admission office checks receipts within one working day. You will get a notification and an email.</p>
+phone("payment-waiting", "In review", """<span class="offtag">Online payment (off for now)</span><h1 class="gh">In review</h1><p>The admission office checks receipts within one working day. You will get a notification and an email.</p>
 """ + plist(row("Reference no.", "", '<span class="mono">1009 284 551 203</span>'), row("Sent", "", "Jan 12, 8:10 AM"), row("Status", "", '<span class="dot a"></span>For review')),
       extra='<a class="mocklink" href="seat.html#approved">Mockup: payment approved →</a><a class="mocklink" href="payment-rejected.html">Mockup: sent back →</a>',
       overlays=toast("sent", "ok", OK, "Receipt sent", "You will be notified when it is checked."), states=[("sent", "Just sent")])
@@ -733,11 +739,11 @@ phone("result", "Result", f"""<p class="eyebrow">SKSU TPT · Schedule 1 · relea
     row("Other programs you qualify for", "", "41", "#cutoffs")) + """
 <small>Some programs use your ESM score (English, Mathematics, Science: 566); the rest use your overall score.</small>
 <small>Next: answer the 10-statement exam survey, then choose your program. Your full result, with every subject, is in the PDF.</small>""",
-      cta=("survey.html", "Choose your program"), extra='<span class="twobtn"><a class="back" href="../docs/result-pdf.html">Download full result (PDF)</a><a class="back" href="#share">Share</a></span>',
+      cta=("survey.html", "Answer the survey"), extra='<span class="twobtn"><a class="back" href="../docs/result-pdf.html">Download full result (PDF)</a><a class="back" href="#share">Share</a></span>',
       overlays=modal("cutoffs", "info", "", "Programs you qualify for", plist(row("BS Civil Engineering", "Isulan", "530"), row("BS Information Technology", "ACCESS", "500"), row("BS Criminology", "Isulan", "480"), row("BS Agriculture", "Tacurong", "450")) + '<small>Cut-off = lowest score that qualifies, on the overall or the ESM score depending on the program.</small>', '<a class="back" href="#">Close</a>')
       + modal("not-qualified", "info", "", "Your result", '<span class="outcome">Not qualified for your choices</span><div class="score" style="margin:0"><span class="lbl" style="color:#5f6662;font-size:13px">Overall standard score</span><span class="n">452</span><span>Stanine 4 of 9 · Low Average</span></div><p style="margin:0">Your score is below the cut-off of your three choices. This is not the end: you can still choose from programs that are open to your score, or apply again in a later schedule.</p>' + plist(row("BS Agriculture", "Tacurong · cut-off 450", "Open to you", "#chosen"), row("BSEd Filipino", "Kalamansig · cut-off 440", "Open to you", "#chosen")) + '<small>Questions? Open a support request.</small>', '<a class="go" href="survey.html">Choose from open programs</a><a class="back" href="../docs/result-pdf.html">Download full result (PDF)</a>')
       + modal("absent", "info", "", "Your result", '<span class="outcome">Absent</span><p style="margin:0">There is no score for you in the Testing Center’s file, so you are marked absent for Schedule 1.</p><p style="margin:0">You can apply for Schedule 3 (registration Apr 11 – May 15). Your details are copied.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="support.html#new">Ask the office</a>')
-      + modal("choose", "info", "", "Choose your program", '<div class="plist" style="margin:0">' + row("BS Civil Engineering", "Isulan · cut-off 530 · your score 584", "1st choice", "#chosen", "on", RADIO) + row("BS Information Technology", "ACCESS · cut-off 500 · your score 584", "2nd choice", "#chosen", "", RADIO) + '</div>', '<a class="go" href="#chosen">Confirm</a><a class="back" href="#">Cancel</a>')
+      + modal("choose", "info", "", "Choose your program", '<div class="plist" style="margin:0">' + row("BS Civil Engineering", "Isulan · cut-off 530 · your ESM score 566", "1st choice", "#chosen", "on", RADIO) + row("BS Information Technology", "ACCESS · cut-off 500 · your overall score 584", "2nd choice", "#chosen", "", RADIO) + '</div>', '<a class="go" href="#chosen">Confirm</a><a class="back" href="#">Cancel</a>')
       + toast("chosen", "ok", OK, "BS Civil Engineering chosen", "The Isulan registrar will contact you.")
       + modal("share", "info", "", "Share your result", '<p style="margin:0;color:#5f6662">Choose what to send. Your scores are private; only share them with people you trust.</p>'
       + plist(row("Result PDF", "Full result with every subject, for a school or family", "", "#share-sheet"), row("Proof link", "Shows only that the result is real: your name and examinee no., no scores", "", "#share-sheet"))
@@ -970,7 +976,7 @@ function toggleSide(){var b=document.body;if(window.innerWidth<=900){b.classList
 var c=b.classList.toggle("side-collapsed");try{localStorage.setItem("tpt-side",c?"collapsed":"open")}catch(e){}}
 (function(){var c=location.hash==="#side-collapsed";try{c=c||localStorage.getItem("tpt-side")==="collapsed"}catch(e){}
 if(c)document.body.classList.add("side-collapsed")})();
-function topIfPane(){var t=location.hash&&document.getElementById(location.hash.slice(1));if(t&&t.classList.contains("pane"))window.scrollTo(0,0)}
+function topIfPane(){var t=location.hash&&document.getElementById(location.hash.slice(1));if(t&&(t.classList.contains("pane")||t.classList.contains("inmain")))window.scrollTo(0,0)}
 addEventListener("hashchange",topIfPane);addEventListener("load",topIfPane);
 </script>"""
 
@@ -981,13 +987,11 @@ def admin(key, title, content, active=None, overlays="", states=None, crumb="", 
     guide = guide_modal(key) if key in GUIDES else ""
     if guide:
         states = [("guide", "Guide")] + list(states or [])
-    # the setup line: on the dashboard by default (new school year story), as a state on the busiest pages
+    # the setup line only shows while the next school year is being set up: a state on these pages, not the default view
     setup = ""
-    if key == "dashboard":
-        setup = setup_line()
-    elif key in ("schedules", "exam-slots", "campuses", "applications") and nav is NAV:
+    if key in ("dashboard", "schedules", "exam-slots", "campuses", "applications") and nav is NAV:
         setup = setup_line("setup-on")
-        states = list(states or []) + [("setup-on", "Setup in progress")]
+        states = list(states or []) + [("setup-on", "Setting up the next school year")]
     # search, open schedule and bell are for office staff; a program chair only sees their own list
     tools = "" if nav is CHAIR_NAV else f'''<a class="gsearch" href="search.html">Search name, examinee no., reference<kbd>/</kbd></a><a class="pill ok" href="schedules.html" title="Students can apply now. Click to manage.">Registration open · Schedule 2</a><a href="messages.html#q-open" class="abell" aria-label="Notifications, 3 new">{BELL}<i>3</i></a>'''
     links = []
@@ -1003,7 +1007,7 @@ def admin(key, title, content, active=None, overlays="", states=None, crumb="", 
 {tools}<div style="line-height:1.15;text-align:right"><div class="ink">{user[0]}</div><small class="muted">{user[1]}</small></div><a href="account.html" class="avatar" style="text-decoration:none">A</a></header>
 <nav class="mtabs">{''.join(f'<a href="{k}.html"{" class=on" if k == active else ""}>{label}</a>' for _, items in nav for k, label in items)}</nav>
 <div class="shell"><nav class="side">{''.join(links)}{f'<small class="sidenote">{side_note}</small>' if side_note else ''}</nav>
-<main>{crumb}{pagehead(title, content, guide=key in GUIDES, setup=setup)}<span id="side-collapsed" hidden></span></main></div>{overlays}{guide}{menu("setupmenu", [("Hide", "#", "", "Only for you; turn it back on in My account")]) if setup else ""}{SIDE_SCRIPT}""", states=states)
+<main>{crumb}{pagehead(title, content, guide=key in GUIDES, setup=setup)}<span id="side-collapsed" hidden></span>{overlays}</main></div>{guide}{menu("setupmenu", [("Hide", "#", "", "Only for you; turn it back on in My account")]) if setup else ""}{SIDE_SCRIPT}""", states=states)
 
 
 def line_chart(vals, labels, w=380, h=150):
@@ -1349,7 +1353,7 @@ admin("exam-slots", "Exam slots", f"""{rounds_bar(2)}<div class="head"><span cla
 table(["Campus", "Date", "Rooms", "Seats taken", "Status", ""], srows, sortable=("Campus", "Date", "Seats taken"), active=("Date", "asc")))}
 {menu("slotmenu", [("Add rooms", "#addrooms", "", "More seats for this day"), ("Seat plan", "../docs/seat-plan.html", "", ""), ("Close this exam slot", "#toggle", "", "People keep their seats"), ("Move or cancel this exam slot", "#moveslot", "danger", "Typhoon, class suspension")])}""",
       overlays=modal("add", "info", "+", "Add an exam slot", f'<p class="muted" style="margin:0">Schedule 2 · registration open</p><div class="fld"><label for="a1">Campus</label><select id="a1"><option>Palimbang</option><option>Isulan</option><option>ACCESS, Tacurong</option><option>Tacurong</option><option>Kalamansig</option><option>Bagumbayan</option><option>Lutayan</option></select></div><div class="fld"><label for="a2">Exam day</label><select id="a2"><option>Sat, Apr 25</option><option>Sun, Apr 26</option></select>{hint('Only the exam days of Schedule 2. Add another day in Edit schedule.')}</div><div class="fld"><label>Rooms</label><div class="roomlist"><label class="chkrow roomrow"><input type="checkbox" checked> <b>All rooms</b><span class="muted num">100 seats</span></label><label class="chkrow roomrow"><input type="checkbox" checked> <span>Main Building · Room 1</span><span class="muted num">50 seats</span></label><label class="chkrow roomrow"><input type="checkbox" checked> <span>Main Building · Room 2</span><span class="muted num">50 seats</span></label></div></div><p style="margin:0"><b>2 rooms · 100 seats</b> <span class="muted">· report by 7:30 AM (from the schedule)</span></p>', btn("Cancel", "#") + btn("Add exam slot", "#added", "primary"))
-      + modal("add-err", "info", "+", "Add an exam slot", '<div class="fld"><label for="ae1">Campus</label><select id="ae1"><option>Isulan</option></select></div><div class="fld err"><label>Rooms</label><div class="roomlist"><label class="chkrow roomrow"><input type="checkbox"> <span>Main Building · Room 1</span><span class="muted num">50 seats</span></label></div><span class="errmsg">Pick at least 1 room.</span></div><p class="muted" style="margin:0">Isulan already has an exam slot on Sat, Apr 25. A second one that day is fine, for example with a later guide time.</p>', btn("Cancel", "#") + btn("Add exam slot", "#", "primary"))
+      + modal("add-err", "info", "+", "Add an exam slot", '<div class="fld"><label for="ae1">Campus</label><select id="ae1"><option>Isulan</option></select></div><div class="fld err"><label>Rooms</label><div class="roomlist"><label class="chkrow roomrow"><input type="checkbox"> <span>Main Building · Room 1</span><span class="muted num">50 seats</span></label></div><span class="errmsg">Pick at least 1 room.</span></div><p class="muted" style="margin:0">Isulan already has an exam slot on Sat, Apr 25. One exam slot per campus per day: to fit more students, use Add rooms on that slot, or add another day.</p>', btn("Cancel", "#") + btn("Add exam slot", "#", "primary"))
       + modal("addrooms", "info", "+", "Add rooms · Isulan, Sat Apr 25", '<p class="muted" style="margin:0">Full: 200 of 200. 41 approved applicants from Isulan have no exam slot yet.</p><div class="fld"><label>Rooms not used on this day</label><div class="roomlist"><label class="chkrow roomrow"><input type="checkbox" checked> <span>Engineering · ENG 201</span><span class="muted num">45 seats</span></label><label class="chkrow roomrow"><input type="checkbox"> <span>Engineering · ENG 202</span><span class="muted num">40 seats</span></label></div></div><p style="margin:0"><b>+45 seats</b> <span class="muted">· a room missing? Add it on the Rooms page first.</span></p>', btn("Cancel", "#") + btn("Add rooms", "#roomsadded", "primary"))
       + modal("moveslot", "warn", WARN, "Move or cancel Isulan, Sat Apr 25?", '<label class="chkrow"><input type="radio" name="mv" checked> Move everyone to another day</label><div class="fld"><label for="mv1">New date</label><input id="mv1" type="date" value="2027-05-02"></div><label class="chkrow"><input type="radio" name="mv"> Cancel and move people to other exam slots with room</label><div class="fld"><label for="mv2">Reason (sent to students)</label><input id="mv2" value="Class suspension due to Typhoon Kristine"></div><div class="kv"><span>Affected</span><span>200 examinees</span><span>Then</span><span>Permits are rebuilt; app notice and email to everyone</span></div>', btn("Cancel", "#") + btn("Move 200 examinees", "#moved-report", "danger"))
       + modal("moved-report", "info", "", "Moved · delivery", '<div class="kpis"><div class="kpi"><span>In app</span><b>200</b></div><div class="kpi"><span>Email delivered</span><b>196</b></div></div><p class="muted" style="margin:0">4 emails bounced (wrong address). Call them; the numbers are on their records. See Email → Send log.</p>', btn("Close", "#"))
@@ -1378,8 +1382,8 @@ SCORE_STEPS = [("Upload file", "The Testing Center Excel", "#uploading"), ("Matc
 admin("scores", "Import scores", f"""{rounds_bar(1)}{rail(SCORE_STEPS, 3, f'''<div class="panel"><div class="head"><h2>SKSU TPT RESULT 2027.xlsx</h2><span class="muted" style="font-size:13px">Sheet “Result” · Apr 18, 3:40 PM</span></div>
 <span class="hint">Upload the Testing Center’s Excel as it is. Scores are saved exactly as given. {btn("Download the Excel template", "../docs/tpt-scores-template.xlsx", "sm")}</span>
 <div class="kpis"><div class="kpi"><span>Rows in file</span><b>9,104</b></div><div class="kpi"><span>Ready</span><b>9,088</b></div><div class="kpi"><span>Not registered</span><b class="neg">4</b></div><div class="kpi"><span>Duplicates or invalid</span><b class="neg">12</b></div><div class="kpi"><span>No score (absent)</span><b>635</b></div></div></div>
-<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>Needs a look · 16</h2>{btn("Download these rows", "#")}</div>
-{table(["Row", "Examinee no.", "Problem", "What to do"], [("212", '<span class="mono">500912</span>', B("bad", "Not registered this schedule"), "Check the number with the Testing Center"), ("1,044", '<span class="mono">50O233</span>', B("bad", "Letter O instead of zero"), "Fix in the file and upload again"), ("2,871", '<span class="mono">500655</span>', B("bad", "Appears twice"), "Keep one row"), ("3,310", '<span class="mono">501288</span>', B("warn", "Possible duplicate person"), "Same name and birth date as 500122; check both"), ("5,002", '<span class="mono">502460</span>', B("bad", "Overall 910 is above 800"), "Ask the Testing Center"), ("6,310", '<span class="mono">501990</span>', B("warn", "Stanine 9 but score 512"), "Ask the Testing Center"), ("—", '<span class="mono">501877</span>', B("warn", "Has a slot, no score in file"), "Marked absent on approve; if they took the exam, ask the Testing Center")])}</div>
+<div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>Needs a look · 15</h2>{btn("Download these rows", "#")}</div>
+{table(["Row", "Examinee no.", "Problem", "What to do"], [("212", '<span class="mono">500912</span>', B("bad", "Not registered this schedule"), "Check the number with the Testing Center"), ("1,044", '<span class="mono">50<b style="color:var(--bad)">O</b>233</span>', B("bad", "Letter O instead of zero"), "Fix in the file and upload again"), ("2,871", '<span class="mono">500655</span>', B("bad", "Appears twice"), "Keep one row"), ("3,310", '<span class="mono">501288</span>', B("warn", "Possible duplicate person"), "Same name and birth date as 500122; check both"), ("5,002", '<span class="mono">502460</span>', B("bad", "Overall 910 is above 800"), "Ask the Testing Center"), ("6,310", '<span class="mono">501990</span>', B("warn", "Stanine 9 but score 512"), "Ask the Testing Center")])}</div>
 <div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>What changes if you approve</h2></div>
 {table(["", "Examinees", "Example"], [(B("ok", "New"), '<span class="mono">9,080</span>', "500214 · Overall 584 · stanine 7"), (B("warn", "Changed"), '<span class="mono">8</span>', "500176 · Overall 498 → 512"), (B("gray", "Unchanged"), '<span class="mono">0</span>', "—")])}</div>
 <div class="panel"><h2>Files for this schedule</h2>{table(["File", "Uploaded", "By", "Status", ""], [("SKSU TPT RESULT 2027.xlsx", "Apr 18, 3:40 PM", "Testing Center", B("warn", "Checking"), ""), ("SKSU TPT RESULT 2027 draft.xlsx", "Apr 17, 10:12 AM", "Testing Center", B("gray", "Replaced"), btn("Download original"))])}</div>
@@ -1397,19 +1401,19 @@ admin("scores", "Import scores", f"""{rounds_bar(1)}{rail(SCORE_STEPS, 3, f'''<d
 RESULTS_NOTYET_LIST = list_page(stabs([("All", "9,088"), ("Not prepared", "9,088")]),
     '<p class="muted" style="margin:0">Need one early (for example the office must print it before release)? Prepare just that student. Nothing is shown to students until you publish.</p>',
     table(["Examinee", "Overall standard score", "Result PDF", ""], [
-        (two('<span class="ink">Maria S. Dela Cruz</span>', "509712"), '<span class="num">584</span>', '<span class="st">Not prepared</span>', rowact(None, "", ("Prepare now", "#prep-one"))),
-        (two('<span class="ink">Datu R. Mamalinta</span>', "509713"), '<span class="num">512</span>', '<span class="st">Not prepared</span>', rowact(None, "", ("Prepare now", "#prep-one"))),
-        (two('<span class="ink">Princess A. Lumabao</span>', "509714"), '<span class="num">661</span>', '<span class="st">Not prepared</span>', rowact(None, "", ("Prepare now", "#prep-one")))]),
+        (two('<span class="ink">Maria S. Dela Cruz</span>', "500214"), '<span class="num">584</span>', '<span class="st">Not prepared</span>', rowact(None, "", ("Prepare now", "#prep-one"))),
+        (two('<span class="ink">Datu R. Mamalinta</span>', "500176"), '<span class="num">512</span>', '<span class="st">Not prepared</span>', rowact(None, "", ("Prepare now", "#prep-one"))),
+        (two('<span class="ink">Princess A. Lumabao</span>', "500198"), '<span class="num">661</span>', '<span class="st">Not prepared</span>', rowact(None, "", ("Prepare now", "#prep-one")))]),
     pager(1, 25, "9,088"))
-RESULTS_NOT_PREPARED_RELEASE = ('<div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st">Not released</span><label for="rel0">Release on</label><input id="rel0" type="datetime-local" value="2027-04-20T09:00"></span><span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + btn("Publish now", "#pub-noprep", "primary") + '</span></div>')
+RESULTS_NOT_PREPARED_RELEASE = ('<div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st">Not released</span><label for="rel0">Release on</label><input id="rel0" type="datetime-local" value="2027-04-20T09:00"></span><span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + btn("Prepare, then publish", "#pub-noprep") + '</span></div>')
 RESULTS_NOT_PREPARED = ('<div class="tipline"><b>Recommended:</b> prepare the PDFs before you publish. If thousands of students open and download at the same moment while PDFs are still being made, the website slows down or stops. Prepared files are only handed out, so results day stays fast. It takes about 1 to 1.5 hours; overnight is best.</div><div class="pdfpanel"><div><b>Result PDFs</b><span class="muted">0 of 9,088 ready · scores approved Apr 18. Prepare them before you publish.</span></div><span>' + btn("Prepare result PDFs", "#before", "primary") + '</span></div>')
 RESULTS_PDF_LIST = list_page(stabs([("All", "9,088"), ("Ready", "6,210"), ("Preparing", "2,876"), ("Failed", "2")]),
     table(["Examinee", "Overall standard score", "Result PDF", ""], [
-        (two('<span class="ink">Maria S. Dela Cruz</span>', "509712"), '<span class="num">584</span>', '<span id="pdfs1" class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
-        (two('<span class="ink">Datu R. Mamalinta</span>', "509713"), '<span class="num">512</span>', '<span id="pdfs2" class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
-        (two('<span class="ink">Princess A. Lumabao</span>', "509714"), '<span class="num">661</span>', '<span id="pdfs3" class="st">Preparing…</span>', ""),
-        (two('<span class="ink">Norhana P. Sali</span>', "509715"), '<span class="num">547</span>', '<span id="pdfs4" class="st">Waiting</span>', rowact(None, "", ("Prepare now", "#prep-one"))),
-        (two('<span class="ink">Abdul R. Kanakan</span>', "509716"), '<span class="num">498</span>', '<span class="st bad">Failed</span>', rowact(None, "", ("Retry", "#")))]),
+        (two('<span class="ink">Maria S. Dela Cruz</span>', "500214"), '<span class="num">584</span>', '<span id="pdfs1" class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
+        (two('<span class="ink">Datu R. Mamalinta</span>', "500176"), '<span class="num">512</span>', '<span id="pdfs2" class="st live">Ready</span>', rowact(None, "", ("Open PDF", "../docs/result-pdf.html"))),
+        (two('<span class="ink">Princess A. Lumabao</span>', "500198"), '<span class="num">661</span>', '<span id="pdfs3" class="st">Preparing…</span>', ""),
+        (two('<span class="ink">Ella G. Mangansakan</span>', "500241"), '<span class="num">547</span>', '<span id="pdfs4" class="st">Waiting</span>', rowact(None, "", ("Prepare now", "#prep-one"))),
+        (two('<span class="ink">Rowena L. Talib</span>', "500252"), '<span class="num">498</span>', '<span class="st bad">Failed</span>', rowact(None, "", ("Retry", "#")))]),
     pager(1, 25, "9,088"))
 PDF_DEMO = """<script>
 (function () {
@@ -1440,7 +1444,7 @@ PDF_DEMO = """<script>
 </script>"""
 RESULTS_BAR = ('<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><b><span id="pdfn">6,210</span> of 9,088</b> ready · preparing one by one in the background · <span id="pdfleft">about 25 min left</span></span><div class="meter run" id="pdfmeter"><div class="t"><span id="pdfbar" style="width:68%"></span></div><span class="num" id="pdfpct">68%</span></div></div><span style="display:flex;gap:8px;align-items:center">' + btn("Pause", "#") + '</span></div>'
                '<div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st">Not released</span><label for="rel">Release on</label><input id="rel" type="datetime-local" value="2027-04-20T09:00"></span>'
-               '<span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + '<a class="btn primary" href="#pub-early">Publish now</a>' + '</span></div><label class="chkrow"><input type="checkbox" checked> Publish when the PDFs are ready (if the release date has passed)</label>')
+               '<span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + '<a class="btn primary" href="#pub-early">Publish when ready</a>' + '</span></div><label class="chkrow"><input type="checkbox" checked> Publish when the PDFs are ready (if the release date has passed)</label>')
 admin("results", "Results", f"""{rounds_bar(1)}<div class="head"><span class="muted"></span><span class="pubnote">Visible to students<small>since Apr 20, 9:00 AM</small></span><a class="switch on" href="#hide" aria-label="Results visible to students: turn off to hide"></a></div>
 <div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><span class="donemark">✓</span> 9,088 of 9,088 ready · one per examinee, in the official layout</span><div class="meter done"><div class="t"><span style="width:100%"></span></div><span class="num">100%</span></div></div><span style="display:flex;gap:8px">{btn("Preview one", "../docs/result-pdf.html")}{btn("Prepare again", "#pdf-rebuild")}</span></div>
 {list_page(stabs([("All scored", "9,088"), ("Qualified, 1st choice", "5,102"), ("Qualified, 2nd or 3rd", "1,112"), ("Not qualified", "2,874"), ("Absent", "635"), ("Hidden from student", "3")]), filters("Name or examinee no.", [("Campus", ["Any campus", "Isulan", "ACCESS, Tacurong"]), ("Program", ["Any program (type to search)", "BS Civil Engineering", "BS Nursing"])], more=True, right=btn("Export (Excel)", "exports.html#queued"), showing="Showing <b>412</b> · Qualified for 1st choice · BS Civil Engineering"),
@@ -1455,7 +1459,7 @@ pager(1, 25, "9,088"))}""",
       + toast("date-ok", "ok", OK, "Release date saved", "Results go out by themselves on Apr 20, 9:00 AM.")
       + inmain("notyet", RESULTS_NOT_PREPARED + RESULTS_NOT_PREPARED_RELEASE + RESULTS_NOTYET_LIST)
       + toast("prep-one", "ok", OK, "Maria S. Dela Cruz's PDF is ready", "Made in a few seconds. Open it from her row. Students still can't see results until you publish.")
-      + modal("pub-noprep", "warn", WARN, "Prepare the result PDFs first", '<p class="muted" style="margin:0">0 of 9,088 are ready. Publishing now would make the website build thousands of PDFs while every student is online, which can slow it down or stop it.</p><p style="margin:0"><b>Prepare, then publish</b> makes them now (about 1 to 1.5 hours) and publishes by itself when all are ready, with notices in waves.</p><p class="muted" style="margin:0;font-size:13px">Emergency only: a super admin can <a href="#pub-force">publish without PDFs</a>.</p>', btn("Cancel", "#") + btn("Prepare, then publish", "#before", "primary"))
+      + inmain("pub-noprep", RESULTS_NOT_PREPARED + RESULTS_NOT_PREPARED_RELEASE + RESULTS_NOTYET_LIST + shown(modal("pub-noprep-d", "warn", WARN, "Prepare the result PDFs first", '<p class="muted" style="margin:0">0 of 9,088 are ready. Publishing now would make the website build thousands of PDFs while every student is online, which can slow it down or stop it.</p><p style="margin:0"><b>Prepare, then publish</b> makes them now (about 1 to 1.5 hours) and publishes by itself when all are ready, with notices in waves.</p><p class="muted" style="margin:0;font-size:13px">Emergency only: a super admin can <a href="#pub-force">publish without PDFs</a>.</p>', btn("Cancel", "#") + btn("Prepare, then publish", "#before", "primary"))))
       + modal("pub-force", "bad", BAD, "Publish without the PDFs?", '<p class="muted" style="margin:0">Only for emergencies, for example if PDFs can’t be made today. Students see their result on screen; each PDF says “available soon” until it is made in the background. Super admins only.</p><div class="fld"><label for="pfr">Reason (activity log)</label><input id="pfr" placeholder="e.g. PDF printer service down, release promised for 9:00 AM"></div><div class="fld"><label for="pfc">Type PUBLISH to confirm</label><input id="pfc" placeholder="PUBLISH"></div>', btn("Cancel", "#") + btn("Publish without PDFs", "#", "danger"))
       + inmain("listloading", skel_table(6, 5))
       + toast("pdf-open", "info", '<span class="spin"></span>', "Opening Maria S. Dela Cruz's result PDF", "It is already prepared, so it opens in a second.")
@@ -1463,13 +1467,13 @@ pager(1, 25, "9,088"))}""",
       + menu("rowmenu", [("Hide this student's result", "#hide-one", "", "e.g. a score under review"), ("Correct a score", "result-detail.html#fix", "", "Saved as given; PDF rebuilt")])
       + modal("hide-one", "warn", WARN, "Hide Maria S. Dela Cruz's result?", '<div class="fld"><label for="ho">Reason (for the activity log)</label><select id="ho"><option>Score under review with the Testing Center</option><option>Identity check needed</option><option>Other</option></select></div><p class="muted" style="margin:0">She sees: “Your result is under review. Please contact the Guidance and Testing Center.” Her PDF can’t be downloaded until you show it again.</p>', btn("Cancel", "#") + btn("Hide her result", "#hidden-one", "primary"))
       + toast("hidden-one", "ok", OK, "Result hidden for Maria S. Dela Cruz", "Show it again from her row any time. Logged with your reason.")
-      + modal("pub-early", "warn", WARN, "PDFs are still being prepared (6,210 of 9,088)", '<p class="muted" style="margin:0">About 25 minutes left. Publishing now would make the website build the rest while every student is online.</p><p style="margin:0"><b>Publish when ready</b> releases the results by itself as soon as the last PDF is done.</p><p class="muted" style="margin:0;font-size:13px">Emergency only: a super admin can <a href="#pub-force">publish without PDFs</a>.</p>', btn("Cancel", "#") + btn("Publish when ready", "#before", "primary"))
+      + inmain("pub-early", RESULTS_BAR + RESULTS_PDF_LIST + shown(modal("pub-early-d", "warn", WARN, "PDFs are still being prepared (6,210 of 9,088)", '<p class="muted" style="margin:0">About 25 minutes left. Publishing now would make the website build the rest while every student is online.</p><p style="margin:0"><b>Publish when ready</b> releases the results by itself as soon as the last PDF is done.</p><p class="muted" style="margin:0;font-size:13px">Emergency only: a super admin can <a href="#pub-force">publish without PDFs</a>.</p>', btn("Cancel", "#") + btn("Publish when ready", "#before", "primary"))))
       + inmain("pdf-busy", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><b>5,402 of 9,088</b> ready · <b>paused by itself</b>: the website is busy (registration is open). It continues when it is quiet.</span><div class="meter"><div class="t"><span style="width:59%"></span></div><span class="num">59%</span></div></div><span>' + btn("Continue anyway", "#before") + '</span></div>')
       + inmain("pdf-outdated", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted">9,087 of 9,088 ready · <b>1 outdated</b>: Maria S. Dela Cruz’s score was corrected at 2:05 PM. Her new PDF is being made; she sees the new score on screen already.</span></div></div>')
       + inmain("pdf-nophoto", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted">9,088 of 9,088 ready · <b>3 without a photo</b> (photo missing or unreadable). Their PDF shows “Photo on file at the Guidance and Testing Center”.</span></div><span>' + btn("See the 3", "#") + '</span></div>')
       + inmain("pdf-resumed", '<div class="pdfpanel"><div><b>Result PDFs</b><span class="muted"><b>7,120 of 9,088</b> ready · the server restarted at 1:12 AM and <b>continued where it stopped</b>. Nothing was made twice.</span><div class="meter run"><div class="t"><span style="width:78%"></span></div><span class="num">78%</span></div></div></div>')
       + inmain("pdf-failed", '<div class="setrow"><span>Result PDFs: <b>9,086 of 9,088</b> ready · <span style="color:var(--bad)">Build failed for 2</span> (500231, 500655)</span>' + btn("Retry", "#before") + '</div>' + RESULTS_BAR.split('</div>', 1)[1])
-      + modal("release", "info", "", "Release plan · Schedule 1", '<div class="plan"><div class="fld"><label>When</label><label class="chkrow planopt"><input type="radio" name="when"> <span><b>Now</b></span></label><label class="chkrow planopt"><input type="radio" name="when" checked> <span><b>At a set time</b><small>Apr 20, 9:00 AM</small></span></label></div><div class="fld"><label>Notify students</label><label class="chkrow planopt"><input type="radio" name="notify" checked> <span><b>In waves (recommended)</b><small>9,088 students in 6 waves of about 1,500, every 5 minutes · over 30 minutes</small></span></label><label class="chkrow planopt"><input type="radio" name="notify"> <span><b>All at once</b></span></label><label class="chkrow"><input type="checkbox"> Go campus by campus (ACCESS first)</label></div><div class="fld"><label>Full result PDF</label><label class="chkrow planopt"><input type="radio" name="pdf" checked> <span><b>Ready at release (recommended)</b><small>All 9,088 PDFs are built</small></span></label><label class="chkrow planopt"><input type="radio" name="pdf"> <span><b>Allow downloads 1 hour after release</b></span></label><label class="chkrow planopt"><input type="radio" name="pdf"> <span><b>Off for now (screen only)</b><small>Students see their result; the PDF comes later</small></span></label></div><div class="fld"><label>Before you release</label><ul class="checklist"><li class="ok">Scores approved</li><li class="ok">Result PDFs ready · 9,088 of 9,088</li><li class="ok">Release time set · Apr 20, 9:00 AM</li><li>Server boost for results day <span class="muted">(ask IT; optional)</span></li></ul></div><p class="muted" style="margin:0">Results on screen are served from a ready copy, so many students can open them at once. You can hide the results again, but messages already sent stay sent.</p></div>', btn("Cancel", "#") + btn("Release as planned", "#live", "primary"))
+      + inmain("release", RESULTS_BAR + RESULTS_PDF_LIST + shown(modal("release-d", "info", "", "Release plan · Schedule 1", '<div class="plan"><div class="fld"><label>When</label><label class="chkrow planopt"><input type="radio" name="when"> <span><b>Now</b></span></label><label class="chkrow planopt"><input type="radio" name="when" checked> <span><b>At a set time</b><small>Apr 20, 9:00 AM</small></span></label></div><div class="fld"><label>Notify students</label><label class="chkrow planopt"><input type="radio" name="notify" checked> <span><b>In waves (recommended)</b><small>9,088 students in 6 waves of about 1,500, every 5 minutes · over 30 minutes</small></span></label><label class="chkrow planopt"><input type="radio" name="notify"> <span><b>All at once</b></span></label><label class="chkrow"><input type="checkbox"> Go campus by campus (ACCESS first)</label></div><div class="fld"><label>Full result PDF</label><label class="chkrow planopt"><input type="radio" name="pdf" checked> <span><b>Ready at release (recommended)</b><small>All 9,088 PDFs are built</small></span></label><label class="chkrow planopt"><input type="radio" name="pdf"> <span><b>Allow downloads 1 hour after release</b></span></label><label class="chkrow planopt"><input type="radio" name="pdf"> <span><b>Off for now (screen only)</b><small>Students see their result; the PDF comes later</small></span></label></div><div class="fld"><label>Before you release</label><ul class="checklist"><li class="ok">Scores approved</li><li class="ok">Result PDFs ready · 9,088 of 9,088</li><li class="ok">Release time set · Apr 20, 9:00 AM</li><li>Server boost for results day <span class="muted">(ask IT; optional)</span></li></ul></div><p class="muted" style="margin:0">Results on screen are served from a ready copy, so many students can open them at once. You can hide the results again, but messages already sent stay sent.</p></div>', btn("Cancel", "#") + btn("Release as planned", "#live", "primary"))))
       + inmain("live", '<div class="panel"><div class="head"><h2>Release in progress · Schedule 1</h2><span class="st live">Live</span></div><div class="kpis"><div class="kpi"><span>Notices sent</span><b>3 of 6 waves</b><small>4,544 of 9,088 students</small></div><div class="kpi"><span>Opened their result</span><b data-count="3912">3,912</b></div><div class="kpi"><span>PDF downloads</span><b data-count="1207">1,207</b></div><div class="kpi"><span>Server</span><b>Busy · 62%</b><small>From System status</small></div></div><div style="display:flex;gap:8px"><a class="btn" href="#released">Pause notifications</a><a class="btn" href="#pdf-paused">Pause PDF downloads</a></div></div>')
       + toast("pdf-paused", "info", INFO, "PDF downloads paused", "Students still see their result on screen. Turn downloads back on here.")
       + modal("hide", "warn", WARN, "Hide Schedule 1 results?", '<p class="muted" style="margin:0">Students stop seeing scores in the app, and the verify page says “not available”. Emails already sent can’t be unsent.</p>', btn("Cancel", "#") + btn("Hide results", "#hidden", "danger"))
@@ -1552,7 +1556,7 @@ admin("email", "Email", f"""{ptabs([("sender", "Sender"), ("auto", "Automatic me
       overlays=modal("mail", "info", "✎", "Official email", '<div class="fld"><label for="mf1">Sender name</label><input id="mf1" value="SKSU Admission Office"></div><div class="fld"><label for="mf2">Sends from</label><input id="mf2" type="email" value="admission@sksu.edu.ph"></div><div class="fld"><label for="mf3">Replies go to</label><input id="mf3" type="email" value="admission@sksu.edu.ph"></div><div class="fld"><label for="mf4">Footer</label><input id="mf4" value="Sultan Kudarat State University · Admission Office · (064) 201-0000"></div>' + hint("A new address must be verified first: we send it a link. Until then, emails keep the old sender."), btn("Send a test email", "#mail-test") + btn("Cancel", "#") + btn("Save", "#mail-ok", "primary"))
       + toast("mail-test", "info", INFO, "Test email sent", "Check admission@sksu.edu.ph. It should arrive within a minute.")
       + toast("mail-ok", "ok", OK, "Saved", "New emails use this sender. The change is in the activity log.")
-      + modal("tpl", "info", "✎", "Edit template · Pick your exam slot", f'<div class="fld"><label for="t1">Subject</label><input id="t1" value="Pick your exam slot"></div><div class="fld"><label for="t2">Message</label><textarea id="t2" rows="4" style="border:1px solid var(--line);border-radius:6px;padding:10px;font:14px var(--sans)">Hi {{{{first_name}}}}, your payment is approved…</textarea>{hint("Fields: {{{{first_name}}}}, {{{{examinee_no}}}}, {{{{exam slot}}}}, {{{{seat}}}}.")}</div>', btn("Cancel", "#") + btn("Save", "#", "primary"))
+      + modal("tpl", "info", "✎", "Edit template · Pick your exam slot", f'<div class="fld"><label for="t1">Subject</label><input id="t1" value="Pick your exam slot"></div><div class="fld"><label for="t2">Message</label><textarea id="t2" rows="4" style="border:1px solid var(--line);border-radius:6px;padding:10px;font:14px var(--sans)">Hi {{first_name}}, your payment is approved…</textarea>{hint("Fields: {{first_name}}, {{examinee_no}}, {{exam slot}}, {{seat}}.")}</div>', btn("Cancel", "#") + btn("Save", "#", "primary"))
       + modal("resend", "info", "", "Resend to Rhea L. Sumagka", '<div class="fld"><label for="rn">Email</label><input id="rn" type="email" value="rhea.sumagka@gmail.com"></div>' + hint("The email on her account is updated too."), btn("Cancel", "#") + btn("Resend", "#resent", "primary"))
       + toast("resent", "ok", OK, "Resent", "Delivered to rhea.sumagka@gmail.com."),
       states=[("auto", "Automatic messages tab"), ("templates", "Templates tab"), ("log", "Send log tab"), ("mail", "Official email"), ("mail-test", "Test email"), ("mail-ok", "Email saved"), ("tpl", "Edit template"), ("resend", "Resend a failed one"), ("resent", "Resent")])
@@ -1640,7 +1644,7 @@ admin("survey-results", "Survey results", f"""<div class="head"><span class="mut
 {table(["No.", "Statement", "Answers", "SA", "A", "N", "D", "SD", "Average (1 = Strongly Agree)"], [(f'<span class="mono muted">{i}</span>', f'<span class="ink">{q}</span>', likert_bar(c), *[f"{v:,}" for v in c], likert_avg(c)) for i, (q, c) in enumerate(zip(SURVEY_QS, SURVEY_COUNTS), 1)])}
 <small class="muted">The Excel has one row per statement with the count for each answer, the format the office submits.</small>
 <h2 style="margin:8px 0 0;font-size:16px">Comments</h2>
-{table(["When", "Campus", "Comment"], [('<span class="muted">Mar 14</span>', "Isulan", "The room was hot in the afternoon; please open the windows."), ('<span class="muted">Mar 14</span>', "ACCESS, Tacurong", "Clear instructions from the proctor. Thank you."), ('<span class="muted">Mar 15</span>', "Kalamansig", "The signs to the testing rooms were hard to find.")])}
+{table(["When", "Campus", "Comment"], [('<span class="muted">Mar 14</span>', "Isulan", "The room was hot by midday; please open the windows."), ('<span class="muted">Mar 14</span>', "ACCESS, Tacurong", "Clear instructions from the proctor. Thank you."), ('<span class="muted">Mar 15</span>', "Kalamansig", "The signs to the testing rooms were hard to find.")])}
 {pager(1, 3, 213)}""", active="reports", crumb='<a href="reports.html" class="muted">← Reports</a>')
 
 admin("exports", "Downloads", table(["File", "What is in it", "Asked by", "Status", ""], [
@@ -1720,7 +1724,7 @@ admin("landing", "Student app", f"""<div class="head"><span class="muted">What s
 {ptabs([("home", "Home"), ("info", "Info"), ("settings", "Settings")])}
 <section class="pane" id="pane-home"><div class="appedit"><div class="appform">
 <div class="panel"><div class="head"><h2>Announcement</h2><a class="switch on" href="#announce" aria-label="Show the announcement"></a></div>
-<div class="fld"><label for="l1">Shown at the top of the student Home and the landing page</label><input id="l1" value="Cashier offices close at 12:00 noon on Saturdays. Bring your application code."></div>
+<div class="fld"><label for="l1">Shown at the top of the student Home and the landing page</label><input id="l1" value="Isulan cashier is open on Saturdays, 8:00 AM to 12:00 noon."></div>
 <small class="muted">Up to 120 characters. Leave it off when there is nothing new.</small></div>
 <div class="panel"><h2>Filled in by the system</h2><div class="kv">
 <span>Registration</span><span>Open · Schedule 2 · until Apr 10 (from Exam schedules)</span>
@@ -1812,7 +1816,7 @@ admin("account", "My account", f"""<div class="panel" style="max-width:640px"><d
 
 doc("docs/seat-plan.html", "Seat plan", f"""<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a> | <a href="../admin/exam-slots.html">Back to exam slots</a></div>
 <div class="paper">{LETTERHEAD}<h1>Seat plan · Isulan · Room 4 · Sat, Mar 14</h1>
-{table(["Seat", "Examinee no.", "Name", "Signature"], [(str(i), f'<span class="mono">5002{i:02d}</span>', n, "") for i, n in zip(range(26, 30), ["Rodel A. Sangki", "Maria S. Dela Cruz", "Jomar P. Abdullah", "Aisah K. Mangudadatu"])])}
+{table(["Seat", "Examinee no.", "Name", "Signature"], [(seat, f'<span class="mono">{no}</span>', n, "") for seat, no, n in [("26", "500211", "Rodel A. Sangki"), ("27", "500214", "Maria S. Dela Cruz"), ("28", "500219", "Glenda P. Masukat"), ("29", "500222", "Nestor B. Alonzo")]])}
 <span class="muted">50 seats. Printed Mar 13, 2027.</span></div>""")
 
 
@@ -1887,7 +1891,7 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Student flow",
           (P, "applicant/home.html", "6", "Home: submitted", "Status and the code; Show my code.")]),
        ("6b–6d · When online payment is turned on (off for now)", [
           (P, "applicant/payment-online.html", "6b", "Upload receipt", "Reference no. and receipt photo."),
-          (P, "applicant/payment-waiting.html#sent", "6c", "Waiting for approval", "The office checks it within a working day."),
+          (P, "applicant/payment-waiting.html#sent", "6c", "In review (online, later)", "The office checks it within a working day."),
           (P, "applicant/payment-rejected.html#receipt", "6d", "Sent back with remarks", "What to fix; send again.")], "later"),
        ("7 · Approved: examinee number", [
           (P, "applicant/home.html#approved", "7", "Home: approved", "Paid · OR no. · examinee no.; Pick exam slot by Mar 1."),
@@ -1944,7 +1948,7 @@ admin_pages = [("dashboard", "", "Dashboard", "Today’s numbers, sign-ups, dema
                ("applicant", "", "Applicant record", "Everything about one applicant plus the full history."),
                ("applicant", "edit", "Edit details", "Form with a date error; a reason is required."),
                ("applicant", "move", "Move exam slot", ""), ("applicant", "cancel", "Cancel application", "Type CANCEL to confirm."),
-               ("payments", "", "Payment review", "Queue, receipt and decision side by side; keyboard keys."),
+               ("payments", "", "Payment review (off for now)", "Only when online payment is turned on."),
                ("payments", "approve", "Reused reference warning", ""), ("payments", "approved", "Approved", "Number issued, next one opens."),
                ("payments", "reject", "Send back with remarks", "What to fix, reason and remarks."), ("payments", "conflict", "Two reviewers", "Someone else decided first."),
                ("payments", "empty", "All caught up", ""),
@@ -2065,7 +2069,7 @@ ADMIN_CYCLE = [
         ("docs/email-rejected.html", "What the applicant gets: sent back", ""),
         ("docs/permit-pdf.html", "Permit issued", "After the applicant picks an exam slot; QR links to the verify page.")]),
     ("5b · When online payment is turned on (later)", [
-        ("admin/payments.html", "Payment review", "Queue, receipt and decision side by side; A and R keys."),
+        ("admin/payments.html", "Payment review (online payment, off for now)", "Only when online payment is turned on."),
         ("admin/payments.html#approve", "Reused reference warning", "Caught before a double approval."),
         ("admin/payments.html#approved", "Approved, number issued", "Examinee no. comes from the school year counter; next one opens."),
         ("admin/payments.html#reject", "Send back with remarks", "What to fix, a reason and remarks go to the applicant."),
@@ -2086,9 +2090,13 @@ ADMIN_CYCLE = [
         ("admin/scores.html#map", "Match columns", "Remembered for next time."),
         ("admin/scores.html#map", "Match columns", "The sheet, two header rows and extra columns, checked once and remembered."),
         ("admin/scores.html#commit", "Approve confirm", "Scores are saved exactly as in the file, not yet visible.")]),
-    ("8 · Review and publish results", [
-        ("admin/results.html#committed", "Results", "Release date set; scored and absent counted."),
-        ("admin/results.html#release", "Release now?", "Can’t be taken back."),
+    ("8 · Prepare PDFs and publish results", [
+        ("admin/results.html#notyet", "PDFs not prepared yet", "One click: Prepare result PDFs (recommended before publishing)."),
+        ("admin/results.html#before", "Preparing PDFs", "Progress, pause, each examinee's PDF status; Prepare now for one."),
+        ("admin/results.html#pub-noprep", "Publish before PDFs", "Becomes Prepare, then publish."),
+        ("admin/results.html#pub-force", "Emergency publish", "Super admin only, with a reason."),
+        ("admin/results.html#release", "Release plan", "Now or at a time, notices in waves."),
+        ("admin/results.html#hide-one", "Hide one student", "Score under review; Hidden tab."),
         ("admin/results.html#releasing", "Sending emails", "Runs in the background."),
         ("admin/results.html#released", "Released", ""),
         ("admin/results.html#report", "Delivery report", "In-app and email delivered; failures to resend."),
@@ -2117,7 +2125,7 @@ board("ADMIN-JOURNEY-MOCKUP.html", "Admin: the full school year",
       "Click any screen to open it.",
       sections,
       [("One green button per area", "Danger actions are red and always behind a confirm."), ("Every change has a reason", "Edits, moves and corrections ask why and write the history."),
-       ("Nothing waits on a spinner", "Exports, emails and score maths run in the background."), ("Tables fold on a phone", "Each row becomes a card; filters stack."),
+       ("Nothing waits on a spinner", "Exports, emails and result PDFs run in the background."), ("Tables fold on a phone", "Each row becomes a card; filters stack."),
        ("Guards, not warnings", "Can’t remove the last admin, can’t double-approve, can’t overbook."), ("Same words as the applicant sees", "Draft, In review, Approved, Scheduled, Scored.")])
 
 
@@ -2145,7 +2153,7 @@ def cashier(key, title, body, tab="counter", overlays="", states=None):
     doc(f"cashier/{key}.html", title, f"""<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
 <div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav>{tabs}</nav>
 {GUIDE_BTN if key in GUIDES else ""}<span class="ctally">Today: 36 · ₱9,900</span><span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><a class="btn sm" href="shift-end.html">End shift</a><a class="btn sm" href="#signout">Sign out</a></header>
-<main class="cmain">{body}</main></div>{overlays}{SIGNOUT}{guide_modal(key) if key in GUIDES else ""}""", states=([("guide", "Guide")] if key in GUIDES else []) + list(states or []))
+<main class="cmain">{body}{overlays}</main></div>{SIGNOUT}{guide_modal(key) if key in GUIDES else ""}""", states=([("guide", "Guide")] if key in GUIDES else []) + list(states or []))
 
 
 RECENT = [("9:41", "Ricky P. Ulangkaya", "0048213", "Cash"), ("9:12", "Joy M. Dalumpines", "0048212", "Cash"), ("8:47", "Norhana P. Sali", "0048211", "GCash at counter")]
@@ -2182,10 +2190,10 @@ cashier("console", "Counter", f"""<section class="cleft"><div class="cfind"><inp
 {cnotice("again", "info", "Already recorded by you at 10:02", "Lea M. Sampulna is paid: OR 0048214, examinee no. 509786. Nothing was recorded twice.", btn("Print slip", "../docs/payment-slip.html", "sm"))}
 {cnotice("offline", "bad", "No connection: payments can't be recorded", "Brownout or internet down. Issue the paper OR as usual and write the applicant code on your copy. When the system is back, use Record a paper payment.", btn("Record a paper payment", "#paper", "sm"))}
 {cnotice("lastor", "warn", "Last OR in this booklet: 0048500", "Add your next booklet before the next payment.", btn("Add booklet", "#booklet", "sm"))}
-{cnotice("closed", "bad", "Schedule 2 registration closed Apr 10, 11:59 PM", "This applicant can't pay now. Only the admin can extend one applicant's payment date.")}
+{cnotice("closed", "bad", "Payment window closed · Apr 10, 11:59 PM · not extended", "This application closed because it wasn't paid in time. Don't take the payment; the student can apply in the next schedule, or the admin can extend this one applicant.")}
 {cnotice("extended", "info", "Extended until Apr 12 by Ana R.", "Registration closed, but this applicant may still pay.")}
 <div class="cform"><span class="clabel">Payment for</span>
-<div class="cperson"><div class="thumb cphoto" style="padding:0;overflow:hidden"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div><div><b>Lea M. Sampulna</b><span class="mono">APP-27-20422</span><span>BSEd Mathematics · Kalamansig</span><span class="muted">Schedule 2 · Freshman</span></div></div>
+<div class="cperson"><div class="thumb cphoto" style="padding:0;overflow:hidden"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div><div><b>Lea M. Sampulna</b><span class="mono">APP-27-20422</span><span>BSEd Mathematics · Kalamansig</span><span class="muted">Schedule 2 · Freshman · pay by Apr 10</span></div></div>
 <small class="muted">Someone else paying for them is fine. Check that the photo and name match the student this payment is for.</small>
 <div class="camount"><span>Amount</span><b>₱275.00</b></div>
 <div class="fld"><label for="rcv">Received</label><div class="money"><span>₱</span><input id="rcv" inputmode="decimal" value="500.00"></div>
@@ -2203,7 +2211,7 @@ cashier("console", "Counter", f"""<section class="cleft"><div class="cfind"><inp
         overlays=modal("spoil", "warn", WARN, "Mark 0048215–0048216 as spoiled?", '<div class="fld"><label for="sp">Reason</label><select id="sp"><option>Torn or misprinted</option><option>Written wrong, cancelled</option><option>Other</option></select></div><p class="muted" style="margin:0">Keep the spoiled receipts. They appear on your end-of-shift list.</p>', btn("Cancel", "#") + btn("Mark as spoiled", "#", "primary"))
         + modal("paper", "info", "", "Record a paper payment", '<p class="muted" style="margin:0">For payments taken on paper while the system was down. An admin reviews each one; the examinee no. is issued now.</p><div class="formgrid"><div class="fld"><label for="pp1">Applicant code</label><input id="pp1" value="APP-27-20431"></div><div class="fld"><label for="pp2">OR no.</label><input id="pp2" inputmode="numeric" value="0048217"></div><div class="fld"><label for="pp3">Paid on</label><input id="pp3" type="datetime-local" value="2027-03-15T10:20"></div><div class="fld"><label for="pp4">Reason</label><select id="pp4"><option>System was down (brownout or no internet)</option><option>Other</option></select></div></div>', btn("Cancel", "#") + btn("Record late payment", "#done", "primary"))
         + modal("booklet", "info", "+", "Add your next booklet", '<div class="formgrid"><div class="fld"><label for="bk1">First OR no.</label><input id="bk1" inputmode="numeric" value="0048501"></div><div class="fld"><label for="bk2">Last OR no.</label><input id="bk2" inputmode="numeric" value="0049000"></div></div><p class="muted" style="margin:0">Allowed for your counter by the admin. Every new booklet is logged.</p>', btn("Cancel", "#") + btn("Add booklet", "#", "primary")),
-        states=[("done", "Recorded"), ("again", "Pressed Record twice"), ("paid", "Already paid"), ("dupe", "Possible duplicate"), ("orused", "OR already used"), ("orrange", "OR not in booklet"), ("orskip", "Skipped OR numbers"), ("spoil", "Mark spoiled"), ("orformat", "OR format error"), ("lastor", "Booklet running out"), ("booklet", "Add booklet"), ("offline", "No connection"), ("paper", "Record a paper payment"), ("notfound", "Not found"), ("notlisted", "Not in the list"), ("round", "Wrong schedule"), ("closed", "Registration closed"), ("extended", "Extended by admin"), ("waived", "Fee waived"), ("cpaused", "Payments paused"), ("signout", "Sign out mid-shift")])
+        states=[("done", "Recorded"), ("again", "Pressed Record twice"), ("paid", "Already paid"), ("dupe", "Possible duplicate"), ("orused", "OR already used"), ("orrange", "OR not in booklet"), ("orskip", "Skipped OR numbers"), ("spoil", "Mark spoiled"), ("orformat", "OR format error"), ("lastor", "Booklet running out"), ("booklet", "Add booklet"), ("offline", "No connection"), ("paper", "Record a paper payment"), ("notfound", "Not found"), ("notlisted", "Not in the list"), ("round", "Wrong schedule"), ("closed", "Payment window closed"), ("extended", "Extended by admin"), ("waived", "Fee waived"), ("cpaused", "Payments paused"), ("signout", "Sign out mid-shift")])
 
 PAID = [("APP-27-20398", "Ricky P. Ulangkaya", "0048213", "Cash", "Today 9:41", "Isulan counter 1", "509785"), ("APP-27-20377", "Joy M. Dalumpines", "0048212", "Cash", "Today 9:12", "Isulan counter 1", "509784"),
         ("APP-27-20361", "Norhana P. Sali", "0048211", "GCash at counter", "Today 8:47", "Isulan counter 1", "509782"), ("APP-27-20301", "Ana Liza C. Bansil", "0048210", "Cash", "Today 8:31", "Isulan counter 1", "509781")]
@@ -2305,7 +2313,7 @@ groups = [
     ("Proctor (phone)", ["proctor/rooms.html", "proctor/checkin.html", "proctor/summary.html"]),
     ("Admin", [f"admin/{k}.html" for k in ["dashboard", "setup", "report-hometown", "report-summary", "search", "support", "support-ticket", "messages", "email", "system", "landing", "survey", "survey-results", "chair", "rooms", "cashier", "setup-1", "setup-2", "setup-3", "setup-4", "setup-5", "applications", "applicant", "payments", "schedules", "exam-slots", "checkin", "scores", "results", "result-detail", "reports", "report-view", "exports", "campuses", "staff", "audit", "account"]]),
 ]
-flows = [("Applicant, start to result", "public/landing.html"), ("Payment review", "admin/payments.html"), ("Exam day", "proctor/rooms.html"), ("Scores to release", "admin/scores.html")]
+flows = [("Applicant, start to result", "public/landing.html"), ("Cashier counter", "cashier/console.html"), ("Exam day", "proctor/rooms.html"), ("Scores to release", "admin/scores.html")]
 
 
 def title_of(path):

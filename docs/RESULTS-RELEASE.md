@@ -8,14 +8,18 @@ How results go out without overloading the 2-core server. Students see their res
 flowchart TD
     A[Testing Center Excel] --> B[Import scores<br/>match columns, check rows]
     B --> C[Admin approves<br/>scores saved, still hidden]
-    C --> D[Queue builds PDFs<br/>1 at a time, quiet hours<br/>~1-1.5 h for 10,000]
+    C --> P[Admin clicks Prepare result PDFs<br/>one click; Prepare now for one student]
+    P --> D[Queue builds PDFs<br/>1 at a time, quiet hours<br/>~1-1.5 h for 10,000]
     D --> E{All PDFs ready?}
     E -- not yet --> D
-    E -- yes --> F[Release plan<br/>time, waves, PDF option]
+    E -- yes --> F[Release plan<br/>time, waves]
+    C -. Publish clicked too early .-> W[Becomes: Prepare, then publish<br/>emergency: super admin publishes without PDFs]
+    W --> D
     F --> G[Release at the set time]
-    G --> H[Notices in waves<br/>~1,500 every 5 min]
+    G --> H[Notices in waves<br/>~1,500 every 5 min, in app + email]
     H --> I[Student opens result<br/>summary on screen, from cache]
-    I --> J[Download full result PDF<br/>ready file, no building]
+    I --> J[Download full result PDF<br/>or Share: PDF or proof link]
+    G --> V[Visible to students switch<br/>hide all, or hide one student]
 ```
 
 ## 2. Why waves matter
@@ -44,7 +48,9 @@ The bars are everyone told at once: a spike in the first minute. The line is the
 
 ## 4. Admin controls
 
-- **Publish → Release plan:** now or at a time; notify all at once or in waves (recommended); PDF ready before release (recommended), open after 1 hour, or off for now.
+- **Prepare result PDFs:** one click after approving (one student early with Prepare now).
+- **Publish → Release plan:** now or at a time; notify in waves (recommended). If PDFs aren't ready, Publish becomes **Prepare, then publish**; only a super admin can publish without PDFs (emergency, with a reason).
 - **Checklist:** PDFs ready, scores approved, time set, server boost for results day (ask IT).
 - **While it runs:** waves sent, students who opened their result, PDF downloads, server busy level; **Pause notifications** and **Pause PDF downloads**.
-- **Hide results** any time.
+- **Visible to students** switch hides all results any time; **hide one student's result** with a reason (Hidden tab).
+- Students can **share** their result: the PDF, or a proof link without scores.

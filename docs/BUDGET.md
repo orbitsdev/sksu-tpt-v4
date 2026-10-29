@@ -27,7 +27,7 @@ What SKSU needs to pay for to run SKSU TPT v4, and what is free. Prices are **es
 
 ## 3. Free (no purchase)
 
-- Laravel, Vue, Nuxt UI, Tailwind, Redis, MySQL, Laravel Horizon: open source.
+- Laravel, Inertia, Vue, shadcn-vue, Tailwind, Redis, MySQL, Laravel Horizon: open source.
 - The student app as a PWA: no App Store or Play Store fees.
 - Load testing tool (k6): free.
 - Google sign-in for students: free.

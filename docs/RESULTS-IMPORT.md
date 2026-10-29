@@ -21,9 +21,13 @@ Code: `app/Imports/ExaminationResultImport.php` and `app/Http/Livewire/Admin/App
 7. No check against attendance. Absent examinees and missing answer sheets look the same (the 635 gap).
 8. The 2026 file didn't fit this importer: it has name, standard score, stanine and label per subject, ESM, an overall score, and a second table glued on at columns 32–33. Hence the hand-written scripts in `docs/` (`clean_csv.php`, `find_missing_results.php` …) and the Feb 2026 migration adding `esm_*` and `preferred_program`.
 
+## Template
+
+`tpt-scores-template.xlsx` (Download the Excel template on Import scores) follows the **2026 layout**: sheet "Result", two header rows (subject, then Standard Score / Stanine / Qualitative Interpretation per subject), Name of Examinee, Examinee Number, Preferred Program, and one fictional sample row. The importer accepts this layout and the older one-row CSV (`tpt-scores-template.csv`) the same way, through column matching.
+
 ## v4 Excel template
 
-One header row, sheet "Result". Download it from the Import scores page: `tpt-scores-template.xlsx` (a CSV with the same columns also works).
+Older one-row layout (still accepted, e.g. as CSV).
 
 ```csv
 examinee_no,name,english_ss,english_stanine,science_ss,science_stanine,math_ss,math_stanine,filipino_ss,filipino_stanine,social_studies_ss,social_studies_stanine,esm_ss,esm_stanine,overall_ss,overall_stanine
@@ -53,5 +57,5 @@ examinee_no,name,english_ss,english_stanine,science_ss,science_stanine,math_ss,m
 | Two tables side by side (the 2026 layout) | The extra columns are ignored in Match columns |
 | Re-upload | Compared with what's in the system: new, changed, unchanged. Only approved changes are saved |
 | Approval | One transaction. The original file, uploader, time, counts and approver go in `score_imports` and the activity log |
-| Publish | A separate step with a scheduled time; students and SMS notified |
+| Publish | A separate step after Prepare result PDFs, now or at a set time; students notified in the app and by email, in waves (SMS later) |
 | Correct one score | Edit with a reason; the old value is kept in the history |

@@ -13,7 +13,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 1 | Sign in with Google | Old | Keep |
 | 2 | Email-link sign-in for students without Google | New | Optional (not in the mockups; Google only, as tptv3) |
 | 3 | Application forms (personal, school, 3 programs) | Old | Keep (cleaner fields) |
-| 4 | Extra uploads: Form 138, valid ID | New (from the tpt-recreate-v2 plan) | **Cut**: only the 2×2 photo and the receipt are collected; the ID is shown at the door |
+| 4 | Extra uploads: Form 138, valid ID | New (from the tpt-recreate-v2 plan) | **Cut**: only the 2×2 photo is collected (the receipt only when online payment is on; transferees add grades); the ID is shown at the door |
 | 5 | Photo shrunk on the phone | New | Keep (fixes 26 GB of uploads) |
 | 6 | Receipt upload + reviewer approval | Old | **Later**: a school-year switch, off (cashier only for now) |
 | 7 | Cashier console (record the OR no.) | Asked | Keep, simple version |
@@ -21,7 +21,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 9 | Refunds | New | **Cut** for v1 (accounting handles it) |
 | 10 | Reconciliation against GCash/Landbank statements | New | **Cut** for v1 |
 | 11 | School years with 1–3 schedules | Asked ("three schedules") | Keep; confirm what the three schedules are |
-| 12 | School year setup wizard (5 steps) | New | Simplify to plain forms |
+| 12 | School year setup wizard (5 steps) | New | Keep: 5 steps with the vertical step rail (hideable) |
 | 13 | Rooms with seats per room | Old (as a room count) | Keep, simple |
 | 14 | Rooms CSV import | New | **Cut** |
 | 15 | Schedule by date; times only as a guide | Asked | Keep |
@@ -44,7 +44,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 31 | Bulk actions (remind, export) | New | Optional |
 | 32 | Saved views | New | **Cut** |
 | 33 | Duplicate-applicant detector | New | Optional (flag only; no merge) |
-| 34 | Roles: admin, cashier, reviewer, scores admin, proctor | New (old: admin and applicant) | Keep a few: admin, cashier, proctor |
+| 34 | Roles: admin, cashier, reviewer, scores admin, proctor | New (old: admin and applicant) | Keep a few: admin (+ super admin), cashier, proctor (optional check-in), program chair / dean (#44) |
 | 35 | Activity logs | New | Keep |
 | 36 | Undo in the activity logs | New | **Cut** |
 | 37 | Welcome and splash screens in the app | New | Optional |

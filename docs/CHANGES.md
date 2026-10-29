@@ -168,3 +168,15 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ New screens: move or cancel an exam slot (typhoon) with delivery report; new application for someone (walk-in); change sign-in email; correct OR no.; extend payment; seat now; office summary report; close school year checklist; transferee slots per program; deactivate a chair with pending approvals.
 - ✅ Rules: super admin; voided examinee numbers retired; corrected scores stored as given; same-day exam slots allowed; dates until 11:59 PM; change-slot deadline; drafts kept on unpublish; publish with no slots warns.
 - ✅ Sample data agrees across pages (people, OR and examinee numbers, today's totals, pause time, Schedule 1 results released).
+
+## Last gap check (29 Oct, evening)
+
+- ✅ Page states (empty, loading, notices) sit below the header and beside the sidebar.
+- ✅ Results: publish buttons say what they do ("Prepare, then publish", "Publish when ready"); dialogs open over the matching moment.
+- ✅ **One exam slot per campus per day** (a second one would bring back morning/afternoon): more students = Add rooms or another day.
+- ✅ **Pay-by deadline** shown on the student Home, Payment screen and cashier; unpaid applications close by themselves after it (apply in the next schedule, or the admin extends one applicant).
+- ✅ Online review status reads **"In review"** everywhere; online payment screens tagged "later".
+- ✅ Flow diagram and admin board include **Prepare result PDFs**, emergency publish and hiding one student.
+- ✅ Excel template follows the **2026 layout** (two header rows); the old one-row CSV is still accepted.
+- ✅ Docs aligned: Laravel 13, Inertia 3, shadcn-vue, existing server, SMS later, PRD data model points to DATABASE.md.
+- ✅ Sample data: examinee numbers, seat plan, scores used per program, survey comment, Saturday cashier notice.
