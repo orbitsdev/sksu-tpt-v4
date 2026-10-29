@@ -365,7 +365,8 @@ The dashboard shows the round's seats (total, taken, left, open exam days) and e
 ## Examinee numbers
 
 - tptv3: 6 digits, the next number is the last one plus 1, starting from a number set in the code each year (500001 now; an older version used 411111). The office's start number changed by editing code.
-- v4: the school year has a **First examinee number** setting (6 digits). Numbers are issued in order when a payment is recorded (or the chairperson-approved transferee pays), from a counter locked in the same transaction, so two people never get the same number. The range can't overlap an earlier school year. An admin can correct a number with a reason (logged), like tptv3's "examinee_number_updated".
+- v4: the school year has an **examinee number pattern**: optional prefix, number of digits (default 6) and start number, with a live preview. It locks once the first number is given, and each new school year can use a new pattern, so the office can change the format later without code. The results import checks numbers against the school year's pattern.
+- Numbers:  Numbers are issued in order when a payment is recorded (or the chairperson-approved transferee pays), from a counter locked in the same transaction, so two people never get the same number. The range can't overlap an earlier school year. An admin can correct a number with a reason (logged), like tptv3's "examinee_number_updated".
 - To confirm with the office: the start number for the next school year, and whether transferee schedules share the same series.
 
 ## Permit format
