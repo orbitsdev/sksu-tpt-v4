@@ -12,7 +12,7 @@ What SKSU TPT v4 is built with, and why. Versions checked against the official d
 | Components | **shadcn-vue** (on Reka UI) **+ Tailwind 4** | **Decided.** We own every component, so the app ships only what it uses (small downloads on low-end phones and mobile data) and matches the calm SKSU design exactly. Accessible by default (Reka UI). Data tables with TanStack Table; date pickers, dialogs, drawers and sheets from the same set |
 | Student app | **PWA** (installable web app) | Install from the website on Android and iPhone; no APK, no store; offline permit |
 | Sign-in | **Google** (Laravel Socialite) | Same as tptv3; staff by invite only |
-| Roles | spatie/laravel-permission | Admin (+ super admin), Cashier, Proctor, Program chair / Dean |
+| Roles | spatie/laravel-permission | Admin (+ super admin), Cashier, Proctor, Program chair / Dean (see 1b) |
 | Lists, filters, sorting | spatie/laravel-query-builder | One pattern for every list (tabs, search, filters, sort, 25 per page) |
 | Files (photos, receipts) | spatie/laravel-medialibrary | Photos shrunk on the phone first (about 200 KB) |
 | Excel import and export | A streaming reader/writer (e.g. OpenSpout) | Reads the Testing Center file as it is; big exports run in the background |
@@ -21,6 +21,34 @@ What SKSU TPT v4 is built with, and why. Versions checked against the official d
 | Queue monitor | Laravel Horizon | See jobs (PDFs, emails, imports), retry failed ones |
 | Email | tptv3 today: Gmail SMTP as sksutpt@gmail.com (about 500 emails a day). For v4: a mail service (e.g. Amazon SES, about $0.10 per 1,000) or the university's Google Workspace address (about 2,000 a day) | **Decide** (official sender); a plain Gmail can't email 9,000 students in one day |
 | SMS | tptv3 has **no SMS**. v4 starts with in-app + email; an SMS provider (e.g. Semaphore) can be added later | **Decide** later (budget) |
+
+## 1b. Packages (proven Laravel packages, so we don't rebuild what exists)
+
+Each one replaces code we would otherwise write and maintain. Check that every package supports Laravel 13 when the build starts.
+
+| Need in TPT | Package | Why this one |
+|---|---|---|
+| Roles: admin, super admin, cashier, proctor, program chair / dean | **spatie/laravel-permission** | The standard for roles and permissions; scoped by campus or program |
+| Photos, receipts, grades files, result PDFs | **spatie/laravel-medialibrary** | Stores files per applicant, makes small versions, keeps originals separate |
+| Activity log (every staff change, who and when, old and new value) | **spatie/laravel-activitylog** | Drop-in audit trail for the Activity logs page and record history |
+| Lists: search, filters, sorting, paging | **spatie/laravel-query-builder** | One safe pattern for every list's filters and sort from the address bar |
+| Settings (school year, payment methods, limits, maintenance switches) | **spatie/laravel-settings** | Typed settings stored in the database, changed on screen, no code edits |
+| Backups to off-server storage | **spatie/laravel-backup** | Daily database + files backup, keeps old copies, alerts on failure |
+| System status page (disk, queue, mail, database health) | **spatie/laravel-health** | Ready-made checks for the System status screen |
+| Excel import and export (Testing Center file, reports) | **spatie/simple-excel** (OpenSpout) | Streams big files row by row, low memory |
+| Result PDFs | **barryvdh/laravel-dompdf** | Light engine, runs in the queue |
+| QR codes (permit, result verify) | **simplesoftwareio/simple-qrcode** or endroid/qr-code | Small, no outside service |
+| Image resize on the server (safety net after phone shrinking) | **intervention/image** | Standard image library |
+| Google sign-in | **laravel/socialite** | Official |
+| Queue dashboard | **laravel/horizon** | Official; watch and retry PDFs, emails, imports |
+| Live performance monitor in production | **laravel/pulse** | Official; slow pages, busy queues, top users at a glance |
+| Typed links from Vue to Laravel routes | **laravel/wayfinder** | Official; no hand-written URLs in the screens |
+| Typed data between Laravel and Vue | **spatie/laravel-data** (+ TypeScript transformer) | One definition for each screen's data, checked on both sides |
+| Tests | **Pest** | Fast, readable tests for payments, examinee numbers, results |
+| Code quality | **Larastan** (static checks), **Laravel Pint** (formatting) | Catch mistakes before they ship |
+| Development only | **Laravel Telescope** or Debugbar | See queries and slow parts while building (never on the live server) |
+
+Front end: **shadcn-vue** + Tailwind 4, **TanStack Table** for big tables, **vite-plugin-pwa** for the installable student app, **browser-image-compression** to shrink photos on the phone before upload.
 
 ## 2. How it fits together
 
