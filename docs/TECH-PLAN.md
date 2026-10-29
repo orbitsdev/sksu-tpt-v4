@@ -1,14 +1,14 @@
 # Tech plan
 
-What SKSU TPT v4 is built with, and why. Every choice is made for TPT's own goals: **clean, fast, optimized**. Euphoria is only a reference; where its choice is also the best fit for TPT, we use it. Items marked **Decide** need your answer.
+What SKSU TPT v4 is built with, and why. Versions checked against the official docs on Oct 29, 2026; always start with the latest stable release. Every choice is made for TPT's own goals: **clean, fast, optimized**. Euphoria is only a reference; where its choice is also the best fit for TPT, we use it. Items marked **Decide** need your answer.
 
 ## 1. The stack
 
 | Part | Choice | Why |
 |---|---|---|
-| Backend | **Laravel 12**, PHP 8.4 | Mature, secure, fast to build with; the TPT server already runs PHP 8.4 |
+| Backend | **Laravel 13** (latest major, released Mar 17, 2026; security fixes until Mar 17, 2028), PHP 8.4 | Latest stable; supports PHP 8.3–8.5, and the TPT server already runs PHP 8.4. Built-in queue routing (Queue::route) fits the PDF and email queues |
 | Database | **MySQL 8** | Already on the server; tptv3 data can be read for reference |
-| Screens | **Inertia 2 + Vue 3 + TypeScript** | Pages load once, then only small JSON moves (fast on phones). Not Livewire: every click going back to the server is part of why tptv3 is slow |
+| Screens | **Inertia 3** (latest major, released Mar 26, 2026) **+ Vue 3 + TypeScript** | Pages load once, then only small JSON moves (fast on phones). Not Livewire: every click going back to the server is part of why tptv3 is slow |
 | Components | **shadcn-vue** (on Reka UI) **+ Tailwind 4** | **Decided.** We own every component, so the app ships only what it uses (small downloads on low-end phones and mobile data) and matches the calm SKSU design exactly. Accessible by default (Reka UI). Data tables with TanStack Table; date pickers, dialogs, drawers and sheets from the same set |
 | Student app | **PWA** (installable web app) | Install from the website on Android and iPhone; no APK, no store; offline permit |
 | Sign-in | **Google** (Laravel Socialite) | Same as tptv3; staff by invite only |
