@@ -134,3 +134,48 @@ td .act{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}td{ver
 
 /* short table cells (dates, counts, status) stay on one line */
 td .num,td .st,td .act{white-space:nowrap}
+
+/* sortable column headers: the active one shows its arrow */
+th.sort a{color:inherit;text-decoration:none;display:inline-flex;gap:4px;align-items:center}
+th.sort i{font-style:normal;color:var(--line-2);font-size:11px}
+th.sort.on a{color:var(--ink)}th.sort.on i{color:var(--ink)}
+th.sort a:hover i{color:var(--muted)}
+
+/* pages of 25 under long lists */
+.pager{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;font-size:13px}
+.pager>span:last-child{display:flex;gap:6px}
+.panel>.pager{padding:10px 16px}
+
+/* date range and money fields */
+.range{display:inline-flex;align-items:center;gap:6px}
+.money{display:flex;align-items:center;border:1px solid var(--line-2);border-radius:8px;background:#fff;overflow:hidden}
+.money>span{padding:0 10px;color:var(--muted);border-right:1px solid var(--line);align-self:stretch;display:grid;place-items:center;background:#f7f8f7}
+.money input{border:0!important;box-shadow:none!important;flex:1;min-width:0}
+
+/* calendar for the date-picker state */
+.cal{display:block!important;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.calhead{display:flex!important;width:100%;justify-content:space-between;align-items:center;margin-bottom:8px}
+.calhead a{width:32px;height:32px;display:grid;place-items:center;border-radius:8px;text-decoration:none;color:var(--ink)}
+.calhead a:hover{background:#f1f2f1}
+.calgrid{display:grid!important;width:100%;grid-template-columns:repeat(7,1fr);grid-auto-rows:34px;gap:2px;align-items:center;text-align:center;font-size:13px}
+.calgrid b{font-weight:500;color:var(--muted);padding:4px 0}
+.calgrid a{display:grid;place-items:center;height:34px;font-size:13px;border-radius:8px;color:var(--ink);text-decoration:none}
+.calgrid a:hover{background:#f1f2f1}
+.calgrid a.in{background:#f1f2f1;border-radius:0}
+.calgrid a.on{background:var(--deep-2);color:#fff;font-weight:600}
+.calgrid a.today{box-shadow:inset 0 0 0 1px var(--line-2)}
+
+/* never a box inside a box: anything inside a panel sits flat, split by hairlines */
+.panel .up{border:0;border-top:1px solid var(--line);border-radius:0;background:none;padding:12px 0;box-shadow:none}
+.panel .setrow{border:0;border-radius:0;background:none;padding:0;box-shadow:none}
+.panel .preview{border:0;border-left:3px solid var(--line-2);border-radius:0;background:none;padding:2px 0 2px 12px}
+.panel .proof{border:0;background:none;padding:0}
+.panel .kpis .kpi{border:0;border-radius:0;background:none;padding:4px 0;box-shadow:none}
+.panel .kpis .kpi+.kpi{border-left:1px solid var(--line);padding-left:20px}
+.panel .alertbox{border:0;border-radius:0;background:none;padding:0;color:var(--muted)}
+.panel .alertbox.warn,.panel .alertbox.bad{color:var(--warn);font-weight:500}
+
+/* buttons and bars: solid colour, no gradient or glow */
+.btn.primary,.btn.primary:hover{background:var(--deep-2)!important;background-image:none!important;box-shadow:none!important;border-color:var(--deep-2)!important}
+.btn.primary:hover{filter:brightness(.95)}
+.ctop{background:var(--deep)!important;background-image:none!important}

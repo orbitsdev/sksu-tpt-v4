@@ -36,6 +36,10 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ Vertical step guide: Upload → Match columns → Check rows → Approve → Publish.
 - ✅ A real Excel template to download.
 
+## Only the data we need
+
+- ✅ Uploads cut to the **2×2 ID photo** (for the permit) and the **payment receipt** (online payment only). Transferees add their grades for the chairperson. No Form 138 or ID copies: the ID is shown at the door.
+
 ## Look and feel (calm, minimal, like euphoria)
 
 - ✅ **Sidebar in work order with groups**: Applicants · Exam · Reports · Management · **System** (technical pages at the bottom).
@@ -60,6 +64,20 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ Removing things the scope check cut (saved views, merge, undo, refunds, notification settings, extra roles).
 - ✅ Same numbers and dates on every page.
 
+## Student app redesign
+
+- ✅ euphoria's phone frame (dark bezel, camera dot); numbered screens with captions on the journey board.
+- ✅ Flat white screens, thin dividers, no card inside a card, one solid green button, no gradients or glow.
+- ✅ Messages pop up inside the phone; bottom sheets stay in the phone.
+- ✅ Right fields: calendar for birth date, +63 mobile keypad, number keypad, search pickers for school and program, camera or gallery for the photo.
+- ✅ Plain office wording ("SKSU TPT · SY 2027–2028"), no "Let's start!".
+
+## Fields and lists (admin and cashier)
+
+- ✅ Date pickers with a calendar, number, email and phone fields where they belong.
+- ✅ Search, filters, sortable columns and pages of 25 on every list that can grow.
+- ✅ Public landing, sign-in and the proctor app in the same calm style.
+
 ## Docs
 
 - ✅ **UI rules** (new): when to use a page, dialog, drawer or step form; buttons; what happens after a click; errors; long-term rules.
@@ -78,6 +96,7 @@ Everything changed in the mockups and docs today. ✅ = done.
 6. Will cashiers type the OR no. in the system?
 7. Cut-off score per program; official stanine labels.
 8. Official sender email; SMS provider and budget.
+9. Transferees: is approval in the system enough, or do you still need the chairperson's signature on paper?
 
 ## Not touched
 

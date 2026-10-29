@@ -29,7 +29,7 @@ Checked against tptv3's Livewire validation rules and migrations, and the live s
 | previous_school_address | Free text | Town only (dropdown) |
 | track_and_strand_taken | Free text | Dropdown (STEM, ABM, HUMSS, GAS, TVL, Arts and Design, Sports, ALS) |
 | honor_or_awards_received | 20 "Data too long" errors [Certain] | Optional, 200-character limit shown |
-| (missing) | — | GWA (number, 60–100); Form 138 upload; valid ID upload |
+| (missing) | — | GWA (number, 60–100) |
 
 ### Program choices (`ProgramInfo.php`, plus `select_courses` after the survey)
 
@@ -47,7 +47,7 @@ Checked against tptv3's Livewire validation rules and migrations, and the live s
 |---|---|---|
 | Sign in | users | — |
 | Start | applications (school year, schedule) | draft |
-| Forms | applicant_profiles, schools, program_choices, uploads (photo, Form 138, ID) | draft |
+| Forms | applicant_profiles, schools, program_choices, uploads (photo, receipt; grades for transferees) | draft |
 | Submit | application_events | submitted |
 | Pay (upload) | payments (method, ref, amount, paid_on), uploads (receipt) | payment_review |
 | Pay (cashier) or approve | payments (recorded_by, or_no) + examinee_no from the school year counter | approved |

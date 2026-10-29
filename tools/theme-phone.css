@@ -1,0 +1,233 @@
+
+/* ===== student app: a plain native phone app (loaded last).
+   Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
+   No gradients, glows, pills on every row or cards inside cards. ===== */
+:root{--sys:Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;--p-ink:#1b1d1c;--p-muted:#5f6662;--p-line:#e3e6e4;--p-green:#007a30;--p-bg:#f4f5f4}
+body.phone-page{background:#e9ebea;background-image:none}
+
+/* device frame (as KIOSK-FRAMES-MOCKUP-2): dark bezel, camera dot, screen inset */
+.phone.app{width:414px;height:868px;border-radius:54px;border:12px solid #1d1e20;background:#fff;color:var(--p-ink);font:400 16px/1.45 var(--sys);
+ box-shadow:0 0 0 1px #3a3b3e,0 30px 60px rgba(0,0,0,.22);transform:translateZ(0);overflow:hidden}
+.phone.app:before{content:"";position:absolute;top:10px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#0d0d0e;box-shadow:inset 0 0 0 2px #26272a;z-index:30}
+.phone.app:after{content:"";position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#1b1d1c;z-index:30}
+.framed .phone.app{border:0;border-radius:0;box-shadow:none;width:100%;height:100vh}
+.framed .phone.app:before{display:none}
+
+.phone.app .sbar{height:36px;padding:0 24px;font:500 14px var(--sys);color:var(--p-ink)}
+.phone.app .apph{height:56px;min-height:56px;gap:4px;padding:0 8px;border-bottom:1px solid transparent}
+.phone.app .apph img{width:28px;height:28px;margin-left:8px}
+.phone.app .apph .ttl{flex:1;font:500 18px var(--sys);color:var(--p-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:4px}
+.phone.app .apph .ttl small{display:block;font:400 12px var(--sys);color:var(--p-muted)}
+.phone.app .hbtn{width:48px;height:48px;margin:0;color:var(--p-ink)}
+.phone.app .hbtn.bell{margin-left:auto}
+.phone.app .hbtn.bell i{top:9px;right:9px;min-width:16px;height:16px;padding:0 4px;font:500 10px/16px var(--sys);border-radius:8px}
+.phone.app .dots{display:none}
+
+.phone.app .appb{padding:8px 20px 24px;gap:16px;background:#fff}
+.phone.app.tabbed .appb{padding-bottom:96px}
+.phone.app .gh,.phone.app .big{font:500 24px/1.25 var(--sys);letter-spacing:0;color:var(--p-ink);text-align:left!important;margin:0}
+.phone.app .big{font-size:32px}
+.phone.app .lead,.phone.app .appb p{font:400 15px/1.5 var(--sys);color:var(--p-muted);margin:0}
+.phone.app .eyebrow{font:500 13px var(--sys);letter-spacing:0;text-transform:none;color:var(--p-green)}
+.phone.app .cap,.phone.app label.cap,.phone.app .fld label{font:500 13px var(--sys);letter-spacing:0;text-transform:none;color:var(--p-muted)}
+.phone.app .center{text-align:left}
+.phone.app small{font:400 13px/1.4 var(--sys);color:var(--p-muted)}
+.phone.app .mono{font-family:"Roboto Mono",ui-monospace,Consolas,monospace;letter-spacing:.02em}
+
+/* sections are flat: no boxes, no tints */
+.phone.app .lb,.phone.app .dialog .lb{background:none;border:0;border-radius:0;padding:0;box-shadow:none;gap:6px}
+.phone.app .alertbox,.phone-page .dialog .alertbox{background:none;border:0;border-left:3px solid #c9cdcb;border-radius:0;padding:2px 0 2px 12px;color:var(--p-ink);font:400 15px/1.5 var(--sys)}
+.phone.app .alertbox.warn,.phone-page .dialog .alertbox.warn{border-left-color:#b45309}
+.phone.app .alertbox.bad{border-left-color:#b91c1c}
+.phone.app .okmark{display:none}
+
+/* grouped list rows (settings style) */
+.plist{display:flex;flex-direction:column;margin:0 -20px;border-top:1px solid var(--p-line)}
+.plist>*{display:flex;align-items:center;gap:14px;min-height:56px;padding:10px 20px;border-bottom:1px solid var(--p-line);text-decoration:none;color:var(--p-ink);background:#fff}
+.plist>a:active{background:#f2f3f2}
+.plist .grow{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.plist .grow b{font:500 16px var(--sys)}
+.plist .grow small{color:var(--p-muted)}
+.plist .end{font:400 14px var(--sys);color:var(--p-muted);text-align:right;white-space:nowrap}
+.plist .chev:after{content:"›";font-size:22px;color:#9aa19d;margin-left:4px}
+.plist .radio{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid #8a918d}
+.plist .on .radio,.plist>.on .radio{border:7px solid var(--p-green)}
+.plist>.off{color:#9aa19d}.plist>.off .grow small{color:#9aa19d}
+.plist .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:500 13px var(--sys);color:var(--p-muted);border:1.5px solid #c9cdcb}
+.plist .now .num{border-color:var(--p-green);color:var(--p-green)}
+.plist .done .num{background:var(--p-green);border-color:var(--p-green);color:#fff}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#9aa19d;margin-right:6px;vertical-align:1px}
+.dot.g{background:var(--p-green)}.dot.a{background:#b45309}.dot.r{background:#b91c1c}
+.ghead{font:500 13px var(--sys);color:var(--p-muted);margin:8px 0 -8px}
+
+/* old card-style rows, made flat */
+.phone.app .ses,.phone-page .dialog .ses{display:flex;flex-direction:column;gap:2px;border:0;border-bottom:1px solid var(--p-line);border-radius:0;background:none;padding:12px 0;box-shadow:none;font:400 15px var(--sys);color:var(--p-ink)}
+.phone.app .ses .h,.phone-page .dialog .ses .h{font:500 16px var(--sys)}
+.phone.app .ses em,.phone-page .dialog .ses em{font:400 13px var(--sys);color:var(--p-muted);font-style:normal;background:none;padding:0}
+.phone.app .ses.on,.phone-page .dialog .ses.on{border:0;border-bottom:1px solid var(--p-line);background:none;box-shadow:none}
+
+/* the emphasised surface (one per screen) */
+.hero{background:var(--p-bg);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.hero .amt{font:500 34px var(--sys);color:var(--p-ink)}
+.hero .lbl{font:400 13px var(--sys);color:var(--p-muted)}
+
+/* form fields: outlined, 56px, helper text under */
+.phone.app .fld{gap:6px}
+.phone.app input:not([type=checkbox]):not([type=radio]),.phone.app select,.phone.app textarea,.phone-page .dialog input:not([type=checkbox]),.phone-page .dialog select,.phone-page .dialog textarea{
+ height:56px;border:1px solid #8a918d;border-radius:8px;background:#fff;padding:0 14px;font:400 16px var(--sys);color:var(--p-ink);box-shadow:none;width:100%;box-sizing:border-box}
+.phone.app textarea,.phone-page .dialog textarea{height:auto;padding:14px}
+.phone.app input:focus,.phone.app select:focus{outline:2px solid var(--p-green);outline-offset:-1px;border-color:var(--p-green)}
+.phone.app .fld.err input,.phone.app .fld.err select{border-color:#b91c1c}
+.phone.app .errmsg{font:400 13px var(--sys);color:#b91c1c}
+.pre{display:flex;align-items:stretch}.pre span{display:grid;place-items:center;padding:0 12px;border:1px solid #8a918d;border-right:0;border-radius:8px 0 0 8px;font:400 16px var(--sys);color:var(--p-muted)}
+.pre input{border-radius:0 8px 8px 0!important}
+.phone.app .two{gap:12px}
+.picker{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--p-line);border-bottom:1px solid var(--p-line);text-decoration:none;color:var(--p-ink)}
+.picker .ph{flex:none;width:56px;height:56px;border-radius:8px;background:#eceeed}
+.picker .grow{flex:1;display:flex;flex-direction:column;gap:2px}
+.picker b{font:500 16px var(--sys)}
+.chk{display:flex;gap:12px;align-items:flex-start;font:400 15px var(--sys);color:var(--p-ink)}
+.chk input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--p-green)}
+.filter{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:0 20px}
+.filter a{flex:none;height:36px;display:grid;place-items:center;padding:0 14px;border:1px solid #c9cdcb;border-radius:8px;font:500 14px var(--sys);color:var(--p-ink);text-decoration:none}
+.filter a.on{background:#e7efe9;border-color:#e7efe9;color:var(--p-green)}
+
+/* buttons: one solid green action, text buttons for the rest */
+.phone.app .appcta{padding:12px 20px 30px;gap:4px;border-top:1px solid var(--p-line);background:#fff}
+.phone.app .go,.phone-page .dialog .go{height:52px;border-radius:12px;background:var(--p-green);box-shadow:none;font:500 16px var(--sys);color:#fff;letter-spacing:.01em}
+.phone.app .go:hover,.phone-page .dialog .go:hover{background:#006428}
+.phone.app .go.blue{background:#fff;color:var(--p-green);border:1px solid #c9cdcb}
+.phone.app .back,.phone-page .dialog .back,.phone.app .mocklink{height:44px;border:0;background:none;font:500 15px var(--sys);color:var(--p-green);display:grid;place-items:center;text-decoration:none}
+.phone.app .mocklink{color:#9aa19d;font-size:13px;height:28px}
+
+/* bottom navigation: flat, full width */
+.phone.app .tabbar{left:0;right:0;bottom:0;height:80px;padding:6px 0 22px;border:0;border-top:1px solid var(--p-line);border-radius:0;background:#fff;box-shadow:none;backdrop-filter:none}
+.phone.app .tabbar a{font:500 12px var(--sys);color:var(--p-muted);gap:4px}
+.phone.app .tabbar a.on{color:var(--p-green);font-weight:500}.phone.app .tabbar a.on:after{display:none}
+.phone.app .tabbar a.on svg{stroke:var(--p-green)}
+
+/* bottom sheets and snackbars live inside the phone */
+.phone.app .modal{position:fixed;inset:0;align-items:flex-end;background:rgba(0,0,0,.32);font-family:var(--sys)}
+.phone.app .modal .scrim{position:absolute;inset:0}
+.phone.app .dialog{width:100%;max-width:100%;border-radius:20px 20px 0 0;padding:8px 20px 34px;gap:14px;box-shadow:none;font:400 15px/1.5 var(--sys)}
+.phone.app .dialog:before{width:32px;height:4px;background:#c9cdcb;margin:4px auto 6px}
+.phone.app .dialog h3{font:500 20px/1.3 var(--sys);color:var(--p-ink)}
+.phone.app .dialog .ico{display:none}
+.phone.app .dialog .acts{gap:4px}
+.phone.app .toast{position:fixed;top:auto;bottom:120px;left:16px;right:16px;width:auto;transform:none;max-width:none;background:#2f3130;border:0;border-radius:8px;padding:14px 16px;box-shadow:0 4px 12px rgba(0,0,0,.25);color:#fff;font:400 14px/1.4 var(--sys);align-items:center}
+.phone.app.tabbed .toast{bottom:96px}
+.phone.app .toast .ico{display:none}
+.phone.app .toast b{display:block;font:500 14px var(--sys);color:#fff}
+.phone.app .toast .muted{color:#d6d9d7}
+.phone.app .toast .x{color:#9fe0b6;text-decoration:none;font-size:20px;margin-left:auto}
+
+/* notifications */
+.phone.app .notes{gap:0;margin:0 -20px;border-top:1px solid var(--p-line)}
+.phone.app .note{border:0;border-bottom:1px solid var(--p-line);border-radius:0;padding:14px 20px;background:#fff;gap:12px;font:400 15px var(--sys)}
+.phone.app .note .ni{display:none}
+.phone.app .note b{font:500 15px var(--sys)}
+.phone.app .note.unread b:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--p-green);margin-right:8px;vertical-align:1px}
+.phone.app .note.unread b:after{display:none}
+
+/* permit: the one document on screen */
+.permit{border:1px solid #c9cdcb;border-radius:12px;overflow:hidden;background:#fff}
+.permit .ph1{display:flex;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--p-line)}
+.permit .ph1 img{width:36px;height:36px}
+.permit .ph1 b{display:block;font:500 13px var(--sys);letter-spacing:.02em}
+.permit .ph1 small{font-size:12px}
+.permit .pb{display:grid;grid-template-columns:84px 1fr;gap:14px;padding:14px}
+.permit .pphoto{width:84px;height:84px;background:#eceeed;border-radius:4px;display:grid;place-items:center;font-size:11px;color:#9aa19d}
+.permit .pname b{display:block;font:500 17px var(--sys)}
+.permit .pname .mono{font-size:20px;font-weight:500}
+.permit .pg{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--p-line)}
+.permit .pg div{padding:10px 14px;border-bottom:1px solid var(--p-line);display:flex;flex-direction:column}
+.permit .pg div:nth-child(odd){border-right:1px solid var(--p-line)}
+.permit .pg small{font-size:12px}.permit .pg b{font:500 15px var(--sys)}
+.permit .pq{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px}
+
+/* result */
+.score{display:flex;flex-direction:column;gap:2px}
+.score .n{font:500 48px/1.1 var(--sys);color:var(--p-ink)}
+.phone.app .subj{gap:6px}
+.phone.app .subj .t{height:6px;background:#eceeed;border-radius:3px}
+.phone.app .subj .t span{background:var(--p-green);border-radius:3px}
+
+/* calendar sheet */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font:400 14px var(--sys)}
+.cal b{font:500 12px var(--sys);color:var(--p-muted);padding:6px 0}
+.cal span{height:40px;display:grid;place-items:center;border-radius:50%}
+.cal span.on{background:var(--p-green);color:#fff}
+.calhead{display:flex;justify-content:space-between;align-items:center;font:500 16px var(--sys)}
+
+/* journey board: same device frame, caption under it */
+.dev{background:#1d1e20!important;border-radius:46px!important;padding:11px!important;box-shadow:0 0 0 1px #3a3b3e,0 22px 44px rgba(0,0,0,.2)!important;position:relative}
+.dev:before{content:"";position:absolute;top:5px;left:50%;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:#0d0d0e;z-index:2}
+.dev .scr{border-radius:28px!important;overflow:hidden;background:#fff}
+.boardpage .fr .cap{color:var(--p-ink)}
+.framed body.phone-page{background:#fff}
+/* journey board: plain header, no banner */
+.boardpage .bhead{background:none!important;box-shadow:none!important;padding:0!important;min-height:0!important;color:var(--p-ink)}
+.boardpage .bhead:before,.boardpage .bhead:after{display:none!important}
+.boardpage .bhead h1{color:var(--p-ink)!important}
+.boardpage .bhead .kicker{color:var(--p-muted)!important}
+.boardpage .bhead img{width:48px;height:48px}
+/* welcome screens: a plain campus photo, no tint or fade */
+.phone.app.intro{background:#fff}
+.phone.app .hero-ph{inset:0 0 46% 0;background:url("campus-duo.jpg") center/cover;border-radius:0;filter:none}
+.phone.app .introb .skip{color:#fff;background:rgba(0,0,0,.35);padding:4px 10px;border-radius:6px;font:500 14px var(--sys);z-index:2;top:10px}
+.phone.app .pdots span{background:#c9cdcb}.phone.app .pdots span.now{background:var(--p-green)}
+.phone.app .alt{display:flex;justify-content:space-between}.phone.app .alt a{font:500 14px var(--sys);color:var(--p-green);text-decoration:none}
+
+/* ===== public pages: plain white, institutional; one emphasised block (the dates) ===== */
+.pub{background:#fff}
+.pubnav{background:#fff!important;background-image:none!important;border-bottom:1px solid var(--line)!important;color:var(--ink)!important}
+.pubnav .brandline b{color:var(--ink)!important}.pubnav .brandline span{color:var(--muted)!important}
+.pubnav nav a{color:var(--ink)!important;text-decoration:none}.pubnav nav a.btn.primary{color:#fff!important}
+.phero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:48px;max-width:1080px;margin:0 auto;padding:56px 32px 40px;align-items:start}
+.phero .ptext{display:flex;flex-direction:column;gap:16px}
+.pkick{margin:0;font:500 14px var(--sans);color:var(--deep-2)}
+.phero h1{margin:0;font:600 40px/1.15 var(--sans);letter-spacing:-.02em;color:var(--ink)}
+.phero p{margin:0;font-size:17px;line-height:1.55;color:var(--muted)}
+.pacts2{display:flex;gap:10px;flex-wrap:wrap}
+.pdates{margin:0;background:#f6f7f6;border-radius:12px;padding:20px 24px;display:flex;flex-direction:column;gap:2px;font-size:15px}
+.pdates dt{font-weight:600;color:var(--ink);margin-top:10px}.pdates dt:first-child{margin-top:0}
+.pdates dd{margin:0;color:var(--muted)}
+.road{max-width:1080px;margin:0 auto;padding:16px 32px 48px;background:none!important}
+.pfoot{display:flex;gap:16px;flex-wrap:wrap;padding:24px 32px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;background:#fff!important}
+.pfoot a{color:var(--muted)}.pfoot a:last-child{margin-left:auto}
+.auth{background:#fff!important;background-image:none!important}
+.authcard{border:0!important;box-shadow:none!important;background:none!important}
+@media(max-width:800px){.phero{grid-template-columns:1fr;padding:32px 16px}.phero h1{font-size:30px}.road{padding:16px}}
+
+/* ===== proctor app: the same device frame as the student app ===== */
+.pro{position:relative;width:414px;height:868px;min-height:0;border-radius:54px;border:12px solid #1d1e20!important;background:#fff;
+ box-shadow:0 0 0 1px #3a3b3e,0 30px 60px rgba(0,0,0,.22)!important;transform:translateZ(0);overflow:hidden;font:400 16px/1.45 var(--sys);color:var(--p-ink)}
+.pro:before{content:"";position:absolute;top:10px;left:50%;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:#0d0d0e;box-shadow:inset 0 0 0 2px #26272a;z-index:30}
+.pro:after{content:"";position:absolute;bottom:8px;left:50%;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#1b1d1c;z-index:30}
+.pro .sbar{background:#fff!important;color:var(--p-ink)!important;height:36px;padding:0 24px;font:500 14px var(--sys)}
+.pro .ph{background:#fff!important;background-image:none!important;border-bottom:1px solid var(--p-line)!important;padding:8px 16px}
+.pro .ph b.ink{color:var(--p-ink)!important}.pro .ph small.muted{color:var(--p-muted)!important}
+.pro .pb{padding:16px 20px;gap:16px;height:calc(868px - 24px - 36px - 57px);overflow:auto}
+.pro h2{font:500 20px var(--sys);margin:0}
+.pro .k{display:flex;gap:0;border-bottom:1px solid var(--p-line);padding-bottom:12px}
+.pro .k div{flex:1;background:none!important;border:0!important;border-radius:0;padding:0 12px}
+.pro .k div:first-child{padding-left:0}.pro .k div+div{border-left:1px solid var(--p-line)!important}
+.pro .k b{font:500 26px var(--sys)!important;font-variant-numeric:tabular-nums;color:var(--p-ink)}
+.pro .cam{border-radius:12px}
+.pro .hit{background:none!important;border:0!important;border-left:3px solid var(--p-green)!important;border-radius:0!important;padding:4px 0 4px 14px!important}
+.pro .hitt{font:500 18px var(--sys);color:var(--p-green)}
+.pro .pbtn a{height:52px;border-radius:12px;font:500 16px var(--sys);display:grid;place-items:center;text-decoration:none}
+.pro .pbtn .pquiet{background:none;border:1px solid var(--p-line);color:var(--p-ink)}
+.pro .pbtn .pmain{background:var(--p-green);color:#fff}
+.pro .ses{display:flex;flex-direction:column;gap:2px;border:0!important;border-bottom:1px solid var(--p-line)!important;border-radius:0!important;background:none!important;padding:12px 0!important;box-shadow:none!important;font:400 15px var(--sys)!important;color:var(--p-ink);text-decoration:none}
+.pro .ses .h{font:500 16px var(--sys);display:flex;justify-content:space-between}.pro .ses em{font-style:normal;color:var(--p-muted);font-size:13px;background:none}
+.pro .alertbox{background:none!important;border:0!important;border-left:3px solid #c9cdcb!important;border-radius:0!important;padding:2px 0 2px 12px!important;font:400 14px/1.5 var(--sys)}
+.pro .modal{position:fixed;inset:0;align-items:flex-end;background:rgba(0,0,0,.32)}
+.pro .dialog{width:100%;max-width:100%;border-radius:20px 20px 0 0;padding:12px 20px 30px;font-family:var(--sys)}
+.pro .toast{position:absolute;left:12px;right:12px;bottom:90px;top:auto;transform:none;width:auto;background:#1f2321;color:#fff;border:0;border-radius:10px;font-family:var(--sys)}
+.pro .toast b{color:#fff}.pro .toast .muted{color:#c9cdcb}.pro .toast .ico{display:none!important}.pro .toast .x{color:#c9cdcb}
+.framed .pro{border:0!important;border-radius:0;box-shadow:none!important;width:100%;height:100vh}
+.framed .pro:before,.framed .pro:after{display:none}
+.pubnav{box-shadow:none!important}
+.pub footer.pfoot{background:#fff!important;color:var(--muted)!important;border-top:1px solid var(--line)!important}
+.pub footer.pfoot a{color:var(--muted)!important}

@@ -30,7 +30,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Rooms | Buildings and rooms per campus with exam seats; reused every school year; added one by one | `admin/rooms` |
 | Schedule days | Campus + date + rooms → seats; guide times; optional two batches | `admin/exam-slots` |
 | Applicants and applications | Google sign-in; profile, school, 3 program choices (2 for transferees); one status per application (see the status list in section 7) | `applicant/*`, `admin/applications`, `admin/applicant` |
-| Uploads | 2×2 photo, Form 138, valid ID, payment receipt; compressed on the phone; reviewer can ask for a new one | `applicant/apply-*`, `admin/applicant#photo` |
+| Uploads | Only what is used: 2×2 ID photo (for the permit) and the payment receipt (online payment only); transferees add their grades for the chairperson. Compressed on the phone; reviewer can ask for a new one | `applicant/apply-*`, `admin/applicant#photo` |
 | Payments | Cashier records the OR number (instant), or upload and review; duplicate-reference guard | `admin/cashier`, `admin/payments` |
 | Permits | Examinee number from the school-year counter; wallet-style permit and PDF with QR; public verify page | `applicant/permit`, `docs/permit-pdf`, `public/verify` |
 | Exam day | Optional, off by default: offline QR check-in on the proctor's phone, information only. Absent is decided by the score import | `proctor/*`, `admin/checkin` |

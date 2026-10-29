@@ -40,18 +40,24 @@ Never a dialog on top of a dialog. Never a step form for something done every da
 - **Selected things** (tab, sidebar item, filter) are shown with dark bold text, an underline, or a grey chip. Never a light green box with a border.
 - Words are the old system's: **School year → Schedule → Exam slot**. Examinee no., OR no., cut-off score.
 
-## 5. Every screen has these states
+## 5. Form fields and lists
+
+- **The right field for the data:** a date picker with a calendar for dates (birth date, registration dates, exam days), time picker for times, `tel` with +63 for mobile, `email` for email, numeric keypad for scores, GWA, OR and reference numbers, radio buttons for 2–4 choices, a select for 5–15, a search-as-you-type picker for long lists (schools, programs, applicants), a camera/file picker for photos.
+- Labels above the field, help or error text under it. Required fields are not marked with stars; optional ones say "(optional)".
+- **Every list that can grow** has search, the filters people actually use (schedule, campus, status), sorting on the columns that matter (name, date, oldest waiting), and pages of 25. Short fixed lists (under about 10 rows) don't need them.
+
+## 6. Every screen has these states
 
 Loading (grey placeholders), empty (what to do first), error (what went wrong and what to do), success (toast), no permission (who to ask). The mockups show them in the yellow "States on this page" bar.
 
-## 6. Errors
+## 7. Errors
 
 - Say **what is wrong and how to fix it**, next to the field: "Not a real date", "This OR no. was already used on Jan 12 for Maria Dela Cruz".
 - Never lose what the user typed. Forms save drafts.
 - No connection: "You're offline. We'll send it when you're back." Nothing is lost.
 - Server problems show a plain message and a reference number for IT, never a code dump.
 
-## 7. Built for the long term
+## 8. Built for the long term
 
 - Every school year, schedule, campus, program and room is **data**, created on screen. No code change for a new year.
 - Nothing is deleted that already has applicants. It is switched off instead, and old years stay readable.
