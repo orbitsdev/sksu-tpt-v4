@@ -1,15 +1,15 @@
 # Tech plan
 
-What SKSU TPT v4 is built with, and why. It follows euphoria's stack (already running in production, so the team knows it) and every decision in the mockups. Items marked **Decide** need your answer.
+What SKSU TPT v4 is built with, and why. Every choice is made for TPT's own goals: **clean, fast, optimized**. Euphoria is only a reference; where its choice is also the best fit for TPT, we use it. Items marked **Decide** need your answer.
 
 ## 1. The stack
 
 | Part | Choice | Why |
 |---|---|---|
-| Backend | **Laravel 12**, PHP 8.4 | Same as euphoria; the TPT server already runs PHP 8.4 |
+| Backend | **Laravel 12**, PHP 8.4 | Mature, secure, fast to build with; the TPT server already runs PHP 8.4 |
 | Database | **MySQL 8** | Already on the server; tptv3 data can be read for reference |
-| Screens | **Inertia 2 + Vue 3 + TypeScript** | Pages load once, then only small JSON moves (fast on phones) |
-| Components | **Nuxt UI 4 + Tailwind 4** | euphoria's library: date pickers, tables, dialogs, drawers that look and behave the same everywhere |
+| Screens | **Inertia 2 + Vue 3 + TypeScript** | Pages load once, then only small JSON moves (fast on phones). Not Livewire: every click going back to the server is part of why tptv3 is slow |
+| Components | **shadcn-vue** (on Reka UI) **+ Tailwind 4** | **Decided.** We own every component, so the app ships only what it uses (small downloads on low-end phones and mobile data) and matches the calm SKSU design exactly. Accessible by default (Reka UI). Data tables with TanStack Table; date pickers, dialogs, drawers and sheets from the same set |
 | Student app | **PWA** (installable web app) | Install from the website on Android and iPhone; no APK, no store; offline permit |
 | Sign-in | **Google** (Laravel Socialite) | Same as tptv3; staff by invite only |
 | Roles | spatie/laravel-permission | Admin (+ super admin), Cashier, Proctor, Program chair / Dean |
