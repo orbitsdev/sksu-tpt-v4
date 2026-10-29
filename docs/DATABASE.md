@@ -304,6 +304,75 @@ Unique: `application_id`. Indexes: (`score_import_id`) for the import summary; (
 | jobs, job_batches, failed_jobs, cache, sessions | Laravel (Redis for cache, sessions and queue in production) | Queue, cache, sign-in |
 | pulse_* | Laravel Pulse | Performance monitor |
 
+## 3b. Example data: one student, start to finish
+
+Made-up sample (no real student). Maria applies in Schedule 1, pays at the Isulan cashier, takes the exam and qualifies. Each table below shows only the rows and columns that matter for her.
+
+**school_years**
+
+| id | name | fee_centavos | examinee_prefix | examinee_digits | examinee_start | examinee_next | online_payment | is_current |
+|---|---|---|---|---|---|---|---|---|
+| 3 | 2027–2028 | 27500 | (none) | 6 | 500001 | 509734 | false | true |
+
+**schedules**
+
+| id | school_year_id | number | type | registration_closes_at (shown in PH time) | pay_by_at | report_time | start_time | published_at | results_published_at |
+|---|---|---|---|---|---|---|---|---|---|
+| 11 | 3 | 1 | freshmen | Feb 28, 11:59 PM | Mar 3 | 07:30 | 08:00 | Dec 15 | Apr 20, 9:00 AM |
+| 14 | 3 | 4 | transferees | Dec 3, 11:59 PM | Dec 5 | 07:30 | 08:00 | (not yet) | (not yet) |
+
+**program_offerings** (what Isulan and ACCESS offer this year)
+
+| id | program | campus | cutoff | cutoff_basis |
+|---|---|---|---|---|
+| 201 | BS Civil Engineering | Isulan | 530 | esm |
+| 214 | BS Information Technology | ACCESS | 500 | overall |
+| 230 | BS Criminology | Isulan | 480 | overall |
+
+**exam_slots** and **exam_slot_rooms**
+
+| exam_slot id | schedule | campus | exam_date | seats_taken | rooms (exam_slot_rooms) |
+|---|---|---|---|---|---|
+| 51 | 11 | Isulan | Mar 14 | 200 | Room 1 (50), Room 2 (50), Room 4 (50), ENG 201 (45)… |
+
+**applications** (Maria's row, after each step fills in more)
+
+| column | value | filled in when |
+|---|---|---|
+| code | APP-27-10422 | she submits |
+| status | program_chosen | changes at every step (section 4) |
+| birth_date / sex / mobile | 2008-05-12 / female / +639171234567 | she applies |
+| applicant_kind / school / strand / general_average | shs_graduate / Isulan National High School / STEM / 91.40 | she applies |
+| submitted_at | Jan 11, 7:55 PM | she submits |
+| examinee_no | 500214 | the cashier records her payment |
+| approved_at | Jan 12, 4:30 PM | same moment (her details lock) |
+| exam_slot_id / exam_slot_room_id / seat_no | 51 / Room 4 / 27 | she picks her exam slot |
+| chosen_offering_id / chosen_at | 201 (BS Civil Engineering, Isulan) / Apr 21 | after the survey |
+
+**application_choices**
+
+| application | rank | offering | decision |
+|---|---|---|---|
+| APP-27-10422 | 1 | 201 BS Civil Engineering, Isulan | (freshman: none) |
+| APP-27-10422 | 2 | 214 BS Information Technology, ACCESS | |
+| APP-27-10422 | 3 | 230 BS Criminology, Isulan | |
+
+**payments** (her payment, plus two other rows from the same booklet)
+
+| id | application | kind | or_no | amount_centavos | method | paid_at | recorded_late | status |
+|---|---|---|---|---|---|---|---|---|
+| 9001 | APP-27-10422 | cashier | 0048190 | 27500 | cash | Jan 12, 4:28 PM | false | recorded |
+| 9002 | (none) | spoiled | 0048191 | | | Jan 12, 4:35 PM | false | recorded (spoiled_reason: "Torn") |
+| 9003 | APP-27-10435 | cashier | 0048192 | 27500 | cash | Jan 12, 2:10 PM | **true** (brownout, recorded at 5:05 PM) | recorded |
+
+**scores** (from the Testing Center Excel)
+
+| application | overall_ss / stanine | esm_ss | english_ss / stanine | … | pdf_status | hidden_at |
+|---|---|---|---|---|---|---|
+| APP-27-10422 | 584 / 7 | 566 | 612 / 8 | … | ready | (none) |
+
+**Worked out, not stored:** she *qualifies* for BS Civil Engineering because its basis is ESM and 566 ≥ 530; for BS IT because overall 584 ≥ 500. Her *permit* is built from her application, exam slot and room. Counts like "Qualified, 1st choice 5,102" are counted (and cached), never typed in.
+
 ## 4. Statuses and allowed changes
 
 **Application `status`:** `draft` → `submitted` → (`waiting_chair` → `declined` / `waiting_payment`) or `waiting_payment` → (`in_review` → `sent_back` / `approved`) or `approved` → `slot_picked` → `scored` / `absent` → `program_chosen`. Also `cancelled` from any state before `scored`, and `sent_back` from any state before `approved` (photo or details), returning to the previous state when fixed.
