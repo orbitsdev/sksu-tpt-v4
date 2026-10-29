@@ -132,7 +132,7 @@ Unique: (`school_year_id`, `program_id`). A program not offered has no row.
 
 Unique: (`school_year_id`, `number`). Index: (`published_at`, `registration_closes_at`) for "which schedule is open now" (landing, Home).
 
-**exam_slots**: Exam slots page, the student's slot picker. `schedule_id` fk, `campus_id` fk, `exam_date` date, `report_time` time, `start_time` time, `seats_taken` int (counter kept in the same transaction as seating, so the picker never counts rows), `closed_at` ts, `cancelled_at` ts. Index: (`schedule_id`, `exam_date`) for the list and the picker. Two slots on the same campus and day are allowed (different guide times).
+**exam_slots**: Exam slots page, the student's slot picker. `schedule_id` fk, `campus_id` fk, `exam_date` date, `report_time` time, `start_time` time, `seats_taken` int (counter kept in the same transaction as seating, so the picker never counts rows), `closed_at` ts, `cancelled_at` ts. Unique: (`schedule_id`, `campus_id`, `exam_date`): one exam slot per campus per day (more seats = add rooms). Index: (`schedule_id`, `exam_date`) for the list and the picker.
 
 **exam_slot_rooms**: which rooms a slot uses. `exam_slot_id` fk, `room_id` fk, `seats` smallint (copied from the room when added, so editing a room later doesn't change a running slot). Unique: (`exam_slot_id`, `room_id`).
 
