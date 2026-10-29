@@ -128,6 +128,8 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ Home address as Province → Municipality or city → Barangay; "Applicants by home town" report; location filter behind More filters.
 - ✅ Privacy notice and Terms of use; required consent at sign-up and on Review; Support topic "Privacy request".
 
+- ✅ Maintenance controls in System status: pause the student app, new applications or cashier payments, schedule maintenance; each says what stops and what still works.
+
 ## Decided
 
 - ✅ **Student app = installable web app (PWA).** Students install it from the website (Android: Install; iPhone: Share → Add to Home Screen). No APK, no Expo Go, no store accounts. One system for phones and computers.

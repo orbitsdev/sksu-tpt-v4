@@ -432,3 +432,16 @@ Plus "Comments and suggestions (optional)".
 - Every admin and cashier list uses one pattern (`list_page`): muted count and page actions on the title line, status tabs with counts when the list has statuses, one filter line (a search box that says exactly what it searches plus at most two selects), the table in one white panel, and a "1–25 of N" footer. Rows show the one action that fits the row plus View; rare or risky actions sit under "···".
 - Home location filter (Province → Municipality or city) sits behind "More filters" on Applications, Results and Survey results. The student form records the address as Province → Municipality or city → Barangay (lists, not free text) plus an optional street, so the filter and the "Applicants by home town" report are accurate.
 - Guidance like euphoria: a setup line under page titles while a new school year is unfinished (with a Setup checklist page), a Guide button on complex pages (what it's for, how it works, examples), and the step rail on long forms. Staff can hide any of it; My account → Guides turns it back on.
+
+## Maintenance and pauses
+
+System status → Maintenance (super admin only). Each switch asks for a reason and says plainly what stops and what still works; every pause and resume goes in the activity log with who and when.
+
+| Pause | Stops | Still works |
+|---|---|---|
+| Student app | Students and the landing page see a maintenance screen with a "back by" time | Staff sign in and work; permits saved on phones open offline; nothing is lost |
+| New applications | Nobody can start or submit an application | Status, permit and results; cashier payments |
+| Cashier payments | The counter can't record; cashiers see "Payments paused by … at …" | Applying and waiting; recorded payments stay |
+| Hide results | Students stop seeing results (Results page control) | Everything else |
+
+Scheduled maintenance: a date and time window plus a message; students see a notice on Home before it starts. While the student app is paused, the admin header shows a thin line "Student app paused · Resume".

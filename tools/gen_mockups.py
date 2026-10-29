@@ -249,6 +249,7 @@ def pubnav(active=""):
 
 doc("public/landing.html", "Home", f"""<div class="pub">{pubnav()}
 <p class="announce pub-announce">Schedule 2 registration is open until Apr 10.</p>
+<div class="pubmaint" id="maintenance"><img src="../assets/sksu-seal.png" alt="SKSU seal" width="64" height="64"><h1>SKSU TPT is under maintenance</h1><p>Back by 3:00 PM today. Your application is saved.</p><a href="#">Back to the page</a></div>
 <section class="phero"><div class="ptext">
 <p class="pkick">Guidance and Testing Center</p>
 <h1>SKSU Tertiary Placement Test<br>SY 2027–2028</h1>
@@ -270,7 +271,7 @@ doc("public/landing.html", "Home", f"""<div class="pub">{pubnav()}
 <h2 style="margin-top:24px">On exam day, bring</h2><p class="muted">Pencil No. 2 with eraser · this permit · school ID or any valid ID · official receipt (if paid at the cashier)</p>
 <p class="muted">Schedule 1 registration closes Feb 28; Schedules 2 and 3 open later. Tests are held at 7 SKSU campuses · <a href="#centers">See test centers</a></p></section>
 <div class="modal" id="centers"><a class="scrim" href="#"></a><div class="dialog" role="dialog"><h3>Test centers</h3><ul class="centers"><li><b>ACCESS Campus</b><span>EJC Montilla, Tacurong City</span></li><li><b>Isulan Campus</b><span>Kalawag II, Isulan</span></li><li><b>Tacurong Campus</b><span>Tacurong City</span></li><li><b>Kalamansig Campus</b><span>Kalamansig</span></li><li><b>Bagumbayan Campus</b><span>Bagumbayan</span></li><li><b>Palimbang Campus</b><span>Palimbang</span></li><li><b>Lutayan Campus</b><span>Lutayan</span></li></ul><div class="acts"><a class="btn" href="#">Close</a></div></div></div>
-<footer class="pfoot"><span>Guidance and Testing Center · SKSU ACCESS Campus, EJC Montilla, Tacurong City</span><span>© Sultan Kudarat State University</span><a href="privacy.html">Privacy and terms</a><a href="staff-login.html" style="margin-left:auto">Staff sign-in</a></footer></div>""")
+<footer class="pfoot"><span>Guidance and Testing Center · SKSU ACCESS Campus, EJC Montilla, Tacurong City</span><span>© Sultan Kudarat State University</span><a href="privacy.html">Privacy and terms</a><a href="staff-login.html" style="margin-left:auto">Staff sign-in</a></footer></div>""", states=[("maintenance", "Maintenance screen")])
 
 doc("public/login.html", "Sign in", f"""<div class="pub">{pubnav()}
 <div class="auth"><div class="authcard">
@@ -526,10 +527,13 @@ phone("home", "Home", '<p class="announce">Schedule 2 registration is open until
     '<div class="hero"><span class="lbl">Pay ₱275.00 at an SKSU cashier · show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl">The cashier records it and your examinee number appears here.</span></div>'
     + CASHIER_HOURS + plist(row("Where to pay", "Cashier offices per campus", "", "payment.html")),
     ("payment.html", "Show my code")),
-      overlays="".join(home_state(k, v) for k, v in HOME.items()) + OFFLINE,
+      overlays="".join(home_state(k, v) for k, v in HOME.items()) + OFFLINE
+      + home_state("maintenance", '<div class="maintscreen"><img src="../assets/sksu-seal.png" alt="SKSU seal" width="56" height="56"><h1 class="gh">SKSU TPT is under maintenance</h1><p>Back by 3:00 PM today. Your application is saved; nothing is lost.</p><small>Questions: Guidance and Testing Center, 0997 780 1758</small></div>')
+      + home_state("apps-paused", '<p class="announce">New applications are paused for now. Check back later or ask the Guidance and Testing Center.</p>' + home_view("Not started", 0, '<p class="muted" style="margin:0">You can still sign in, see your status and keep your permit.</p>'))
+      + home_state("maint-notice", '<p class="announce">SKSU TPT will be down Sat, Apr 18, 10:00–11:30 PM for maintenance.</p>' + home_view("Application submitted · Jan 11", 1, '<div class="hero"><span class="lbl">Pay ₱275.00 at an SKSU cashier · show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span></div>', ("payment.html", "Show my code"))),
       states=[("not-started", "Not started"), ("draft", "Draft"), ("chair", "Waiting for chairperson"), ("sent-back", "Sent back"), ("approved", "Approved: pick exam slot"),
               ("booked", "Exam slot picked"), ("exam-done", "Waiting for results"), ("result-out", "Result out"), ("chosen", "Program chosen"), ("absent", "Absent"),
-              ("closed", "Registration closed"), ("offline", "Offline")])
+              ("closed", "Registration closed"), ("offline", "Offline"), ("maintenance", "Maintenance screen"), ("maint-notice", "Scheduled maintenance notice"), ("apps-paused", "Applications paused")])
 
 phone("apply-personal", "About you", """<h1 class="gh">Personal details</h1>
 <div class="fld"><label class="cap" for="ln">Last name</label><input id="ln" value="Dela Cruz" autocomplete="family-name"></div>
@@ -1417,9 +1421,21 @@ admin("system", "System status", f"""<div class="kpis">
 <div class="kpi"><span>Emails today</span><b>1,420</b><small>of 2,000 a day</small></div>
 <div class="kpi"><span>SMS credits left</span><b>18,600</b><small>About 30 days at this rate</small></div></div>
 <div class="panel"><div class="head"><h2>Server</h2></div>{table(["", "Now", "Limit", ""], [("Processor", "34%", "100%", B("ok", "OK")), ("Memory", "5.1 GB", "8 GB", B("ok", "OK")), ("Storage (uploads)", "41 GB", "160 GB", B("ok", "OK")), ("Jobs waiting (emails, imports)", "12", "—", B("ok", "OK"))])}</div>
+<div class="panel" id="maint"><div class="head"><h2>Maintenance</h2><span class="muted">Super admin only · every pause and resume goes in the activity log</span></div>
+<div class="setrow"><span><b>Pause the student app</b><small>Students and the landing page see a maintenance screen. Staff can still sign in.</small></span><a class="switch" href="#pause-app" aria-label="Pause the student app"></a></div>
+<div class="setrow"><span><b>Pause new applications</b><small>People who already applied can still pay, pick a slot and see results.</small></span><a class="switch" href="#pause-apps" aria-label="Pause new applications"></a></div>
+<div class="setrow"><span><b>Pause cashier payments</b><small>Paused by Ana R. at 9:40 AM · cashiers see a notice</small></span><a class="switch on" href="#pause-one" aria-label="Pause cashier payments"></a></div>
+<div class="setrow"><span><b>Hide results</b><small>Students stop seeing their results until you publish again. Controlled on the Results page.</small></span>{btn("Open Results", "results.html", "sm")}</div>
+<div class="setrow"><span><b>Schedule maintenance</b><small>Sat, Apr 18 · 10:00 PM – 11:30 PM · students see a notice on Home from Apr 16.</small></span>{btn("Change", "#maint-plan", "sm")}</div></div>
 <div class="setrow"><span>Data retention: applications older than [RETENTION PERIOD] are deleted or made anonymous. Next clean-up: Jul 1, 2027.</span>{btn("Privacy notice", "../public/privacy.html", "sm")}</div>
 <div class="panel"><div class="head"><h2>Backups</h2></div>{table(["When", "What", "Size", ""], [("Today 2:00 AM", "Database and uploads", "6.2 GB", B("ok", "Done")), ("Yesterday 2:00 AM", "Database and uploads", "6.1 GB", B("ok", "Done"))])}</div>""",
-      overlays=BELL_POP)
+      overlays=BELL_POP
+      + modal("pause-app", "warn", WARN, "Pause the student app?", '<div class="fld"><label for="pm">Message students see</label><input id="pm" value="SKSU TPT is under maintenance. Your application is saved."></div><div class="fld"><label for="pb">Back by (optional)</label><input id="pb" type="time" value="15:00"></div><div class="fld"><label for="pr">Reason (only staff see it)</label><input id="pr" value="Fixing slow exam slot booking"></div>' + '<div class="kv"><span>Stops</span><span>Students and the landing page see the maintenance screen.</span><span>Still works</span><span>Staff sign in and work as usual. Permits saved on phones still open offline. Nothing typed or saved is lost.</span></div>', btn("Cancel", "#") + btn("Pause the student app", "#paused", "danger"))
+      + modal("pause-one", "warn", WARN, "Pause cashier payments?", '<div class="fld"><label for="po">Reason (only staff see it)</label><input id="po" value="OR booklet mix-up at Isulan; checking the numbers"></div>' + '<div class="kv"><span>Stops</span><span>The counter can’t record payments. Cashiers see “Payments paused by Ana R. at 2:10 PM”.</span><span>Still works</span><span>Students can apply, see their code and wait. Payments already recorded stay.</span></div>', btn("Cancel", "#") + btn("Pause", "#", "danger"))
+      + modal("pause-apps", "warn", WARN, "Pause new applications?", '<div class="fld"><label for="pa">Reason (only staff see it)</label><input id="pa" value="Exam slots full at every campus"></div><div class="kv"><span>Stops</span><span>Nobody can start or submit an application.</span><span>Still works</span><span>Applicants see their status, permit and results; cashiers can record payments.</span></div>', btn("Cancel", "#") + btn("Pause", "#", "danger"))
+      + modal("maint-plan", "info", "", "Schedule maintenance", '<div class="formgrid"><div class="fld"><label for="md">Date</label><input id="md" type="date" value="2027-04-18"></div><div class="fld"><label for="mt">From – to</label><span class="range"><input type="time" value="22:00"> – <input type="time" value="23:30"></span></div></div><div class="fld"><label for="mm">Notice on the student Home</label><input id="mm" value="SKSU TPT will be down Sat, Apr 18, 10:00–11:30 PM for maintenance."></div><div class="fld"><label for="mf">Show the notice from</label><input id="mf" type="date" value="2027-04-16"></div>', btn("Cancel", "#") + btn("Save", "#", "primary"))
+      + '<div class="pausedline" id="paused">Student app paused by Ana R. at 1:12 PM · back by 3:00 PM <a href="#">Resume</a></div>',
+      states=[("pause-app", "Confirm pause"), ("paused", "Paused banner"), ("pause-apps", "Pause new applications"), ("pause-one", "Pause cashier payments"), ("maint-plan", "Schedule maintenance")])
 
 reps = [("Registrations by day", "Sign-ups and submissions per day, by campus"), ("Applicant list", "Every field, filterable, for the registrar"), ("Program demand", "1st, 2nd and 3rd choices per campus and program"), ("Payments", "Approved, rejected and waiting, with reviewer and time"), ("Seat plan per room", "Printable list for proctors, by exam slot and room"), ("Attendance", "Scored and absent per exam slot, from the score import"), ("Score distribution", "Standard scores and stanines per subject"), ("Ranking per program", "Examinees ranked within each program choice"), ("Qualified students", "Who meets each program cut-off"), ("Survey answers", "The 10 exam statements: counts per answer, comments; Excel in the office format"), ("Applicants by home town", "Province and municipality or city, by schedule and campus")]
 admin("reports", "Reports", f"""<div class="row"><div class="panel grow"><div class="head"><h2>Where applicants drop off · Schedule 1</h2></div>
@@ -1989,6 +2005,7 @@ cashier("console", "Counter", f"""<section class="cleft"><div class="cfind"><inp
 {cnotice("orused", "bad", "OR 0048213 is already used", "It was recorded at 9:41 for Ricky P. Ulangkaya. Check your booklet and type the next number.")}
 {cnotice("notfound", "info", "No one found for “Lea Sampolna”", "Check the spelling, or ask for the application code on their phone (Home screen). Walk-ins apply online first, then pay.")}
 {cnotice("round", "warn", "Applied for Schedule 3, not open yet", "Schedule 3 payments start Apr 11. Ask them to come back then, or move to Schedule 2 in their app.")}
+{cnotice("cpaused", "bad", "Payments paused by Ana R. at 2:10 PM", "You can’t record payments right now. Ask the admission office before taking any money.")}
 {cnotice("waived", "info", "Fee waived", "Hanna S. Mamalo’s fee was waived by the admission office. Nothing to collect.")}
 <div class="cform"><span class="clabel">Payment for</span>
 <div class="cperson"><div class="thumb cphoto">2×2 photo</div><div><b>Lea M. Sampulna</b><span class="mono">APP-27-10422</span><span>BSEd Mathematics · Kalamansig</span><span class="muted">Schedule 2 · Freshman</span></div></div>
@@ -2005,7 +2022,7 @@ cashier("console", "Counter", f"""<section class="cleft"><div class="cfind"><inp
 <p class="ctell">Tell the student: check the app for your exam slot.</p>
 <div class="cdone-acts">{btn("Print receipt copy", "#")}<a class="btn primary" href="#">Next person <kbd>Esc</kbd></a></div></div>
 </section>""",
-        states=[("done", "Recorded"), ("paid", "Already paid"), ("orused", "OR already used"), ("notfound", "Not found"), ("round", "Wrong schedule"), ("waived", "Fee waived")])
+        states=[("done", "Recorded"), ("paid", "Already paid"), ("orused", "OR already used"), ("notfound", "Not found"), ("round", "Wrong schedule"), ("waived", "Fee waived"), ("cpaused", "Payments paused")])
 
 PAID = [("APP-27-10398", "Ricky P. Ulangkaya", "0048213", "Cash", "Today 9:41", "Isulan counter 1", "500230"), ("APP-27-10377", "Joy M. Dalumpines", "0048212", "Cash", "Today 9:12", "Isulan counter 1", "500229"),
         ("APP-27-10361", "Norhana P. Sali", "0048211", "GCash at counter", "Today 8:47", "Isulan counter 1", "500228"), ("APP-27-10342", "Jomar P. Abdullah", "0048190", "Cash", "Today 9:05", "Isulan counter 2", "500215")]

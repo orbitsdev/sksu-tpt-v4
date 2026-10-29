@@ -358,3 +358,13 @@ main:has(#info:target) .ptabs a[data-pane="info"],main:has(#settings:target) .pt
 .cnotice:target{display:flex}
 .cnotice.bad{border-left-color:var(--bad)}.cnotice.warn{border-left-color:#d4a017}
 .cnotice b{color:var(--ink)}.cnotice .btn{align-self:flex-start;margin-top:4px}
+
+/* maintenance: a thin amber line in the admin, a calm screen for students */
+.pausedline{display:none;position:fixed;top:0;left:0;right:0;z-index:80;padding:6px 16px;background:#fdf3d7;border-bottom:1px solid #e9cf7a;font-size:13px;color:#5c4a12;text-align:center}
+.pausedline:target{display:block}.pausedline a{margin-left:10px;color:#5c4a12;font-weight:600}
+.setrow small{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.maintscreen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:80px 12px}
+.maintscreen p{margin:0;color:#3f4542}.maintscreen small{color:var(--muted)}
+.pubmaint{display:none;position:fixed;inset:0;z-index:90;background:#fff;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px}
+.pubmaint:target{display:flex}.pubmaint p{margin:0;color:#3f4542}
+.maintscreen .gh{text-align:center}
