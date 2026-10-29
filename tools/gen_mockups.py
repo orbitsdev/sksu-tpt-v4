@@ -1297,9 +1297,8 @@ for i, (c, w, r, t, st) in enumerate(ses):
     srows.append((f'<span class="ink">{c}</span>', w, f'<span class="num">{r}</span>',
                   f'<div class="meter"><div class="t"><span class="{"full" if t >= cap else ""}" style="width:{round(t / cap * 100)}%"></span></div><span class="num">{t:,} of {cap:,}</span></div>',
                   f'<span class="st{" bad" if st == "Full" else (" live" if st == "Open" else "")}">{st}</span>', rowact(None, "#slotmenu", ("Add rooms", "#addrooms") if st == "Full" else ("Seat plan", "../docs/seat-plan.html"))))
-admin("exam-slots", "Exam slots", f"""{rounds_bar(2)}<div class="head"><span class="muted"></span>{btn("···", "#pagemenu")}{btn("Add exam slot", "#add", "primary")}</div>
+admin("exam-slots", "Exam slots", f"""{rounds_bar(2)}<div class="head"><span class="muted"></span><span class="mwrap">{btn("···", "#pagemenu")}{menu("pagemenu", [("Assign rooms and seats", "#auto", "", "For approved applicants without a slot"), ("Guide times", "#times", "", "Report and start time"), ("Check-in settings", "schedules.html#round", "", "Off for Schedule 2")])}</span>{btn("Add exam slot", "#add", "primary")}</div>
 <p class="guideline">8 exam slots · 4,150 seats · report by 7:30 AM, exam starts 8:00 AM</p>
-{menu("pagemenu", [("Assign rooms and seats", "#auto", "", "For approved applicants without a slot"), ("Guide times", "#times", "", "Report and start time"), ("Check-in settings", "schedules.html#round", "", "Off for Schedule 2")])}
 {list_page(stabs([("Both days", "8"), ("Sat, Apr 25", "5"), ("Sun, Apr 26", "3")]) + '', filters("Campus or room", [("Campus", ["Any campus", "ACCESS, Tacurong", "Isulan", "Tacurong", "Kalamansig", "Bagumbayan", "Palimbang", "Lutayan"])]),
 table(["Campus", "Date", "Rooms", "Seats taken", "Status", ""], srows, sortable=("Campus", "Date", "Seats taken"), active=("Date", "asc")))}
 {menu("slotmenu", [("Add rooms", "#addrooms", "", "More seats for this day"), ("Seat plan", "../docs/seat-plan.html", "", ""), ("Close this exam slot", "#toggle", "", "People keep their seats"), ("Move or cancel this exam slot", "#moveslot", "danger", "Typhoon, class suspension")])}""",
