@@ -142,7 +142,7 @@ doc("public/landing.html", "Home", f"""<div class="pub">{pubnav()}
 <section class="phero"><div class="ptext">
 <p class="pkick">Guidance and Testing Center</p>
 <h1>SKSU Tertiary Placement Test<br>SY 2027–2028</h1>
-<p>Apply online, pay the ₱275.00 testing fee online or at an SKSU cashier, pick your exam slot and keep your permit on your phone.</p>
+<p>Apply online, pay the ₱275.00 testing fee at an SKSU cashier, pick your exam slot and keep your permit on your phone.</p>
 <div class="pacts2"><a class="btn primary lg" href="login.html">Apply or sign in</a><a class="btn lg" href="#how">How it works</a></div></div>
 <dl class="pdates"><dt>Schedule 1</dt><dd>Registration Jan 1 – Feb 28</dd><dd>Exam Sat–Sun, Mar 14–15</dd><dd>Results Apr 20</dd>
 <dt>Schedule 2</dt><dd>Registration Mar 1 – Apr 10</dd><dd>Exam Sat–Sun, Apr 25–26</dd>
@@ -150,7 +150,7 @@ doc("public/landing.html", "Home", f"""<div class="pub">{pubnav()}
 <section id="how" class="road"><h2>How it works</h2>
 <ol class="tline">
 <li class="now"><i>1</i><b>Apply</b><span>Details, school, 3 programs</span><em>Jan 1 – Feb 28 · open now</em></li>
-<li><i>2</i><b>Pay</b><span>Online or at an SKSU cashier</span><em>Before Feb 28</em></li>
+<li><i>2</i><b>Pay</b><span>At an SKSU cashier, with your application code</span><em>Before Feb 28</em></li>
 <li><i>3</i><b>Pick your exam slot</b><span>Choose your campus and date; we give you a room and seat</span><em>After approval</em></li>
 <li><i>4</i><b>Take the test</b><span>Show your permit QR at the door</span><em>Mar 14 – 15</em></li>
 <li><i>5</i><b>See your result</b><span>Scores and the programs you qualify for</span><em>Apr 20, 9:00 AM</em></li>
@@ -200,7 +200,7 @@ doc("public/verify.html", "Verify a permit", f"""<div class="pub">{pubnav()}
 
 doc("public/privacy.html", "Privacy and terms", f"""<div class="pub">{pubnav()}
 <div class="idx" style="max-width:760px"><h1>Privacy and terms</h1>
-<p>We collect your name, birth date, contact details, school, program choices, payment receipt and photo to run the admission test. Only admission staff can see them.</p>
+<p>We collect your name, birth date, contact details, school, program choices and photo to run the admission test. Only admission staff can see them.</p>
 <p>Your results are shown only to you and the admission office. We keep application data for [RETENTION PERIOD] and then delete it.</p>
 <p>Questions: [ADMISSION OFFICE EMAIL]. This follows the Data Privacy Act of 2012 (RA 10173).</p></div></div>""")
 
@@ -216,9 +216,9 @@ doc("public/error.html", "Error pages", f"""<div class="pub">{pubnav()}
 FLOW = [("notifications", "Notifications"), ("home", "Home"), ("apply-personal", "About you"), ("apply-school", "School"), ("apply-programs", "Programs"),
         ("apply-review", "Review"), ("apply-t-school", "Transferee: school"), ("apply-t-programs", "Transferee: programs"), ("payment-chair", "Transferee: chairperson"), ("payment", "Payment"), ("payment-waiting", "Waiting"), ("payment-rejected", "Sent back"),
         ("seat", "Pick an exam slot"), ("seat-t", "Transferee: batch"), ("permit", "Permit"), ("result-pending", "Result not yet"), ("survey", "Survey"),
-        ("result", "Result"), ("profile", "My account")]
+        ("result", "Result"), ("profile", "My account"), ("support", "Support"), ("support-ticket", "Support request")]
 DOTS = {"notifications": 0, "home": 0, "apply-personal": 0, "apply-school": 1, "apply-programs": 2, "apply-review": 3, "apply-t-school": 1, "apply-t-programs": 2, "payment-chair": 4, "payment": 4,
-        "payment-waiting": 4, "payment-rejected": 4, "seat": 0, "seat-t": 0, "permit": 0, "result-pending": 0, "survey": 0, "result": 0, "profile": 0}
+        "payment-waiting": 4, "payment-rejected": 4, "seat": 0, "seat-t": 0, "permit": 0, "result-pending": 0, "survey": 0, "result": 0, "profile": 0, "support": 0, "support-ticket": 0}
 
 
 TAB_OF = {"home": "home", "notifications": "alerts", "seat": "schedule", "seat-t": "schedule", "permit": "permit", "profile": "me"}
@@ -272,7 +272,7 @@ OFFLINE = toast("offline", "warn", WARN, "You’re offline", "We’ll keep what 
 NOTE_ICON = {"ok": OK, "info": INFO, "bad": BAD, "warn": WARN}
 intro("splash", "Splash", """<div class="splash"><img src="../assets/sksu-seal.png" alt="SKSU seal"><div class="wm lg"><b>Sultan Kudarat</b><span>State University</span></div><p>Admission Test</p><div class="load"><span></span></div><small>Loading</small></div>""", "", dark=True)
 for i, (eb, big, line) in enumerate([("SKSU TPT · SY 2027–2028", "Apply for the<br>SKSU TPT.", "Apply, pay the exam fee, pick an exam slot and see your result in this app."),
-                                     ("Payment", "₱275.00, online<br>or at a cashier.", "After the admission office approves your payment, choose a campus and date. Your room and seat are assigned."),
+                                     ("Payment", "₱275.00 at an<br>SKSU cashier.", "Show your application code. Once the cashier records it, choose a campus and date. Your room and seat are assigned."),
                                      ("Exam day", "Bring your permit<br>and a valid ID.", "The permit shows your room and seat. It opens without signal.")], 1):
     nxt = f"welcome-{i + 1}.html" if i < 3 else "../public/login.html"
     pages_dots = "".join(f'<span class="{"now" if j == i else ""}"></span>' for j in range(1, 4))
@@ -299,27 +299,23 @@ SHEET_NOTE = '<p style="margin:0">{}</p>'
 phone("notifications", "Notifications", """<h1 class="gh">Notifications</h1>
 <div class="notes">""" + "".join(f'<a class="note{" unread" if u else ""}" href="{h}"><span><b>{t}</b><span>{d}</span><small>{w}</small></span></a>' for t, d, w, u, h in [
     ("Result released", "SKSU TPT, Schedule 1. You qualify for all 3 of your choices.", "Apr 20 · 9:00 AM", True, "result.html"),
-    ("Exam slot booked", "Isulan Campus · Sat, Mar 14 · Room 4, seat 27. Your permit is ready.", "Jan 13 · 9:42 AM", False, "permit.html"),
-    ("Reply from the admission office", "Your receipt is approved. Your examinee number is 500214.", "Jan 12 · 4:35 PM", False, "#reply"),
-    ("Payment approved", "Examinee no. 500214. Pick your exam slot by Mar 1.", "Jan 12 · 4:30 PM", False, "seat.html"),
-    ("Receipt received", "The admission office checks receipts within one working day.", "Jan 12 · 8:10 AM", False, "payment-waiting.html"),
-    ("Application submitted", "Next: pay the ₱275.00 exam fee.", "Jan 11 · 7:55 PM", False, "payment.html")]) + """</div>
-""" + plist(row("Ask the admission office", "Payment, application, exam slot or result", href="#ask")) + """
+    ("Exam slot booked", "Isulan Campus · Sat, Mar 14 · report by 7:30 AM, exam starts 8:00 AM · Room 4, seat 27. Your permit is ready.", "Jan 13 · 9:42 AM", False, "permit.html"),
+    ("Reply to your request #1042", "Isulan cashier is open Saturday, 8:00 AM – 12:00 noon.", "Jan 12 · 4:35 PM", False, "support-ticket.html"),
+    ("Payment recorded", "Paid at Isulan cashier, OR 0048190. Examinee no. 500214. Pick your exam slot by Mar 1.", "Jan 12 · 4:30 PM", False, "seat.html"),
+        ("Application submitted", "Next: pay ₱275.00 at an SKSU cashier. Show code APP-27-10422.", "Jan 11 · 7:55 PM", False, "payment.html")]) + """</div>
+""" + plist(row("Support", "Ask the admission office · 1 request answered", href="support.html")) + """
 <small>Notifications also go to your email.</small>""",
       back="home.html",
-      overlays=modal("ask", "info", "", "Ask the admission office", '<div class="fld"><label class="cap" for="qt">Topic</label><select id="qt"><option>Payment</option><option>Application</option><option>Exam slot</option><option>Result</option><option>Other</option></select></div><div class="fld"><label class="cap" for="qm">Question</label><textarea id="qm" rows="4">I sent my GCash receipt this morning but it still says waiting.</textarea><small>Replies come on working days, here and by email. One open question at a time.</small></div>', '<a class="go" href="#asked">Send question</a><a class="back" href="#">Cancel</a>')
-      + toast("asked", "ok", OK, "Question sent", "The reply will appear here.")
-      + modal("reply", "info", "", "Reply from the admission office", '<div class="alertbox"><div>You asked, Jan 12: I sent my GCash receipt this morning but it still says waiting.</div></div><p style="margin:0">Your receipt is approved. Your examinee number is 500214.</p><small>Admission Office · Jan 12, 4:35 PM</small>', '<a class="go" href="#ask">Ask another question</a><a class="back" href="#">Close</a>')
-      + '<div class="modal" id="empty"><a class="scrim" href="#"></a><div class="dialog">' + empty("bell", "No notifications", "Updates about your application appear here and in your email.") + '</div></div>',
-      states=[("ask", "Ask a question"), ("asked", "Question sent"), ("reply", "Office reply"), ("empty", "Empty")])
+      overlays='<div class="modal" id="empty"><a class="scrim" href="#"></a><div class="dialog">' + empty("bell", "No notifications", "Updates about your application appear here and in your email.") + '</div></div>',
+      states=[("empty", "Empty")])
 
 phone("home", "Home", """<p class="eyebrow">Schedule 1 · registration until Feb 28</p><h1 class="gh">Maria Santos Dela Cruz</h1>
 <p>Your application is not submitted yet.</p>
 <div class="ghead">Steps</div>""" + plist(
     row("Fill in the application", "Personal details, school, 3 programs, 2×2 photo", "Not started", "apply-personal.html", "now", '<span class="num">1</span>'),
-    row("Pay the exam fee", "₱275.00 online or at an SKSU cashier", "", "", "", '<span class="num">2</span>'),
-    row("Pick your exam slot", "After the admission office approves your payment", "", "", "", '<span class="num">3</span>'),
-    row("Take the exam", "Bring your permit and a valid ID", "", "", "", '<span class="num">4</span>')) + """
+    row("Pay the exam fee", "₱275.00 at an SKSU cashier", "", "", "", '<span class="num">2</span>'),
+    row("Pick your exam slot", "After the cashier records your payment", "", "", "", '<span class="num">3</span>'),
+    row("Take the exam", "Mar 14–15 · report by 7:30 AM · bring your permit and a valid ID", "", "", "", '<span class="num">4</span>')) + """
 <small>Schedule 2 registration: Mar 1 – Apr 10. Schedule 3: Apr 11 – May 15.</small>""",
       cta=("apply-personal.html", "Start the application"),
       overlays=modal("closed", "warn", WARN, "Schedule 1 registration is closed", '<p style="margin:0">Schedule 2 registration opens Mar 1. If you have already paid, you can still pick an exam slot.</p>', '<a class="go" href="#">OK</a>') + OFFLINE,
@@ -361,7 +357,10 @@ phone("apply-programs", "Programs", """<h1 class="gh">Programs</h1><p>Choose 3, 
             row("BS Information Technology", "ACCESS Campus, Tacurong", "Remove", "#", "", '<span class="num">2</span>'),
             row("Add 3rd choice", "", "", "#picker", "", '<span class="num">3</span>')),
       cta=("apply-review.html", "Next"), back="apply-school.html",
-      overlays=modal("picker", "info", "", "3rd choice", '<div class="filter"><a class="on" href="#">All campuses</a><a href="#">Isulan</a><a href="#">ACCESS</a><a href="#">Tacurong</a><a href="#">Kalamansig</a></div><input placeholder="Search programs" aria-label="Search programs">' + plist(row("BS Criminology", "Isulan Campus", href="#"), row("BS Nursing", "ACCESS Campus, Tacurong", href="#"), row("BSEd Mathematics", "Kalamansig Campus", href="#")), '<a class="back" href="#">Cancel</a>')
+      overlays=modal("picker", "info", "", "3rd choice", '<input type="search" class="psearch" placeholder="Search programs" aria-label="Search programs"><select class="pselect" aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS, Tacurong</option><option>Tacurong</option><option>Kalamansig</option></select>'
+      + '<div class="ghead">Isulan Campus</div>' + plist(row("BS Civil Engineering", "Your 1st choice", "", "", "off"), row("BS Criminology", "", "Cut-off 480", "#"))
+      + '<div class="ghead">ACCESS Campus, Tacurong</div>' + plist(row("BS Information Technology", "Your 2nd choice", "", "", "off"), row("BS Nursing", "", "Cut-off 600", "#"))
+      + '<div class="ghead">Kalamansig Campus</div>' + plist(row("BSEd Mathematics", "", "Cut-off 450", "#")), '<a class="back" href="#">Cancel</a>')
       + toast("dup", "bad", BAD, "Already chosen", "BS Civil Engineering, Isulan is your 1st choice."),
       states=[("picker", "Program picker"), ("dup", "Duplicate choice error")])
 
@@ -397,65 +396,67 @@ phone("payment-chair", "Chairperson", """<p class="eyebrow">Transferee test · 2
       + modal("declined", "bad", BAD, "Not approved for BS Information Technology", '<div class="alertbox warn"><div>Reason: no slots left for 2nd-year transferees this semester.</div></div><p style="margin:0">Your 2nd choice, BS Computer Engineering, is reviewed next. Do not pay yet.</p>', '<a class="go" href="#">OK</a>'),
       states=[("approved", "Approved: pay at the cashier"), ("declined", "Declined, with the reason")])
 
-phone("payment", "Payment", """<h1 class="gh">Exam fee</h1>
-<div class="hero"><span class="lbl">Amount</span><span class="amt">₱275.00</span><span class="lbl">GCash · [GCASH OR BANK ACCOUNT]</span></div>
-<div class="fld"><label class="cap">Payment method</label><div class="plist" style="margin:0;border-top:0">"""
-      + row("Online", "GCash, Maya or Landbank. Send the receipt here.", lead=RADIO, cls="on")
-      + row("SKSU cashier", "Pay in person. The cashier records it.", href="#cashier", lead=RADIO) + """</div></div>
-<div class="fld"><label class="cap" for="r">Reference number</label><input id="r" inputmode="numeric" value="1009 284 551 203" class="mono"><small>13 digits, from the GCash receipt.</small></div>
-<div class="fld"><label class="cap">Receipt</label><a class="picker" href="#uploading"><span class="ph"></span><span class="grow"><b>receipt.jpg</b><small>Made smaller on your phone: 4.8 MB to 310 KB</small></span><span class="end">Change</span></a></div>""",
-      cta=("payment-waiting.html#sent", "Send receipt"), back="apply-review.html",
-      overlays=toast("submitted", "ok", OK, "Application submitted", "Next, pay the exam fee.")
-      + modal("cashier", "info", "", "Pay at an SKSU cashier", '<p style="margin:0">Give the cashier this code. No receipt upload is needed.</p><div class="hero"><span class="lbl">Application code</span><span class="amt mono" style="font-size:26px">APP-27-10422</span><span class="lbl">Maria S. Dela Cruz · ₱275.00</span></div><small>Cashiers: all SKSU campuses, Mon–Fri, 8:00 AM – 5:00 PM.</small>', '<a class="go" href="#">OK</a>')
+phone("payment", "Payment", """<h1 class="gh">Pay at an SKSU cashier</h1>
+<div class="hero"><span class="lbl">Show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl">Maria S. Dela Cruz · ₱275.00</span></div>
+<div class="ghead">Where to pay</div>""" + plist(
+    row("Isulan Campus", "Cashier's Office, Admin Building", "Mon–Sat"),
+    row("ACCESS Campus, Tacurong", "Cashier's Office, Main Gate", "Mon–Fri"),
+    row("Kalamansig, Bagumbayan, Lutayan, Palimbang", "Campus cashier", "Mon–Fri")) + """
+<small>Open 8:00 AM – 5:00 PM (Saturday until 12:00 noon). Bring this code or your application number. After you pay, the cashier records it and you get your examinee number here.</small>""",
+      cta=("home.html", "Done"), back="apply-review.html",
+      extra='<a class="mocklink" href="seat.html#approved">Mockup: cashier recorded the payment →</a>',
+      overlays=toast("submitted", "ok", OK, "Application submitted", "Next, pay at an SKSU cashier.")
+      + modal("online", "info", "", "Online payment (when turned on)", '<p style="margin:0">Shown instead of the cashier screen only if the office turns on online payment for the school year.</p><div class="hero"><span class="lbl">Send ₱275.00 to</span><span class="amt" style="font-size:20px">[GCASH OR BANK ACCOUNT]</span></div><div class="fld"><label class="cap" for="r">Reference number</label><input id="r" inputmode="numeric" value="1009 284 551 203" class="mono"><small>13 digits, from the GCash receipt.</small></div><div class="fld"><label class="cap">Receipt</label><a class="picker" href="#uploading"><span class="ph"></span><span class="grow"><b>receipt.jpg</b><small>Made smaller on your phone: 4.8 MB to 310 KB</small></span><span class="end">Change</span></a></div>', '<a class="go" href="payment-waiting.html#sent">Send receipt</a><a class="back" href="#">Close</a>')
       + toast("ref-used", "bad", BAD, "Reference number already used", "Another applicant sent this GCash reference. Check your receipt.")
       + modal("uploading", "info", '<span class="spin"></span>', "Sending receipt · 72%", '<div class="progress"><span style="width:72%"></span></div>', '<a class="back" href="#">Cancel</a>'),
-      states=[("submitted", "Arrived after submit"), ("cashier", "Pay at cashier code"), ("uploading", "Uploading"), ("ref-used", "Duplicate reference error")])
+      states=[("submitted", "Arrived after submit"), ("online", "Online payment (when turned on)"), ("uploading", "Online: uploading"), ("ref-used", "Online: reference already used")])
 
-phone("payment-waiting", "Waiting for approval", """<h1 class="gh">Receipt sent</h1><p>The admission office checks receipts within one working day. You will get a notification and an email.</p>
+phone("payment-waiting", "Waiting for approval", """<p class="eyebrow">Only when online payment is turned on</p><h1 class="gh">Receipt sent</h1><p>The admission office checks receipts within one working day. You will get a notification and an email.</p>
 """ + plist(row("Reference no.", "", '<span class="mono">1009 284 551 203</span>'), row("Sent", "", "Jan 12, 8:10 AM"), row("Status", "", '<span class="dot a"></span>For review')),
       extra='<a class="mocklink" href="seat.html#approved">Mockup: payment approved →</a><a class="mocklink" href="payment-rejected.html">Mockup: sent back →</a>',
       overlays=toast("sent", "ok", OK, "Receipt sent", "You will be notified when it is checked."), states=[("sent", "Just sent")])
 
-phone("payment-rejected", "Sent back", """<h1 class="gh">Please fix your receipt</h1>
-<div class="alertbox warn"><div>“The receipt photo is blurry. The reference number can't be read.”<br><small>Admission Office · Jan 13, 4:22 PM</small></div></div>
-<p>The rest of your application stays as it is.</p>
-<div class="fld"><label class="cap" for="r2">Reference number</label><input id="r2" inputmode="numeric" value="1009 284 551 203" class="mono"></div>
-<div class="fld"><label class="cap">Receipt</label><a class="picker" href="#"><span class="ph"></span><span class="grow"><b>Add a clearer photo</b><small>Camera or gallery</small></span><span class="end">›</span></a></div>""",
-      cta=("payment-waiting.html#sent", "Send again"), back="home.html",
-      overlays=modal("voided", "warn", WARN, "Payment cancelled", '<div class="alertbox warn"><div>Reason: the OR number was recorded for another applicant.</div></div><p style="margin:0">Your exam slot was released. Pay again, online or at a cashier, then pick an exam slot. Your application stays as it is.</p>', '<a class="go" href="payment.html">Pay again</a><a class="back" href="#">Close</a>')
-      + modal("closed-out", "warn", WARN, "Schedule 2 registration has closed", '<p style="margin:0">It closed before you sent the fix. You can apply for Schedule 3. Your details are copied from this application.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="#">Close</a>'),
-      states=[("voided", "Payment voided by the admission office"), ("closed-out", "Too late for this schedule")])
+phone("payment-rejected", "Sent back", """<h1 class="gh">Please fix your application</h1>
+<div class="alertbox warn"><div>“The photo is not a 2×2 ID photo. Use a plain white background and show your whole face.”<br><small>Admission Office · Jan 13, 4:22 PM</small></div></div>
+<p>The rest of your application stays as it is. Your payment and examinee number are not affected.</p>
+<div class="fld"><label class="cap">2×2 ID photo</label><a class="picker" href="#"><span class="ph"></span><span class="grow"><b>Take or choose a new photo</b><small>Camera or gallery</small></span><span class="end">›</span></a></div>""",
+      cta=("#resent", "Send again"), back="home.html",
+      overlays=modal("voided", "warn", WARN, "Payment cancelled", '<div class="alertbox warn"><div>Reason: the OR number was recorded for another applicant.</div></div><p style="margin:0">Your exam slot was released. Pay again at an SKSU cashier, then pick an exam slot. Your application stays as it is.</p>', '<a class="go" href="payment.html">Pay again</a><a class="back" href="#">Close</a>')
+      + modal("closed-out", "warn", WARN, "Schedule 2 registration has closed", '<p style="margin:0">It closed before you sent the fix. You can apply for Schedule 3. Your details are copied from this application.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="#">Close</a>')
+      + toast("resent", "ok", OK, "Sent again", "The admission office will check it. You will get a notification.")
+      + modal("receipt", "warn", WARN, "Please fix your receipt (online payment)", '<div class="alertbox warn"><div>“The receipt photo is blurry. The reference number cannot be read.”</div></div><div class="fld"><label class="cap" for="r2">Reference number</label><input id="r2" inputmode="numeric" value="1009 284 551 203" class="mono"></div>', '<a class="go" href="payment-waiting.html#sent">Send again</a><a class="back" href="#">Close</a>'),
+      states=[("resent", "Sent again"), ("receipt", "Online: receipt sent back"), ("voided", "Payment voided by the admission office"), ("closed-out", "Too late for this schedule")])
 
 phone("seat", "Pick an exam slot", """<h1 class="gh">Exam slot</h1><p>Choose a campus and date. Your room and seat are assigned when you confirm.</p>
-<div class="filter"><a class="on" href="#">All campuses</a><a href="#">Isulan</a><a href="#">ACCESS</a><a href="#">Tacurong</a><a href="#">Kalamansig</a></div>
+<select class="pselect" aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS, Tacurong</option><option>Tacurong</option><option>Kalamansig</option></select>
 <div class="ghead">Schedule 1 · Mar 14–15</div>""" + plist(
-    row("Isulan Campus", "Sat, Mar 14", "38 seats left", "#confirm", "on", RADIO),
-    row("ACCESS Campus, Tacurong", "Sun, Mar 15", "112 seats left", "#confirm", "", RADIO),
-    row("Tacurong Campus", "Sat, Mar 14", "48 seats left", "#confirm", "", RADIO),
-    row("Kalamansig Campus", "Sun, Mar 15", "Full", "", "off", RADIO)) + """
-<small>Report by 7:30 AM. The exam starts at 8:00 AM and takes about 3 hours.</small>""",
+    row("Isulan Campus", "Sat, Mar 14 · report by 7:30 AM", "38 seats left", "#confirm", "on", RADIO),
+    row("ACCESS Campus, Tacurong", "Sun, Mar 15 · report by 7:30 AM", "112 seats left", "#confirm", "", RADIO),
+    row("Tacurong Campus", "Sat, Mar 14 · report by 7:30 AM", "48 seats left", "#confirm", "", RADIO),
+    row("Kalamansig Campus", "Sun, Mar 15 · report by 7:30 AM", "Full", "", "off", RADIO)) + """
+<small>Times are a guide; come at the report time. The exam starts at 8:00 AM and takes about 3 hours.</small>""",
       cta=("#confirm", "Confirm exam slot"), back="home.html",
       overlays=toast("approved", "ok", OK, "Payment approved", "Examinee no. 500214. Pick your exam slot.")
-      + modal("confirm", "info", "", "Isulan Campus · Sat, Mar 14", '<p style="margin:0">You can change your exam slot once, until Mar 1.</p>', '<a class="go" href="permit.html#booked">Confirm</a><a class="back" href="#">Choose another</a>')
+      + modal("confirm", "info", "", "Isulan Campus · Sat, Mar 14", '<p style="margin:0">Report by 7:30 AM · exam starts 8:00 AM. You can change your exam slot once, until Mar 1.</p>', '<a class="go" href="permit.html#booked">Confirm</a><a class="back" href="#">Choose another</a>')
       + toast("taken", "bad", BAD, "That exam slot is now full", "Choose another campus or date.")
       + modal("loading", "info", '<span class="spin"></span>', "Loading exam slots", '<div class="skel" style="width:90%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:80%"></div>', ""),
       states=[("approved", "Arrived after approval"), ("loading", "Loading"), ("confirm", "Confirm"), ("taken", "Exam slot full error")])
 
 phone("seat-t", "Pick your batch", """<p class="eyebrow">Transferee test · 2nd semester</p><h1 class="gh">Batch</h1><p>Sat, Dec 12 · Testing Room, Guidance and Testing Center, SKSU ACCESS Campus, Tacurong City</p>
-""" + plist(row("1st batch", "Report by 7:30 AM · starts 8:00 AM", "34 seats left", "#confirm-t", "on", RADIO),
-            row("2nd batch", "Report by 12:30 PM · starts 1:00 PM", "41 seats left", "#confirm-t", "", RADIO)),
+""" + plist(row("1st batch", "Report by 7:30 AM · exam starts 8:00 AM", "34 seats left", "#confirm-t", "on", RADIO),
+            row("2nd batch", "Report by 12:30 PM · exam starts 1:00 PM", "41 seats left", "#confirm-t", "", RADIO)) + "<small>Times are a guide; come at the report time.</small>",
       cta=("#confirm-t", "Confirm batch"), back="home.html",
-      overlays=modal("confirm-t", "info", "", "1st batch · Sat, Dec 12", '<p style="margin:0">You can change your batch once, until Dec 5.</p>', '<a class="go" href="permit.html#booked">Confirm</a><a class="back" href="#">Choose another</a>')
+      overlays=modal("confirm-t", "info", "", "1st batch · Sat, Dec 12", '<p style="margin:0">Report by 7:30 AM · exam starts 8:00 AM. You can change your batch once, until Dec 5.</p>', '<a class="go" href="permit.html#booked">Confirm</a><a class="back" href="#">Choose another</a>')
       + toast("full-t", "bad", BAD, "The 1st batch is now full", "Choose the 2nd batch."),
       states=[("confirm-t", "Confirm"), ("full-t", "Batch full")])
 
 phone("permit", "My permit", """<div class="permit"><div class="ph1"><img src="../assets/sksu-seal.png" alt="SKSU seal"><div><b>SULTAN KUDARAT STATE UNIVERSITY</b><small>Examination permit · SKSU TPT · SY 2027–2028</small></div></div>
 <div class="pb"><div class="pphoto">2×2 photo</div><div class="pname"><b>DELA CRUZ, Maria Santos</b><small>Examinee no.</small><span class="mono">500214</span></div></div>
-<div class="pg"><div><small>Schedule</small><b>Schedule 1</b></div><div><small>Campus</small><b>Isulan</b></div><div><small>Date</small><b>Sat, Mar 14, 2027</b></div><div><small>Report by</small><b>7:30 AM</b></div><div><small>Room</small><b>Room 4, Main Bldg.</b></div><div><small>Seat</small><b>27</b></div></div>
+<div class="pg"><div><small>Schedule</small><b>Schedule 1</b></div><div><small>Campus</small><b>Isulan</b></div><div><small>Date</small><b>Sat, Mar 14, 2027</b></div><div><small>Time</small><b>Report by 7:30 AM · exam starts 8:00 AM</b></div><div><small>Room</small><b>Room 4, Main Bldg.</b></div><div><small>Seat</small><b>27</b></div></div>
 <div class="pq"><svg width="132" height="132" viewBox="0 0 7 7" role="img" aria-label="Permit QR code" shape-rendering="crispEdges"><rect width="7" height="7" fill="#fff"/><path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" fill="#1b1d1c"/><path d="M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z" fill="#fff"/></svg><small>Show at the room door. Works without signal.</small></div></div>
 <div class="ghead">Bring</div>""" + plist(row("Pencil No. 2 with eraser"), row("This permit, on your phone or printed"), row("School ID or any valid ID"), row("Official receipt, if paid at the cashier")),
       cta=("../docs/permit-pdf.html", "Save as PDF"), extra='<a class="mocklink" href="result-pending.html">Mockup: after exam day →</a>',
-      overlays=toast("booked", "ok", OK, "Exam slot booked", "Isulan Campus · Room 4, seat 27.")
+      overlays=toast("booked", "ok", OK, "Exam slot booked", "Isulan Campus · Sat, Mar 14 · report by 7:30 AM · Room 4, seat 27.")
       + modal("making", "info", '<span class="spin"></span>', "Preparing the PDF", '<p style="margin:0">It is saved on your phone after this.</p>', ""),
       states=[("booked", "Arrived after booking"), ("making", "PDF loading")])
 
@@ -463,7 +464,7 @@ phone("result-pending", "Result not yet", """<h1 class="gh">Result</h1>
 <div class="hero"><span class="lbl">Release</span><span class="amt" style="font-size:26px">Apr 20, 9:00 AM</span><span class="lbl">You will get a notification and an email.</span></div>
 """ + plist(row("Exam taken", "", "Sat, Mar 14 · Isulan"), row("Exam-day survey", "Optional, 1 minute", "", "survey.html")),
       extra='<a class="mocklink" href="result.html">Mockup: results released →</a>',
-      overlays=modal("absent", "warn", WARN, "No score: marked absent", '<p style="margin:0">The Testing Center has no score for you from Mar 14. If you took the exam, ask the admission office by Apr 27. You can also apply for Schedule 3; your details are copied from this application.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="notifications.html#ask">Ask the admission office</a>')
+      overlays=modal("absent", "warn", WARN, "No score: marked absent", '<p style="margin:0">The Testing Center has no score for you from Mar 14. If you took the exam, ask the admission office by Apr 27. You can also apply for Schedule 3; your details are copied from this application.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="support.html#new">Ask the admission office</a>')
       + toast("thanks", "ok", OK, "Survey sent", "Thank you."),
       states=[("absent", "Absent"), ("thanks", "After the survey")])
 
@@ -491,14 +492,48 @@ phone("result", "Result", f"""<p class="eyebrow">SKSU TPT · Schedule 1 · relea
 
 phone("profile", "My account", """<h1 class="gh">Account</h1>
 """ + plist(row("Maria Santos Dela Cruz", "maria.delacruz@gmail.com · Google"), row("Examinee no.", "", '<span class="mono">500214</span>'), row("Status", "", '<span class="dot"></span>Exam slot picked')) + """
-<div class="ghead">Changes</div>""" + plist(
-    row("2×2 ID photo", "Until Mar 1", "", "#photo"), row("Program choices", "Until Feb 28", "", "apply-programs.html"),
-    row("Exam slot", "1 change left, until Mar 1", "", "seat.html"), row("History", "6 events", "", "#history")),
+<div class="ghead">My details</div>""" + plist(
+    row("Personal details", "Maria Santos Dela Cruz · May 12, 2008 · +63 917 123 4567"), row("School", "Isulan National High School · 2026 · STEM"),
+    row("Programs", "BS Civil Engineering · BS Information Technology · BS Criminology"), row("2×2 ID photo", "Added Jan 11")) + """
+<small>Locked after approval. To change something, ask the admission office.</small>""" + plist(
+    row("Request a change", "Opens a support request", "", "support.html#new-change"), row("Exam slot", "1 change left, until Mar 1", "", "seat.html"),
+    row("Support", "1 request", "", "support.html"), row("History", "6 events", "", "#history")),
       extra='<a class="back" href="../public/landing.html">Sign out</a>', back="home.html",
       overlays=modal("photo", "info", "", "2×2 ID photo", plist(row("Take a photo", "Uses your camera", href="#photo-ok"), row("Choose from gallery", "JPG or PNG", href="#photo-ok")), '<a class="back" href="#">Cancel</a>')
       + toast("photo-ok", "ok", OK, "Photo updated", "Your permit shows the new photo.")
-      + modal("history", "info", "", "History", plist(row("Exam slot booked", "Isulan, Room 4, seat 27", "Jan 13"), row("Payment approved", "Examinee no. 500214", "Jan 12"), row("Receipt sent", "", "Jan 12"), row("Application submitted", "", "Jan 11"), row("Signed in with Google", "", "Jan 11")), '<a class="back" href="#">Close</a>'),
-      states=[("photo", "Change photo"), ("photo-ok", "Photo saved"), ("history", "History")])
+      + modal("history", "info", "", "History", plist(row("Exam slot booked", "Isulan, Room 4, seat 27", "Jan 13"), row("Payment recorded", "Isulan cashier · OR 0048190 · examinee no. 500214", "Jan 12"), row("Application submitted", "", "Jan 11"), row("Signed in with Google", "", "Jan 11")), '<a class="back" href="#">Close</a>')
+      + modal("before", "info", "", "Before approval", '<p style="margin:0">Until the cashier records your payment, your details stay editable.</p>' + plist(row("Personal details", "", "Edit", "apply-personal.html"), row("School", "", "Edit", "apply-school.html"), row("Programs", "", "Edit", "apply-programs.html"), row("2×2 ID photo", "", "Change", "#photo")), '<a class="back" href="#">Close</a>'),
+      states=[("before", "Before approval: editable"), ("photo", "Change photo"), ("photo-ok", "Photo saved"), ("history", "History")])
+
+
+# support: a small ticket system with limits (one open request, 5 per school year)
+TOPICS = '<option>Payment</option><option>Application</option><option>Change my details</option><option>Exam slot</option><option>Result</option><option>Other</option>'
+NEW_REQ = ('<div class="fld"><label class="cap" for="nt">Topic</label><select id="nt">{topics}</select></div>'
+           '<div class="fld"><label class="cap" for="nm">Message</label><textarea id="nm" rows="4" maxlength="1000">{msg}</textarea><small>10 to 1,000 characters. Links are shown as plain text.</small></div>'
+           '<div class="fld"><label class="cap">Photo (optional)</label><a class="picker" href="#"><span class="ph"></span><span class="grow"><b>Add a photo</b><small>JPG or PNG, up to 2 MB, made smaller on your phone</small></span><span class="end">›</span></a></div>')
+phone("support", "Support", """<h1 class="gh">Support</h1><p>Questions or changes to your details go to the admission office. You can have one open request at a time, and 5 in a school year.</p>
+""" + plist(row("#1042 · Payment", "Is the Isulan cashier open on Saturday?", '<span class="dot g"></span>Answered', "support-ticket.html"),
+            row("#0977 · Application", "How do I fix my middle name?", '<span class="dot"></span>Closed', "support-ticket.html")) + """
+<small>4 of 5 requests left for SY 2027–2028.</small>""",
+      cta=("#new", "New request"), back="notifications.html",
+      overlays=modal("new", "info", "", "New request", NEW_REQ.format(topics=TOPICS, msg="Is the Isulan cashier open on Saturday?"), '<a class="go" href="#sent">Send</a><a class="back" href="#">Cancel</a>')
+      + modal("new-change", "info", "", "Request a change", NEW_REQ.format(topics=TOPICS.replace("<option>Change my details</option>", "<option selected>Change my details</option>"), msg="Field: middle name. It should be Santos, not Santo.").replace('<div class="fld"><label class="cap" for="nm">', '<div class="fld"><label class="cap" for="nf">What to change</label><select id="nf"><option>Name</option><option>Birth date</option><option>Mobile number</option><option>School</option><option>Programs</option><option>2×2 photo</option></select></div><div class="fld"><label class="cap" for="nm">'), '<a class="go" href="#sent">Send</a><a class="back" href="#">Cancel</a>')
+      + toast("sent", "ok", OK, "Request #1043 sent", "The reply will appear here and in your email.")
+      + modal("one-open", "info", "", "You have an open request", '<p style="margin:0">You can open a new request when your current one is closed.</p>', '<a class="go" href="support-ticket.html">Open request #1042</a><a class="back" href="#">Close</a>')
+      + modal("used-up", "warn", WARN, "No requests left", '<p style="margin:0">You’ve used your 5 requests for this school year. Visit or call the Guidance and Testing Center: (064) 201-0000.</p>', '<a class="back" href="#">Close</a>')
+      + modal("muted", "warn", WARN, "Support is paused", '<p style="margin:0">The admission office paused support for your account until Jan 20. Visit or call the Guidance and Testing Center.</p>', '<a class="back" href="#">Close</a>')
+      + toast("too-short", "bad", BAD, "Message too short", "Write at least 10 characters.")
+      + toast("too-big", "bad", BAD, "Photo too large", "Use a JPG or PNG up to 2 MB."),
+      states=[("new", "New request"), ("new-change", "Request a change"), ("sent", "Sent"), ("one-open", "Limit: one open request"), ("used-up", "Limit: 5 per school year"), ("muted", "Support paused"), ("too-short", "Too short"), ("too-big", "Photo too large")])
+
+phone("support-ticket", "Support request", """<p class="eyebrow">#1042 · Payment · Answered</p><h1 class="gh">Is the Isulan cashier open on Saturday?</h1>
+<div class="thread"><div class="msg me"><p>Is the Isulan cashier open on Saturday? I can only come on weekends.</p><small>You · Jan 12, 9:02 AM</small></div>
+<div class="msg"><p>Yes. The Isulan cashier is open Saturday, 8:00 AM – 12:00 noon. Bring your application code APP-27-10422.</p><small>Ana R., Admission Office · Jan 12, 4:35 PM</small></div></div>
+<div class="fld"><label class="cap" for="rp">Reply</label><textarea id="rp" rows="3" maxlength="1000" placeholder="Write a reply"></textarea><small>A reply reopens the request. It closes by itself after 7 days with no reply.</small></div>""",
+      cta=("#solved", "Mark as solved"), back="support.html",
+      overlays=toast("solved", "ok", OK, "Request closed", "You can open a new request any time.")
+      + toast("slow", "bad", BAD, "Please wait a moment", "You can send one reply a minute."),
+      states=[("solved", "Marked as solved"), ("slow", "Limit: one reply a minute")])
 
 
 # ---------------------------------------------------------------- documents (PDFs and emails)
@@ -517,14 +552,14 @@ doc("docs/result-pdf.html", "Result PDF", f"""<div class="crumbs" style="text-al
 <small class="muted">Scores as provided by the SKSU Testing Center.</small>
 <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end"><span class="muted">Verify: sksu-tpt.com/v/…</span><div style="text-align:center"><div style="border-top:1px solid #18181b;width:220px;padding-top:4px">[DIRECTOR, TESTING CENTER]</div></div></div></div>""")
 doc("docs/sms.html", "Text messages", """<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a> | <a href="../admin/messages.html">Messages admin</a></div>
-<div class="smsgrid">""" + "".join(f'<div class="smsw"><b>{t}</b><div class="sms">{m}</div><small class="muted">{len(m)} of 160 characters</small></div>' for t, m in [('Payment approved', 'SKSU TPT: Payment approved. Exam no. 500214. Pick your exam slot by Mar 1: sksu-tpt.com/slot'), ('Sent back', 'SKSU TPT: Please fix your application: the receipt photo is blurry. Open sksu-tpt.com/fix'), ('Exam slot booked', 'SKSU TPT: Isulan, Sat Mar 14, Room 4 seat 27. Report by 7:30AM. Permit: sksu-tpt.com/permit'), ('Exam slot changed', 'SKSU TPT: Your exam moved to ACCESS, Sun Mar 15, Room 18 seat 6. New permit: sksu-tpt.com/permit'), ('Exam tomorrow', 'SKSU TPT: Exam tomorrow, Isulan Room 4. Report by 7:30AM, exam 8:00AM. Bring permit, ID, Pencil No. 2.'), ('Results out', 'SKSU TPT: Your result is ready: sksu-tpt.com/result')]) + """</div>""")
+<div class="smsgrid">""" + "".join(f'<div class="smsw"><b>{t}</b><div class="sms">{m}</div><small class="muted">{len(m)} of 160 characters</small></div>' for t, m in [('Payment recorded', 'SKSU TPT: Paid at Isulan cashier, OR 0048190. Exam no. 500214. Pick your exam slot by Mar 1: sksu-tpt.com/slot'), ('Sent back', 'SKSU TPT: Please fix your application: the photo is not a 2x2 ID photo. Open sksu-tpt.com/fix'), ('Exam slot booked', 'SKSU TPT: Isulan, Sat Mar 14, Room 4 seat 27. Report by 7:30AM. Permit: sksu-tpt.com/permit'), ('Exam slot changed', 'SKSU TPT: Your exam moved to ACCESS, Sun Mar 15, Room 18 seat 6. New permit: sksu-tpt.com/permit'), ('Exam tomorrow', 'SKSU TPT: Exam tomorrow, Isulan Room 4. Report by 7:30AM, exam 8:00AM. Bring permit, ID, Pencil No. 2.'), ('Results out', 'SKSU TPT: Your result is ready: sksu-tpt.com/result')]) + """</div>""")
 doc("docs/email-approved.html", "Email: approved", """<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a></div>
 <div class="mail"><div class="mh"><img src="../assets/sksu-seal.png" alt="" style="width:40px"><b>SKSU Admission Test</b></div><div class="mb">
-<b class="ink" style="font-size:18px">Your payment is approved, Maria</b><p style="margin:0">Your examinee number is <b class="mono">500214</b>. Next, pick your exam slot. Slots go fast at Isulan.</p>
+<b class="ink" style="font-size:18px">Your payment is recorded, Maria</b><p style="margin:0">Paid at the Isulan cashier, OR 0048190. Your examinee number is <b class="mono">500214</b>. Next, pick your exam slot. Slots go fast at Isulan.</p>
 <a class="btn primary lg" href="../applicant/seat.html">Pick my exam slot</a><small class="muted">You got this because you applied for the SKSU TPT · SY 2027–2028.</small></div></div>""")
 doc("docs/email-rejected.html", "Email: rejected", """<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a></div>
 <div class="mail"><div class="mh"><img src="../assets/sksu-seal.png" alt="" style="width:40px"><b>SKSU Admission Test</b></div><div class="mb">
-<b class="ink" style="font-size:18px">Please fix your application</b><div class="alertbox warn"><b>Fix:</b> Receipt photo. The receipt photo is blurry. We can’t read the reference number.</div>
+<b class="ink" style="font-size:18px">Please fix your application</b><div class="alertbox warn"><b>Fix:</b> 2×2 photo. The photo is not a 2×2 ID photo. Use a plain white background and show your whole face.</div>
 <p style="margin:0">Nothing is lost. Everything else is saved. Fix that part and we’ll check it again within one working day.</p>
 <a class="btn primary lg" href="../applicant/payment-rejected.html">Fix and send again</a></div></div>""")
 doc("docs/email-results.html", "Email: results out", """<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a></div>
@@ -590,11 +625,12 @@ ICONS = {
     "search": '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
     "landing": '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8M8 16h5"/>',
     "chair": '<path d="M9 11l3 3 8-8"/><path d="M4 6h7M4 12h3M4 18h9"/>',
+    "support": '<path d="M4 5h16v11H8l-4 4z"/><path d="M9 9h6M9 12h4"/>',
     "email": '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
     "system": '<rect x="3" y="4" width="18" height="7" rx="1"/><rect x="3" y="13" width="18" height="7" rx="1"/><path d="M7 7.5h.01M7 16.5h.01"/>',
 }
 NAV = [(None, [("dashboard", "Dashboard")]),
-       ("Applicants", [("applications", "Applications"), ("payments", "Payment review"), ("cashier", "Cashier counters"), ("messages", "Messages")]),
+       ("Applicants", [("applications", "Applications"), ("cashier", "Cashier counters"), ("support", "Support"), ("messages", "Announcements")]),
        ("Exam", [("schedules", "Exam schedules"), ("exam-slots", "Exam slots"), ("checkin", "Check-in"), ("scores", "Import scores"), ("results", "Results")]),
        ("Reports", [("reports", "Reports"), ("exports", "Downloads")]),
        ("Management", [("campuses", "Campuses and programs"), ("rooms", "Rooms"), ("staff", "Staff and roles"), ("landing", "Landing page")]),
@@ -629,7 +665,7 @@ def pagehead(title, content):
 
 
 BELL_ITEMS = [
-    ("Maria S. Dela Cruz asked about her payment", "2 more questions waiting", "9:02 AM", "applicant.html#q", True),
+    ("New support request #1046 · Change my details", "2 more open requests", "12 min ago", "support-ticket.html", True),
     ("Scores import finished", "16 rows need a look", "Apr 18 · 3:41 PM", "scores.html#summary", True),
     ("4 emails or texts failed", "See the send log", "8:00 AM", "messages.html", False),
 ]
@@ -745,9 +781,12 @@ def rail(steps, cur, body):
     return f'<div class="railwrap"><nav class="step-rail" aria-label="Steps">{"".join(items)}</nav><div class="railbody">{body}</div></div>'
 
 
-SENDBACK_FORM = ('<div class="fld"><label for="sbw">What to fix</label><select id="sbw"><option>Receipt</option><option>2×2 photo</option><option>Personal details</option><option>School details or documents</option></select></div>'
-                 '<div class="fld"><label for="sbr">Reason</label><select id="sbr"><option>Reference already used</option><option>Receipt is blurry</option><option>Amount is short</option><option>Photo is not a 2×2 ID photo</option><option>Other</option></select></div>'
-                 '<div class="fld"><label for="sbm">Remarks to the applicant</label><textarea id="sbm" rows="3">The reference number on your receipt was already used by another applicant. Please check your GCash receipt and send the right one.</textarea></div>')
+SENDBACK_FORM = ('<div class="fld"><label for="sbw">What to fix</label><select id="sbw"><option>2×2 photo</option><option>Personal details</option><option>School details</option></select></div>'
+                 '<div class="fld"><label for="sbr">Reason</label><select id="sbr"><option>Photo is not a 2×2 ID photo</option><option>Name does not match the school record</option><option>Other</option></select></div>'
+                 '<div class="fld"><label for="sbm">Remarks to the applicant</label><textarea id="sbm" rows="3">The photo is not a 2×2 ID photo. Use a plain white background and show your whole face.</textarea></div>')
+SENDBACK_RECEIPT = ('<div class="fld"><label for="sbw2">What to fix</label><select id="sbw2"><option>Receipt</option><option>2×2 photo</option><option>Personal details</option></select></div>'
+                    '<div class="fld"><label for="sbr2">Reason</label><select id="sbr2"><option>Reference already used</option><option>Receipt is blurry</option><option>Amount is short</option><option>Other</option></select></div>'
+                    '<div class="fld"><label for="sbm2">Remarks to the applicant</label><textarea id="sbm2" rows="3">The reference number on your receipt was already used by another applicant. Please check your GCash receipt and send the right one.</textarea></div>')
 ROW_MENU = menu("menu", [("Quick look", "#view", "", "Opens on the right"), ("Open full record", "applicant.html", "", ""), ("Edit details", "applicant.html#edit", "", "Name, birth date, contact"),
                          ("Move to another exam slot", "applicant.html#move", "", ""), ("Resend permit email", "#resent", "", ""), ("Print permit", "../docs/permit-pdf.html", "", ""), ("Waive the fee", "applicant.html#waive", "", "Scholar or indigent, with a reason"),
                          ("-", "", "", ""), ("Cancel application", "applicant.html#cancel", "danger", "Frees the exam slot")])
@@ -761,17 +800,17 @@ SLOTS2 = [("ACCESS, Tacurong", "Sat, Apr 25", 24, 1188, "Open"), ("ACCESS, Tacur
 # dashboard: the numbers the office acts on, one funnel, one trend, seats and campuses
 days = [612, 540, 498, 702, 1210, 880, 655, 590, 611, 720, 1302, 940, 812, 212]
 prog = [("BS Information Technology", "ACCESS", 1180), ("BS Nursing", "ACCESS", 1012), ("BS Criminology", "Isulan", 884), ("BS Civil Engineering", "Isulan", 610), ("BSEd English", "ACCESS", 522), ("BS Accountancy", "ACCESS", 498), ("BS Agriculture", "Tacurong", 341), ("BS Fisheries", "Palimbang", 88)]
-att = [("214 payments to review", "The oldest has waited 6 hours.", "payments.html"),
+att = [("12 photos to check", "Marked as not a 2×2 ID photo. Send back with remarks.", "applications.html"),
        ("627 approved, no exam slot yet", "Send a reminder, or they are seated automatically on Apr 11.", "applications.html"),
        ("3 questions from students", "The oldest is from 9:02 AM.", "messages.html")]
 admin("dashboard", "Dashboard", f"""<div class="tabs"><span class="on">Schedule 2</span><span>Whole school year</span><span class="muted" style="margin-left:auto;font-size:13px">Updated 9:14 AM</span></div>
 <div class="kpis">
 <a class="kpi" href="applications.html"><span>Applications submitted</span><b>4,980</b><small>212 today</small></a>
-<a class="kpi" href="applications.html"><span>Paid and approved</span><b>3,976</b><small>80% of submitted</small></a>
-<a class="kpi" href="payments.html"><span>Payments to review</span><b>214</b><small><u>Review now</u></small></a>
+<a class="kpi" href="applications.html"><span>Paid</span><b>3,976</b><small>80% of submitted</small></a>
+<a class="kpi" href="cashier.html"><span>Paid today</span><b>184</b><small>₱50,600 at 4 counters</small></a>
 <a class="kpi" href="exam-slots.html"><span>Exam seats left</span><b>801</b><small>of 4,150</small></a></div>
 <div class="row"><div class="panel grow"><div class="head"><h2>Where applicants are</h2></div>
-{funnel([("Signed up", 6410), ("Submitted", 4980), ("Paid and approved", 3976), ("Picked an exam slot", 3349)])}</div>
+{funnel([("Signed up", 6410), ("Submitted", 4980), ("Paid at the cashier", 3976), ("Picked an exam slot", 3349)])}</div>
 <div class="panel" style="width:420px;flex-shrink:0"><div class="head"><h2>Applications per day</h2><a href="reports.html" style="font-size:13px">Reports →</a></div>{line_chart(days, ["Mar 1", "", "", "", "", "", "Mar 7", "", "", "", "", "", "", "Today"])}</div></div>
 <div class="row"><div class="panel grow"><div class="head"><h2>Exam seats by day</h2><a href="exam-slots.html" style="font-size:13px">All exam slots →</a></div>
 {table(['Exam day', 'Campus', 'Taken', 'Left', ''], [(w, c, f'<div class="meter"><div class="t"><span class="{"full" if t >= r * 50 else ""}" style="width:{round(t / (r * 50) * 100)}%"></span></div></div>', f'<span class="num">{r * 50 - t:,}</span>', B('bad', 'Full') if t >= r * 50 else '') for c, w, r, t, st in SLOTS2 if st != "Closed"])}</div>
@@ -801,7 +840,7 @@ DUPES = drawer("dupes", "3 possible duplicates", "Same name and birth date, or s
 BULK = f"""<div class="bulkbar" id="bulk"><b>3 selected</b><a class="btn" href="#bulk-remind">Send reminder</a><a class="btn" href="exam-slots.html#auto">Assign rooms and seats</a><a class="btn" href="exports.html#queued">Export selected</a><a class="btn" href="#">Clear</a></div>"""
 admin("applications", "Applications", f"""<div class="panel"><div class="filters"><span class="seg"><span class="on">All</span><span>Freshmen</span><span>Transferees</span></span>
 <select aria-label="Schedule"><option>All schedules</option><option>Schedule 1</option><option>Schedule 2</option><option>Schedule 3</option><option>Schedule 4 · Transferees</option></select><select aria-label="Status"><option>Any status</option><option>Draft</option><option>Waiting for chairperson</option><option>Declined</option><option>Waiting for payment</option><option>In review</option><option>Sent back</option><option>Approved</option><option>Exam slot picked</option><option>Scored</option><option>Absent</option><option>Program chosen</option><option>Cancelled</option></select><select aria-label="Campus"><option>Any campus</option></select>
-<select aria-label="Payment"><option>Any payment</option><option>Online receipt</option><option>Cashier</option></select><select aria-label="Sort"><option>Oldest waiting first</option><option>Newest first</option><option>Name A–Z</option></select>
+<select aria-label="Payment"><option>Any payment</option><option>Paid</option><option>Not paid yet</option></select><select aria-label="Sort"><option>Oldest waiting first</option><option>Newest first</option><option>Name A–Z</option></select>
 <input class="search" aria-label="Search" placeholder="Search name, email, no. or reference"><span style="margin-left:auto;display:flex;gap:6px">{btn("Print")}{btn("Excel", "exports.html#queued")}</span></div>
 {BULK}
 {table(['<input type="checkbox" aria-label="Select all">', "Examinee no.", "Applicant", "1st choice", "Status", "Exam slot", ""], [(f'<input type="checkbox" aria-label="Select {a[1]}">', f'<b class="mono ink">{a[0]}</b>', two(a[1], a[2]), two(a[3], a[4]), a[5], two(a[6], a[7]), ACT1 if i == 0 else ACT) for i, a in enumerate(apps)], sortable=("Examinee no.", "Applicant", "1st choice", "Status"), active=("Applicant", "asc"))}
@@ -826,17 +865,14 @@ admin("applicant", "Maria S. Dela Cruz", f"""<div class="tabsbar"><a class="on" 
 <span>Choices</span><span>1 BS Civil Engineering (Isulan) · 2 BS IT (ACCESS) · 3 BS Criminology (Isulan)</span><span>Exam slot</span><span>Isulan · Sat, Mar 14 · Room 4 · seat 27</span></div>
 <h2 style="margin-top:8px">Uploads</h2>
 <div class="uploads"><div class="up"><div class="thumb">Photo</div><div><b>2×2 photo</b><span class="muted">photo.jpg · 248 KB · Jan 11</span>{B("ok", "Accepted")}</div>{btn("View", "#photo")}</div>
-<div class="up"><div class="thumb">Receipt</div><div><b>Payment receipt</b><span class="muted">gcash-receipt.jpg · 310 KB · Jan 12</span>{B("ok", "Approved")}</div>{btn("View", "payments.html")}</div></div>
-<div style="display:flex;gap:8px;flex-wrap:wrap">{btn("Edit details", "#edit")}{btn("Move exam slot", "#move")}{btn("···", "#amenu")}</div>{menu("amenu", [("View permit", "../docs/permit-pdf.html", "", ""), ("Send back with remarks", "#sendback", "", "Photo, details, documents or receipt"), ("-", "", "", ""), ("Void payment", "#void", "danger", "Releases the exam slot"), ("Cancel application", "#cancel", "danger", "")])}</div>
-<div style="width:360px;flex-shrink:0;display:flex;flex-direction:column;gap:16px"><div class="panel" id="q"><div class="head"><h2>Question</h2>{B("warn", "Open")}</div>
-<p style="margin:0"><b>My payment</b> · Jan 12, 9:02 AM</p><p style="margin:0" class="muted">I sent my GCash receipt this morning but it still says waiting.</p>
-<div class="fld"><label for="qr">Reply (goes to her app and email)</label><textarea id="qr" rows="3" style="border:1px solid var(--line);border-radius:6px;padding:10px;font:14px var(--sans)">Your receipt is approved now, and your examinee number is 500214.</textarea></div>
-<div style="display:flex;gap:8px">{btn("Close without reply", "#")}{btn("Send reply", "#replied", "primary")}</div></div>
+</div><div class="kv"><span>Payment</span><span>₱275.00 · paid at Isulan cashier · OR <span class="mono">0048190</span> · Jan 12, 4:30 PM</span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">{btn("Edit details", "#edit")}{btn("Move exam slot", "#move")}{btn("···", "#amenu")}</div>{menu("amenu", [("View permit", "../docs/permit-pdf.html", "", ""), ("Send back with remarks", "#sendback", "", "Photo or details"), ("-", "", "", ""), ("Void payment", "#void", "danger", "Releases the exam slot"), ("Cancel application", "#cancel", "danger", "")])}</div>
+<div style="width:360px;flex-shrink:0;display:flex;flex-direction:column;gap:16px"><div class="panel" id="q"><div class="head"><h2>Support</h2></div><p style="margin:0"><span class="mono">#1042</span> · Payment · Answered</p><p style="margin:0" class="muted">Is the Isulan cashier open on Saturday?</p><a href="support-ticket.html">Open request →</a></div>
 <div class="panel"><h2>History</h2><div class="tl">
-<div><i></i><span>Jan 13 9:42 AM · Maria booked Isulan, Room 4 seat 27</span></div><div><i></i><span>Jan 12 4:30 PM · Ana R. (admin) approved the payment, issued 500214</span></div>
-<div><i></i><span>Jan 12 8:10 AM · Maria sent receipt 1009 284 551 203</span></div><div><i></i><span>Jan 11 7:55 PM · Maria submitted the application</span></div><div><i></i><span>Jan 11 7:31 PM · Maria signed up with Google</span></div></div></div></div></div>""",
+<div><i></i><span>Jan 13 9:42 AM · Maria booked Isulan, Room 4 seat 27</span></div><div><i></i><span>Jan 12 4:30 PM · Cashier 2 recorded OR 0048190 at Isulan, issued 500214</span></div>
+<div><i></i><span>Jan 11 7:55 PM · Maria submitted the application</span></div><div><i></i><span>Jan 11 7:31 PM · Maria signed up with Google</span></div></div></div></div></div>""",
       active="applications", crumb='<a href="applications.html" class="muted">← Applications</a>',
-      overlays=modal("edit", "info", "✎", "Edit details", '<div class="fld"><label for="e1">Full name</label><input id="e1" value="Maria Santos Dela Cruz"></div><div class="fld err"><label for="e2">Birth date</label><input id="e2" type="date" value="2018-05-12"><span class="errmsg">Must be at least 15 years old on exam day.</span></div><div class="fld"><label for="e3">Reason (goes in the history)</label><input id="e3" value="Typo in middle name, applicant emailed"></div>', btn("Cancel", "#") + btn("Save", "#saved", "primary"))
+      overlays=modal("edit", "info", "✎", "Edit details", '<div class="fld"><label for="e1">Full name</label><input id="e1" value="Maria Santos Dela Cruz"></div><div class="fld err"><label for="e2">Birth date</label><input id="e2" type="date" value="2018-05-12"><span class="errmsg">Must be at least 15 years old on exam day.</span></div><div class="fld"><label for="e3">Reason (goes in the history)</label><input id="e3" value="Typo in middle name"></div><small class="muted">Only the admission office can change details after approval. A change asked by the student shows its support request number.</small>', btn("Cancel", "#") + btn("Save", "#saved", "primary"))
       + toast("saved", "ok", OK, "Saved", "The change and your reason are in the history.")
       + toast("replied", "ok", OK, "Reply sent", "Maria sees it in her app and by email. It is in the history too.")
       + modal("sendback", "warn", WARN, "Send back to Maria?", SENDBACK_FORM, btn("Cancel", "#") + btn("Send back", "#saved", "primary"))
@@ -855,7 +891,8 @@ admin("cashier", "Cashier counters", f"""<div class="head"><span class="muted"><
 {table(["Counter", "Cashier", "Payments", "Collected", "Status", ""], [("Isulan counter 1", "Cashier 1", "36", "₱9,900", B("ok", "Open"), btn("View", "../cashier/paid.html")), ("ACCESS counter 1", "Cashier 2", "52", "₱14,300", B("ok", "Open"), btn("View", "../cashier/paid.html")), ("ACCESS counter 2", "Cashier 3", "21", "₱5,775", B("ok", "Open"), btn("View", "../cashier/paid.html")), ("Tacurong counter 1", "Cashier 4", "14", "₱3,850", B("gray", "Closed"), btn("View", "../cashier/paid.html"))])}""")
 
 q = [("Aisah K. Mangudadatu", "1009284551203", "6 h", B("warn", "Same ref."), True), ("Lea M. Sampulna", "1009284552455", "5 h", B("gray", "Waiting"), False), ("Ramon T. Villanueva", "1009284552310", "5 h", B("gray", "Waiting"), False), ("Noel B. Guiamal", "1009284552601", "3 h", B("gray", "Waiting"), False), ("Princess A. Lumabao", "1009284552711", "2 h", B("gray", "Waiting"), False), ("Farida M. Ampatuan", "1009284552840", "40 min", B("gray", "Waiting"), False)]
-admin("payments", "Payment review", f"""<div class="row">
+admin("payments", "Payment review", f"""<div class="alertbox warn">Only when online payment is turned on for the school year. With cashier-only payment there is no receipt queue.</div>
+<div class="row">
 <div class="queue"><div class="qh"><span>Waiting · oldest first</span><span class="muted" style="font-size:12px">A approve · S send back</span></div><div style="padding:8px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px"><input class="search" style="width:100%" aria-label="Search waiting payments" placeholder="Search name or reference"><span style="display:flex;gap:6px"><select aria-label="Schedule" style="flex:1"><option>Schedule 2</option><option>All schedules</option></select><select aria-label="Campus" style="flex:1"><option>All campuses</option><option>Isulan</option><option>ACCESS, Tacurong</option></select></span></div>{''.join(f'<a href="#"{" class=on" if on else ""}><span><span class="ink">{n}</span><span class="sub mono">{r} · {a}</span></span>{b}</a>' for n, r, a, b, on in q)}<div class="pager" style="padding:8px 12px"><span class="muted">1–25 of 214</span><span>{btn('More', '#', 'sm')}</span></div></div>
 <div class="panel grow"><div class="head"><h2>Proof of payment</h2><span class="muted" style="font-size:12px">gcash-receipt.jpg · 310 KB</span></div>
 <div class="proof"><div class="receipt"><b>Receipt image</b><div><span class="muted">Amount</span><b>₱275.00</b></div><div><span class="muted">Ref. no.</span><b class="mono">1009284551203</b></div><div><span class="muted">Date</span><b>Jan 13, 2027</b></div></div></div></div>
@@ -867,7 +904,7 @@ admin("payments", "Payment review", f"""<div class="row">
 {btn("Send back with remarks", "#reject", "lg")}</div></div>""",
       overlays=modal("approve", "warn", WARN, "Approve a reused reference?", '<p class="muted" style="margin:0">This reference was already approved for Maria S. Dela Cruz. Approve only if you checked the GCash records.</p>', btn("Cancel", "#") + btn("Approve anyway", "#approved", "primary"))
       + toast("approved", "ok", OK, "Approved · 500216 issued", "Aisah was notified in the app, by email and by text. Next: Lea M. Sampulna.")
-      + modal("reject", "warn", WARN, "Send back to Aisah?", SENDBACK_FORM + '<p class="muted" style="margin:0">She sees the remarks in the app, by email and by text, fixes that part and sends it again.</p>', btn("Cancel", "#") + btn("Send back", "#rejected", "primary"))
+      + modal("reject", "warn", WARN, "Send back to Aisah?", SENDBACK_RECEIPT + '<p class="muted" style="margin:0">She sees the remarks in the app, by email and by text, fixes that part and sends it again.</p>', btn("Cancel", "#") + btn("Send back", "#rejected", "primary"))
       + toast("rejected", "ok", OK, "Sent back to Aisah", "Next: Lea M. Sampulna.")
       + toast("conflict", "bad", BAD, "Ben T. already decided this one", "It was approved 10 s ago. Showing the next one.")
       + inmain("empty", empty("inbox", "All caught up", "No payments are waiting. New ones appear here by themselves.", btn("Go to applications", "applications.html")))
@@ -886,11 +923,13 @@ admin("schedules", "Exam schedules", f"""<div class="head"><span class="muted"><
 <small class="muted">Students can apply only while a schedule is published and its registration is open.</small></div>
 <h2>All school years</h2>
 {table(["School year", "Schedules", "Applicants", "Status", ""], [
-    ('<b class="ink">SY 2027–2028</b>', "4 · Mar 14 – Dec 12", '<span class="num">14,713</span>', '<span class="st live">Current</span>', btn("View", "#")),
+    ('<b class="ink">SY 2027–2028</b>', "4 · Mar 14 – Dec 12", '<span class="num">14,713</span>', '<span class="st live">Current</span>', btn("Edit", "#edit-sy")),
     ('<b class="ink">SY 2026–2027</b>', "1 · Mar 8", '<span class="num">10,214</span>', '<span class="st">Finished</span>', btn("View")),
     ('<b class="ink">SY 2025–2026</b>', "1 · Oct 25", '<span class="num">8,930</span>', '<span class="st">Finished</span>', btn("View"))])}""",
       overlays=modal("new", "info", "+", "New school year", '<div class="fld"><label for="s1">School year</label><select id="s1"><option>2028–2029</option><option>2029–2030</option></select></div><div class="two" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fld"><label for="s2">Registration opens</label><input id="s2" type="date" value="2028-01-03"></div><div class="fld"><label for="s3">Closes</label><input id="s3" type="date" value="2028-02-26"></div></div><div class="fld"><label for="s4">Exam fee</label><span class="money"><span>₱</span><input id="s4" inputmode="decimal" value="275.00"></span></div><div class="fld"><label for="s5">Schedules</label><select id="s5"><option>3 schedules</option><option>2 schedules</option><option>1 schedule</option></select></div><label style="display:flex;gap:8px;font-size:14px"><input type="checkbox" checked>Copy campuses, programs, rooms and staff from SY 2027–2028</label>', btn("Cancel", "#") + btn("Create", "#open-conflict", "primary"))
       + modal("open-conflict", "warn", WARN, "SY 2027–2028 is still open", '<p class="muted" style="margin:0">Finish SY 2027–2028 first, or save SY 2028–2029 to publish later.</p>', btn("Save for later", "#created") + btn("Finish 2027–2028 and open 2028–2029", "#", "danger"))
+      + modal("edit-sy", "info", "✎", "SY 2027–2028", '<div class="fld"><label for="ef">Exam fee</label><span class="money"><span>₱</span><input id="ef" inputmode="decimal" value="275.00"></span></div><h3 style="margin:8px 0 0;font-size:15px">Payment methods</h3><div class="setrow"><span>At an SKSU cashier</span><span class="muted">Always on</span></div><div class="setrow"><span>Online, with receipt upload</span><a class="switch" href="#" aria-label="Online payment with receipt upload"></a></div><small class="hint">Turn on when the office has a GCash or bank account. Students then upload a receipt and an admin checks it in Payment review.</small>', btn("Cancel", "#") + btn("Save", "#sy-saved", "primary"))
+      + toast("sy-saved", "ok", OK, "Saved", "Applicants see the change on the payment step.")
       + toast("created", "ok", OK, "SY 2028–2029 saved, not published", "Students can’t see it until you publish Schedule 1.")
       + modal("round", "info", "+", "Schedule 3 · SY 2027–2028", '<div class="fld"><label>Who is this schedule for?</label><label class="chkrow"><input type="radio" name="for" checked> Freshmen</label><label class="chkrow"><input type="radio" name="for"> Transferees (2nd semester)</label></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="fld"><label for="r1">Registration opens</label><input id="r1" type="date" value="2027-04-11"></div><div class="fld"><label for="r2">Closes</label><input id="r2" type="date" value="2027-05-15"></div><div class="fld"><label for="r3">Exam day(s)</label><input id="r3" type="date" value="2027-05-30"></div><div class="fld err"><label for="r4">Results release</label><input id="r4" type="date" value="2027-05-20"><span class="errmsg">Must be after the exam day.</span></div></div><label style="display:flex;gap:8px;font-size:14px"><input type="checkbox" checked>Copy the Schedule 2 exam slots and rooms</label>', btn("Cancel", "#") + btn("Save schedule", "#round-saved", "primary"))
       + toast("round-saved", "ok", OK, "Schedule 3 saved, not published", "Students can't see it until you publish it.")
@@ -905,7 +944,7 @@ admin("schedules", "Exam schedules", f"""<div class="head"><span class="muted"><
       + toast("published", "ok", OK, "Schedule 3 published", "Registration opens Apr 11. You can unpublish it any time.")
       + modal("unpublish", "warn", WARN, "Unpublish Schedule 2?", '<p class="muted" style="margin:0">Students can’t start or submit new applications. Anyone who already submitted or paid keeps their progress and seat.</p><div class="fld"><label for="up1">Message on the home page (optional)</label><input id="up1" placeholder="Registration is paused. Please check back on Mar 20."></div>', btn("Cancel", "#") + btn("Unpublish", "#unpublished", "danger"))
       + toast("unpublished", "ok", OK, "Schedule 2 unpublished", "Students can’t apply until you publish it again."),
-      states=[("publish", "Publish schedule"), ("published", "Published"), ("unpublish", "Unpublish schedule"), ("unpublished", "Unpublished"), ("s2menu", "··· menu"), ("new", "New school year form"), ("open-conflict", "Conflict warning"), ("created", "Created"), ("round", "Schedule form with error"), ("cal", "Calendar open"), ("round-saved", "Schedule saved"), ("sched-t", "Transferee schedule form")])
+      states=[("edit-sy", "Edit school year · payment methods"), ("sy-saved", "School year saved"), ("publish", "Publish schedule"), ("published", "Published"), ("unpublish", "Unpublish schedule"), ("unpublished", "Unpublished"), ("s2menu", "··· menu"), ("new", "New school year form"), ("open-conflict", "Conflict warning"), ("created", "Created"), ("round", "Schedule form with error"), ("cal", "Calendar open"), ("round-saved", "Schedule saved"), ("sched-t", "Transferee schedule form")])
 
 SETUP_STEPS = [("Basics", "School year and fee", "setup-1.html"), ("Schedules", "One or more, with dates", "setup-2.html"), ("Campuses and programs", "What is offered", "setup-3.html"),
                ("Exam slots and rooms", "Where and when", "setup-4.html"), ("Review and publish", "Nothing is public before this", "setup-5.html")]
@@ -922,7 +961,7 @@ def setup(n, body, nxt):
 setup(1, f"""<h2>Basics</h2>{hint("You add its exam schedules (1st, 2nd, 3rd) on the next step.")}
 <div class="formgrid"><div class="fld"><label for="n2">School year</label><select id="n2"><option>2028–2029</option><option>2029–2030</option></select>{hint("Shown to applicants as “SKSU TPT · SY 2028–2029”.")}</div>
 <div class="fld"><label for="n3">Exam fee</label><span class="money"><span>₱</span><input id="n3" inputmode="decimal" value="275.00"></span>{hint("Applicants see this on the payment step.")}</div>
-<div class="fld"><label for="n4">Payment to</label><input id="n4" value="[GCASH OR BANK ACCOUNT]"></div></div>
+</div><h3 style="margin:8px 0 0;font-size:15px">Payment methods</h3><div class="setrow"><span>At an SKSU cashier</span><span class="muted">Always on</span></div><div class="setrow"><span>Online, with receipt upload</span><a class="switch" href="#" aria-label="Online payment with receipt upload"></a></div><small class="hint">Turn on when the office has a GCash or bank account. Students then upload a receipt and an admin checks it in Payment review.</small>
 <label class="check"><input type="checkbox" checked>Copy campuses, programs, rooms, staff and message templates from SY 2027–2028</label>""", btn("Next: schedules", "setup-2.html", "primary"))
 setup(2, f"""<h2>Schedules</h2>
 {table(["Schedule", "Registration opens", "Closes", "Exam day", "Results", ""], [(f"<b>Schedule {i}</b>", f'<input type="date" value="{o}">', f'<input type="date" value="{c}">', f'<input type="date" value="{e}">', f'<input type="date" value="{r}">', btn("Remove", "#")) for i, o, c, e, r in [(1, "2028-01-03", "2028-02-26", "2028-03-11", "2028-04-14"), (2, "2028-02-27", "2028-04-08", "2028-04-22", "2028-05-12"), (3, "2028-04-09", "2028-05-13", "2028-05-27", "2028-06-16")]])}
@@ -1014,15 +1053,11 @@ admin("result-detail", "Result · 500214 Maria S. Dela Cruz", table(["Subject", 
       overlays=modal("fix", "warn", WARN, "Correct a score", '<div class="fld"><label for="f1">Science raw</label><input id="f1" value="31"></div><div class="fld"><label for="f2">Reason</label><input id="f2" value="Answer sheet re-checked by testing center"></div><p class="muted" style="margin:0">The standard score is recomputed. Old and new values stay in the history.</p>', btn("Cancel", "#") + btn("Save", "#", "primary")),
       states=[("fix", "Correction dialog")])
 
-EVENTS = [("Account created", "✓", "", "", "Welcome"), ("Application submitted", "✓", "✓", "", "Next: pay"), ("Upload needs redoing", "✓", "✓", "✓", "Photo or receipt problem"), ("Receipt received", "✓", "✓", "", "We’re checking"),
-          ("Payment approved", "✓", "✓", "✓", "Examinee no., pick an exam slot"), ("Payment rejected", "✓", "✓", "✓", "Reason, send again"), ("Exam slot booked · permit ready", "✓", "✓", "✓", "Room, seat, permit link"),
-          ("Schedule changed", "✓", "✓", "✓", "New room and seat"), ("Exam reminder (day before, 5 PM)", "✓", "✓", "✓", "Time, room, what to bring"), ("Marked absent", "✓", "✓", "", "Move to next schedule"),
-          ("Results released", "✓", "✓", "✓", "Link to result")]
-admin("messages", "Messages", f"""<div class="row"><div class="grow" style="display:flex;flex-direction:column;gap:16px;min-width:0"><div class="panel" style="padding:0;gap:0"><div class="head" style="padding:12px 16px"><h2>Questions from students</h2><span class="seg"><a class="on" href="#">Open · 3</a><a href="#">Answered · 128</a></span></div><div class="filters" style="padding:0 16px 12px"><input class="search" aria-label="Search questions" placeholder="Name or words in the question" style="flex:1"><select aria-label="About"><option>Any topic</option><option>My payment</option><option>My application</option><option>My exam slot</option><option>My result</option></select></div>{table(["Asked", "Student", "About", "Question", ""], [
-    ('<span class="mono muted">Jan 12 9:02 AM</span>', "Maria S. Dela Cruz", "My payment", '<span class="muted">I sent my GCash receipt this morning but it still says waiting.</span>', btn("Answer", "applicant.html#q")),
-    ('<span class="mono muted">Jan 12 10:40 AM</span>', "Jomar P. Abdullah", "My exam slot", '<span class="muted">Can I move to ACCESS campus? It is nearer.</span>', btn("Answer", "applicant.html#q")),
-    ('<span class="mono muted">Jan 12 1:15 PM</span>', "Rhea L. Sumagka", "My application", '<span class="muted">I typed my birth date wrong.</span>', btn("Answer", "applicant.html#q"))], sortable=("Asked", "Student"), active=("Asked", "asc"))}</div></div>
-<div class="panel" style="width:420px;flex-shrink:0"><h2>Send an announcement</h2>
+EVENTS = [("Account created", "✓", "", "", "Welcome"), ("Application submitted", "✓", "✓", "", "Next: pay at a cashier, with the code"), ("Sent back with remarks", "✓", "✓", "✓", "What to fix, then send again"),
+          ("Payment recorded at the cashier", "✓", "✓", "✓", "OR no., examinee no., pick an exam slot"), ("Exam slot booked · permit ready", "✓", "✓", "✓", "Date, report time, room, seat, permit link"),
+          ("Exam slot changed", "✓", "✓", "✓", "New date, report time, room and seat"), ("Exam reminder (day before, 5 PM)", "✓", "✓", "✓", "Report time, room, what to bring"), ("Marked absent", "✓", "✓", "", "Move to next schedule"),
+          ("Results released", "✓", "✓", "✓", "Link to result"), ("Receipt received · approved (online payment only)", "✓", "✓", "", "Only when online payment is turned on")]
+admin("messages", "Announcements", f"""<div class="row"><div class="panel" style="max-width:560px;flex:1"><h2>Send an announcement</h2>
 <div class="fld"><label for="m1">To</label><select id="m1"><option>Schedule 2 · approved, no exam slot (627)</option><option>Schedule 1 · absent (121)</option></select></div>
 <div class="fld"><label for="m2">Template</label><select id="m2"><option>Pick your exam slot</option></select></div>
 <div class="preview">Hi {{{{first_name}}}}, your payment is approved but you haven’t picked an exam slot yet. Pick one before Apr 11: sksu-tpt.com/slot</div>
@@ -1033,6 +1068,38 @@ admin("messages", "Messages", f"""<div class="row"><div class="grow" style="disp
       + toast("sent", "ok", OK, "Blast sent", "627 emails, 627 texts. 3 numbers bounced; see Recent.")
       + BELL_POP,
       states=[("q-open", "Bell dropdown"), ("confirm", "Send confirm"), ("sending", "Sending"), ("sent", "Sent")])
+
+TICKETS = [("#1046", "Rhea L. Sumagka", "Change my details", "Isulan", "Open", "12 min ago", "—"),
+           ("#1045", "Jomar P. Abdullah", "Exam slot", "ACCESS, Tacurong", "Open", "1 h ago", "Ana R."),
+           ("#1044", "Farida M. Ampatuan", "Payment", "Tacurong", "Open", "3 h ago", "—"),
+           ("#1042", "Maria S. Dela Cruz", "Payment", "Isulan", "Answered", "Jan 12", "Ana R."),
+           ("#0977", "Maria S. Dela Cruz", "Application", "Isulan", "Closed", "Jan 5", "Ben T.")]
+admin("support", "Support", f"""<div class="filters"><input class="search" aria-label="Search requests" placeholder="Name, request no. or words" style="flex:1;max-width:360px"><span class="seg"><a class="on" href="#">All · 856</a><a href="#">Open · 3</a><a href="#">Answered · 41</a><a href="#">Closed · 812</a></span>
+<select aria-label="Topic"><option>Any topic</option><option>Payment</option><option>Application</option><option>Change my details</option><option>Exam slot</option><option>Result</option><option>Other</option></select><select aria-label="Campus"><option>All campuses</option><option>Isulan</option><option>ACCESS, Tacurong</option></select><label class="chkrow"><input type="checkbox"> Assigned to me</label></div>
+{table(["No.", "Student", "Topic", "Campus", "Status", "Last update", "Assigned", ""], [(f'<span class="mono">{n}</span>', st, t, c, f'<span class="st{" live" if s_ == "Open" else ""}">{s_}</span>', u, a, '<span class="act">' + btn("View", "support-ticket.html") + "</span>") for n, st, t, c, s_, u, a in TICKETS], sortable=("No.", "Last update"), active=("Last update", "asc"))}
+{pager(1, 5, 856)}
+<div class="setrow"><span>Limits: 1 open request per student, 5 per school year, 1 reply a minute</span>{btn("Edit limits", "#limits", "sm")}</div>""",
+      overlays=modal("limits", "info", "✎", "Support limits", '<div class="formgrid"><div class="fld"><label for="l1">Requests per student per school year</label><input id="l1" type="number" min="1" value="5"></div><div class="fld"><label for="l2">Open requests at a time</label><input id="l2" type="number" min="1" value="1" disabled></div><div class="fld"><label for="l3">Replies per request per day</label><input id="l3" type="number" min="1" value="20"></div><div class="fld"><label for="l4">Close after no reply (days)</label><input id="l4" type="number" min="1" value="7"></div></div>' + hint("Also fixed: one reply a minute, 10–1,000 characters, one photo up to 2 MB (JPG or PNG), links shown as plain text."), btn("Cancel", "#") + btn("Save", "#limits-ok", "primary"))
+      + toast("limits-ok", "ok", OK, "Saved", "The new limits apply from now on. The change is in the activity log.")
+      + BELL_POP,
+      states=[("limits", "Support limits"), ("limits-ok", "Limits saved")])
+
+admin("support-ticket", "#1046 · Change my details", f"""<div class="row"><div class="grow" style="display:flex;flex-direction:column;gap:16px;min-width:0">
+<div class="thread"><div class="msg"><p>My birth date is wrong. It should be March 3, 2008, not March 8.</p><small>Rhea L. Sumagka · 12 min ago</small></div></div>
+<div class="fld"><label for="ar">Reply (goes to her app and email)</label><textarea id="ar" rows="4" style="border:1px solid var(--line);border-radius:6px;padding:10px;font:14px var(--sans)">We corrected your birth date to March 3, 2008. Your permit shows the new date.</textarea></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">{btn("Change details", "#change")}{btn("···", "#tmenu")}<span style="margin-left:auto"></span>{btn("Send reply", "#replied", "primary")}</div>
+{menu("tmenu", [("Assign to me", "#", "", ""), ("Close as duplicate", "#dup", "", "Links it to #1031"), ("Close", "#closed", "", ""), ("-", "", "", ""), ("Pause support for this student", "#mute", "danger", "7 days, with a reason")])}</div>
+<div style="width:340px;flex-shrink:0"><h2 style="font-size:15px;margin:0 0 8px">Rhea L. Sumagka</h2><div class="kv"><span>Status</span><span>Exam slot picked</span><span>Examinee no.</span><span class="mono">500233</span><span>Birth date</span><span>Mar 8, 2008</span><span>Campus</span><span>Isulan · Sat, Apr 25</span><span>Requests</span><span>2 of 5 this school year</span></div><a href="applicant.html">Open full record →</a></div></div>""",
+      active="support", crumb='<a href="support.html" class="muted">← Support</a>',
+      overlays=modal("change", "info", "✎", "Change details", '<p class="muted" style="margin:0">Requested by the student · request #1046</p><div class="fld"><label for="cb">Birth date</label><input id="cb" type="date" value="2008-03-03"></div><div class="fld"><label for="cr">Reason (goes in the history)</label><input id="cr" value="Student request #1046; matches PSA birth certificate"></div>', btn("Cancel", "#") + btn("Save", "#changed", "primary"))
+      + toast("changed", "ok", OK, "Details changed", "In her history and the activity log, linked to #1046.")
+      + toast("replied", "ok", OK, "Reply sent", "Rhea sees it in her app and by email. Status: Answered.")
+      + modal("dup", "info", "", "Close as duplicate?", '<div class="fld"><label for="dd">Same as request</label><input id="dd" value="#1031"></div>', btn("Cancel", "#") + btn("Close as duplicate", "#closed", "primary"))
+      + toast("closed", "ok", OK, "Request closed", "The student can open a new request.")
+      + modal("mute", "warn", WARN, "Pause support for Rhea?", '<div class="fld"><label for="mr">Reason (logged, shown to the student)</label><input id="mr" value="Repeated messages with links"></div><p class="muted" style="margin:0">For 7 days she can’t open requests or reply. She is told to visit or call the office.</p>', btn("Cancel", "#") + btn("Pause for 7 days", "#muted", "danger"))
+      + toast("muted", "ok", OK, "Support paused until Jan 19", "The reason is in the activity log.")
+      + BELL_POP,
+      states=[("change", "Change details (requested)"), ("changed", "Changed"), ("replied", "Reply sent"), ("dup", "Close as duplicate"), ("closed", "Closed"), ("mute", "Pause support"), ("muted", "Paused")])
 
 admin("email", "Email and SMS", f"""<div class="panel"><div class="head"><h2>Official email</h2>{btn("Edit", "#mail", "sm")}</div><div class="kv">
 <span>Sends from</span><span class="ink">SKSU Admission Office &lt;admission@sksu.edu.ph&gt; {B("ok", "Verified")}</span>
@@ -1135,7 +1202,7 @@ admin("landing", "Landing page", f"""<div class="head"><span class="muted"></spa
 <span>Exam fee</span><span>₱275.00 (from the school year)</span>
 <span>Campuses</span><span>7 campuses, 56 programs (from Campuses and programs)</span></div></div>
 <div class="panel"><div class="head"><h2>Requirements</h2>{btn("Add", "#req")}</div>
-{table(["", ""], [("2×2 ID photo, white background", btn("Edit", "#req")), ("Photo of the payment receipt, if you pay online", btn("Edit", "#req"))])}</div>
+{table(["", ""], [("2×2 ID photo, white background", btn("Edit", "#req")), ("Application code, shown at the cashier", btn("Edit", "#req"))])}</div>
 <div class="panel"><div class="head"><h2>On exam day, bring</h2>{btn("Add", "#req")}</div>
 {table(["", ""], [("Pencil No. 2 with eraser", btn("Edit", "#req")), ("Permit", btn("Edit", "#req")), ("School ID or any valid ID", btn("Edit", "#req")), ("Official receipt (if paid at the cashier)", btn("Edit", "#req"))])}</div>
 <div class="panel"><div class="head"><h2>Questions and answers</h2>{btn("Add", "#faq")}</div>
@@ -1256,15 +1323,13 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (P, "applicant/apply-review.html#submitting", "7b", "Submitting", "Don’t close the page.", True),
           (P, "applicant/apply-review.html#missing", "7c", "Something missing", "Names exactly what is missing.", True)]),
        ("Pay", [
-          (P, "applicant/payment.html#submitted", "8", "Pay the fee", "Online with a receipt photo, or at an SKSU cashier."),
-          (P, "applicant/payment.html#cashier", "8a", "Pay at the cashier", "A code to show; nothing to upload.", True),
-          (P, "applicant/payment.html#uploading", "8b", "Sending receipt", "Progress with Cancel.", True),
-          (P, "applicant/payment.html#ref-used", "8c", "Reference already used", "Caught before the office has to.", True),
-          (P, "applicant/payment-waiting.html#sent", "9", "Waiting for approval", "What was sent, and that an email will come."),
-          (P, "applicant/payment-rejected.html", "10", "Sent back: please fix", "What to fix, the office’s remarks, and Fix and send again."),
+          (P, "applicant/payment.html#submitted", "8", "Pay at an SKSU cashier", "A code to show, where to pay, office hours. Nothing to upload."),
+          (P, "applicant/payment.html#online", "8a", "Later: online payment", "Only when the office turns it on.", True),
+          (P, "applicant/payment-waiting.html#sent", "9", "Later: receipt sent", "Online payment only.", True),
+          (P, "applicant/payment-rejected.html", "10", "Sent back: please fix", "Photo or details, the office’s remarks, Send again."),
           (P, "applicant/payment-rejected.html#voided", "10a", "Payment cancelled", "An admin voided it; the reason, then pay again.", True),
           (P, "applicant/payment-rejected.html#closed-out", "10b", "Too late for this schedule", "Apply for the next schedule, details filled in.", True),
-          (D, "docs/email-approved.html", "11", "Email: approved", "Examinee number and one button: pick an exam slot."),
+          (D, "docs/email-approved.html", "11", "Email: payment recorded", "OR no., examinee number and one button: pick an exam slot."),
           (D, "docs/email-rejected.html", "12", "Email: sent back", "What to fix and a link straight back.")]),
        ("Exam slot and permit", [
           (P, "applicant/seat.html#approved", "13", "Pick an exam slot", "Live seats left per exam slot; full ones are greyed."),
@@ -1284,14 +1349,14 @@ board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
           (P, "applicant/result.html#choose", "19b", "Choose a program", "Only programs they qualify for.", True),
           (P, "applicant/result.html#chosen", "19c", "Program chosen", "The registrar contacts them.", True),
           (D, "docs/result-pdf.html", "20", "Result PDF", "Official copy with verify link.")]),
-       ("Notifications and questions", [
+       ("Notifications and support", [
           (P, "applicant/notifications.html", "21", "Notifications", "Every update in one list, newest first."),
-          (P, "applicant/notifications.html#ask", "21a", "Ask the office", "Pick a topic, write the question.", True),
-          (P, "applicant/notifications.html#asked", "21b", "Question sent", "", True),
-          (P, "applicant/notifications.html#reply", "21c", "Office reply", "Arrives as a notification and by email.", True),
+          (P, "applicant/support.html#new", "21a", "New support request", "Topic, message, optional photo.", True),
+          (P, "applicant/support-ticket.html", "21b", "Office reply", "A thread; reply or mark as solved.", True),
+          (P, "applicant/support.html#one-open", "21c", "Limit reached", "One open request; 5 per school year.", True),
           (D, "docs/sms.html", "22", "Text messages", "Every SMS, under 160 characters.")]),
        ("Account", [
-          (P, "applicant/profile.html", "23", "My account", "Change photo, choices or exam slot while allowed."),
+          (P, "applicant/profile.html", "23", "My account", "Details locked after approval; request a change through Support."),
           (P, "applicant/profile.html#photo", "23a", "Change photo", "", True),
           (P, "applicant/profile.html#history", "23b", "My history", "Every step with its date.", True),
           (D, "public/error.html", "24", "Error pages", "404, busy queue and server error, each with a next step.")])],
@@ -1420,20 +1485,22 @@ ADMIN_CYCLE = [
         ("admin/applicant.html#moved", "Moved, email sent", ""),
         ("admin/applicant.html#cancel", "Cancel application", "Type CANCEL; the exam slot is freed."),
         ("admin/applicant.html#photo", "Review an upload", "Ask for a new photo without losing the exam slot."),
+        ("admin/applicant.html#sendback", "Send back with remarks", "Photo or details; the applicant fixes it and sends it again."),
         ("admin/applicant.html#void", "Void a payment", "Reason required; exam slot released; applicant told and can pay again.")]),
     ("5 · Payments, numbers and permits", [
         ("cashier/console.html", "Cashier console", "Its own role and screen: search, fixed fee, OR no., Enter."),
         ("admin/cashier.html", "Cashier counters", "Every counter’s payments and voids."),
-        ("admin/payments.html", "Payment review (uploaded receipts)", "Queue, receipt and decision side by side; A and R keys."),
+        ("docs/email-approved.html", "What the applicant gets: approved", ""),
+        ("docs/email-rejected.html", "What the applicant gets: sent back", ""),
+        ("docs/permit-pdf.html", "Permit issued", "After the applicant picks an exam slot; QR links to the verify page.")]),
+    ("5b · When online payment is turned on (later)", [
+        ("admin/payments.html", "Payment review", "Queue, receipt and decision side by side; A and R keys."),
         ("admin/payments.html#approve", "Reused reference warning", "Caught before a double approval."),
         ("admin/payments.html#approved", "Approved, number issued", "Examinee no. comes from the school year counter; next one opens."),
         ("admin/payments.html#reject", "Send back with remarks", "What to fix, a reason and remarks go to the applicant."),
         ("admin/payments.html#rejected", "Sent back", ""),
-        ("admin/payments.html#conflict", "Two cashiers, one receipt", "Whoever is second is told and moved on."),
-        ("admin/payments.html#empty", "All caught up", ""),
-        ("docs/email-approved.html", "What the applicant gets: approved", ""),
-        ("docs/email-rejected.html", "What the applicant gets: sent back", ""),
-        ("docs/permit-pdf.html", "Permit issued", "After the applicant picks an exam slot; QR links to the verify page.")]),
+        ("admin/payments.html#conflict", "Two admins, one receipt", "Whoever is second is told and moved on."),
+        ("admin/payments.html#empty", "All caught up", "")]),
     ("6 · Exam day", [
         ("admin/checkin.html", "Check-in monitor", "Every room live: present, absent, pending, phone sync."),
         ("admin/checkin.html#call", "A proctor is offline", "Name, number, and assign someone else."),
@@ -1607,7 +1674,7 @@ groups = [
     ("Applicant (phone)", ["applicant/splash.html", "applicant/welcome-1.html", "applicant/welcome-2.html", "applicant/welcome-3.html"] + [f"applicant/{k}.html" for k, _ in FLOW]),
     ("Emails and printouts", ["docs/sms.html", "docs/email-approved.html", "docs/email-rejected.html", "docs/email-results.html", "docs/permit-pdf.html", "docs/result-pdf.html", "docs/seat-plan.html"]),
     ("Proctor (phone)", ["proctor/rooms.html", "proctor/checkin.html", "proctor/summary.html"]),
-    ("Admin", [f"admin/{k}.html" for k in ["dashboard", "search", "messages", "email", "system", "landing", "chair", "rooms", "cashier", "setup-1", "setup-2", "setup-3", "setup-4", "setup-5", "applications", "applicant", "payments", "schedules", "exam-slots", "checkin", "scores", "results", "result-detail", "reports", "report-view", "exports", "campuses", "staff", "audit", "account"]]),
+    ("Admin", [f"admin/{k}.html" for k in ["dashboard", "search", "support", "support-ticket", "messages", "email", "system", "landing", "chair", "rooms", "cashier", "setup-1", "setup-2", "setup-3", "setup-4", "setup-5", "applications", "applicant", "payments", "schedules", "exam-slots", "checkin", "scores", "results", "result-detail", "reports", "report-view", "exports", "campuses", "staff", "audit", "account"]]),
 ]
 flows = [("Applicant, start to result", "public/landing.html"), ("Payment review", "admin/payments.html"), ("Exam day", "proctor/rooms.html"), ("Scores to release", "admin/scores.html")]
 

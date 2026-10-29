@@ -48,12 +48,15 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 36 | Undo in the activity logs | New | **Cut** |
 | 37 | Welcome and splash screens in the app | New | Optional |
 | 38 | Applicant app tabs, bottom sheets, wallet permit | Asked (mobile look) | Keep |
-| 39 | Ask the office a question; the admin replies from the applicant's page | New (tptv3 has no way to ask) | Keep, simple: one open question at a time, reply in app and email |
+| 39 | Support requests (tickets): topic, message, optional photo; thread with the office; Open → Answered → Closed; one open at a time, 5 per school year, reply and size limits; admin search, filters, assign, close, change details, pause a student | Asked (tptv3 has no way to ask) | Keep, simple: no priorities or SLAs |
 | 40 | Official email setting: sender name, from address, reply-to, footer, test email | New | Keep (students should see the university address) |
 | 41 | Admin bell: new questions, finished imports, failed sends | New | Keep (small) |
 | 42 | Results import reads the Testing Center Excel as it is: picks the sheet, joins two header rows, ignores extra columns, remembers the column match | Old (Excel upload) | Keep (handles a new layout each year) |
 | 43 | Transferee test (2nd semester) in the same system: a schedule is set to Freshmen or Transferees; transferees give 2 choices plus current school and course; the program chairperson or dean approves before payment; cashier payment only; 1st and 2nd batch | Asked (today it is a paper walk-in form) | Keep |
 | 44 | Program chair login: sees only their program's transferee applicants, approves or declines with a reason | Asked (part of #43) | Keep, small |
+| 45 | Payment methods per school year: cashier always on; online receipt upload + admin review as a switch, **off for now** | Asked (no online payment yet) | Keep the switch; build online later |
+| 46 | Details locked after approval; changes only through a support request or an admin, with a reason | Asked | Keep |
+| 47 | Exam guide times shown wherever an exam day appears | Asked | Keep |
 
 **If you cut every "Cut" and "Optional"**, v1 is:
 

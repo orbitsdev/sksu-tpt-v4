@@ -14,7 +14,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | 2 | **A schedule is a day**: campus + date. The applicant picks campus and date, and the system assigns room and seat. Report and start times (for example 7:30 / 8:00 AM) are a guide printed on the permit, not a bookable slot. | It works like the Civil Service exam. It's simpler and matches how SKSU runs test days [Likely]. |
 | 3 | Two batches (1st batch 8:00 AM, 2nd batch 1:00 PM) stay as a switch, **off by default**, for a day that overflows. | tptv3 hard-coded times, which split seats in half (`slots / 2`). |
 | 4 | **School years and schedules are data, never code.** A school year has one or more exam schedules, each marked Freshmen or Transferees, each with its own registration, exam day(s), seats, scores and release. | tptv3 has year-specific routes, templates and database names. |
-| 5 | Two payment paths: the **cashier records** the payment at the counter (approved at once), or the applicant **uploads a receipt** and a reviewer checks it. | From the earlier tpt-recreate-v2 PRD; it removes most of the review queue. |
+| 5 | **For now, payment is at an SKSU cashier only**: the cashier records the OR no., the application is approved at once and the examinee number is issued. Online payment with a receipt upload and admin review is a **later switch per school year** ("Payment methods"), off by default. | The office has no online payment yet (user, 29 Oct). The online path stays designed so it can be turned on without new code. |
 | 6 | Notifications are a core module: in-app, email and SMS per event. | The user said notifying students is important. |
 | 7 | Stack: Laravel 12, Inertia, Vue 3, Tailwind 4, Nuxt UI or shadcn-vue, Pest, MySQL 8, Redis, queue worker. | The same stack as the team's euphoria v2 and the earlier tpt-recreate-v2 attempt. |
 | 8 | Look: SKSU deep green, mint and gold, the official seal, light mode. Applicant screens are a native-style mobile app; admin follows euphoria v2 admin patterns. | User feedback in this session. |
@@ -30,7 +30,7 @@ The mockups that go with this document are in `mockups/`. Open `mockups/index.ht
 | Rooms | Buildings and rooms per campus with exam seats; reused every school year; added one by one | `admin/rooms` |
 | Schedule days | Campus + date + rooms → seats; guide times; optional two batches | `admin/exam-slots` |
 | Applicants and applications | Google sign-in; profile, school, 3 program choices (2 for transferees); one status per application (see the status list in section 7) | `applicant/*`, `admin/applications`, `admin/applicant` |
-| Uploads | Only what is used: 2×2 ID photo (for the permit) and the payment receipt (online payment only); transferees add their grades for the chairperson. Compressed on the phone; reviewer can ask for a new one | `applicant/apply-*`, `admin/applicant#photo` |
+| Uploads | Only what is used: 2×2 ID photo (for the permit), and the payment receipt only when online payment is turned on; transferees add their grades for the chairperson. Compressed on the phone; reviewer can ask for a new one | `applicant/apply-*`, `admin/applicant#photo` |
 | Payments | Cashier records the OR number (instant), or upload and review; duplicate-reference guard | `admin/cashier`, `admin/payments` |
 | Permits | Examinee number from the school-year counter; wallet-style permit and PDF with QR; public verify page | `applicant/permit`, `docs/permit-pdf`, `public/verify` |
 | Exam day | Optional, off by default: offline QR check-in on the proctor's phone, information only. Absent is decided by the score import | `proctor/*`, `admin/checkin` |
@@ -173,15 +173,37 @@ One status per application. These exact names are used on every screen, in filte
 | Submitted | The moment of submitting (not a resting state) | Waiting for chairperson (transferees) or Waiting for payment (freshmen) |
 | Waiting for chairperson | Transferee; the program chairperson checks grades and slots | Waiting for payment, or Declined |
 | Declined | The chairperson said no, with a reason (the 2nd choice gets a turn) | Waiting for chairperson (2nd choice), or Cancelled |
-| Waiting for payment | Pay online (upload receipt) or at the cashier | In review (online), or Approved (cashier) |
-| In review | The admin checks the whole submission and receipt | Approved, or Sent back |
-| Sent back | Remarks say what to fix; the student fixes it and sends again | In review |
-| Approved | Paid; examinee number issued | Exam slot picked |
+| Waiting for payment | Pay at an SKSU cashier (online upload only if turned on) | Approved (cashier), or In review (online) |
+| In review | Online payment only: the admin checks the receipt | Approved, or Sent back |
+| Sent back | The admin sent back the photo or details (any time) or the receipt (online); the student fixes it and sends again | Back to the status it had |
+| Approved | Paid at the cashier; examinee number issued. **Details are locked from here** | Exam slot picked |
 | Exam slot picked | Has a campus and date (or batch), room and seat; permit ready | Scored, or Absent |
 | Scored | Score imported from the Testing Center file | Program chosen |
 | Absent | Had a slot but no score in the file | Draft in a later schedule (if allowed) |
 | Program chosen | Picked one program they qualify for | — |
 | Cancelled | Cancelled by the student or an admin, with a reason | — |
+
+**Locked after approval.** Once an application is Approved (paid at the cashier, examinee number issued; for transferees also after the chairperson approves), the student can't change their details. The app shows them read-only with "Locked after approval. To change something, ask the admission office." and a **Request a change** support request. Only an admin can edit details after approval, with a reason; a change asked by the student shows its request number. Every change goes in the history and the activity log. Changing the exam slot after approval works only through a request, an admin's "Move exam slot", or the school year's "change once until a deadline" setting.
+
+### Support requests
+
+A small ticket system for questions and change requests (replaces "Ask the office").
+
+| Rule | Value |
+|---|---|
+| Who | Signed-in applicants with an application |
+| Topics | Payment, Application, Change my details, Exam slot, Result, Other |
+| Statuses | Open → Answered → Closed. A student reply reopens it; it closes by itself after 7 days with no reply |
+| Open at a time | 1. A new request only after the previous one is closed (by the office, or the student marks it solved) |
+| Per school year | 5 per student. After that: "You've used your 5 requests for this school year. Visit or call the Guidance and Testing Center." |
+| Replies | 1 a minute, 20 per request per day |
+| Message | 10–1,000 characters; links shown as plain text |
+| Photo | 1, optional, JPG or PNG, up to 2 MB, made smaller on the phone |
+| Admin | Search, filters (status, topic, campus, assigned to me), oldest waiting first; reply, assign, close, close as duplicate, change details (with reason, linked to the request), pause a student's support for 7 days with a reason (logged) |
+
+### Exam times
+
+Times are a guide, not a booking rule, but students always see them: on the exam slot picker ("Sat, Apr 25 · report by 7:30 AM"), the confirm sheet, the permit ("Report by 7:30 AM · exam starts 8:00 AM"), Home, the "Exam slot booked" notification and the reminder SMS/email. Transferee batches: 1st batch report by 7:30 AM, starts 8:00 AM; 2nd batch report by 12:30 PM, starts 1:00 PM.
 
 ## 8. Flows
 
@@ -350,7 +372,7 @@ v4 handles it in the same system:
 | Schedule type | Freshmen | Transferees (set when the schedule is created) |
 | Apply | Online: 3 program choices | Online or encoded by staff: 2 choices, plus current school and current course, and the transcript or certificate of grades |
 | Approval before paying | — | The program chairperson or dean of the 1st-choice program approves (slot available, grades OK) or declines with a reason |
-| Pay | Online receipt or cashier | Cashier only |
+| Pay | Cashier (online later, if turned on) | Cashier only |
 | Exam | Exam slots by campus and date | One venue, 1st or 2nd batch |
 | Examinee no., permit, results, choosing a program | Same | Same |
 

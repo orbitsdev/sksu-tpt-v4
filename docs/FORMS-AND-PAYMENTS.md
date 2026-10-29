@@ -71,10 +71,12 @@ Every status change also writes an `application_events` row (who, when, why).
 
 Scholars and indigent applicants may be exempt.
 
+**Decision (29 Oct): cashier only for now.** The office has no online payment yet. The school year has a "Payment methods" setting: cashier always on, online receipt upload off. Option 2 below stays designed so it can be turned on later without new code.
+
 **Recommended, simplest that works:**
 
-1. **The cashier records it in the system** (preferred). The applicant shows the application code, the cashier types the OR number, and the payment is approved at once. Nothing to review.
-2. **Online or bank payment with a proof upload.** The applicant enters method, reference no., date and amount, and adds a screenshot or slip. A reviewer checks it against the bank or GCash statement.
+1. **The cashier records it in the system** (the only way for now). The applicant shows the application code, the cashier types the OR number, and the payment is approved at once. Nothing to review.
+2. **Later, when turned on: online or bank payment with a proof upload.** The applicant enters method, reference no., date and amount, and adds a screenshot or slip. A reviewer checks it against the bank or GCash statement.
 3. **Waiver.** An admin waives the fee with a reason (indigent, scholar). The applicant is approved, and it's counted separately in reports.
 
 **Checks built in:**
@@ -86,7 +88,7 @@ Scholars and indigent applicants may be exempt.
 
 **Rejection and resubmission:** the reason comes from a fixed list plus a note. The applicant gets a text and email and can resend from the same screen. Nothing else is lost.
 
-**Refunds:** recorded by an admin with a reason (paid twice, schedule cancelled); the money goes back through the cashier. The status stays correct and the Payments report shows it.
+**Refunds:** cut for v1 (see the scope check); accounting handles them.
 
 **Trade-offs:**
 

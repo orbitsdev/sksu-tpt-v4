@@ -1007,3 +1007,20 @@ body.phone-page{background:#e9ebea;background-image:none}
 .pubnav{box-shadow:none!important}
 .pub footer.pfoot{background:#fff!important;color:var(--muted)!important;border-top:1px solid var(--line)!important}
 .pub footer.pfoot a{color:var(--muted)!important}
+
+/* pickers: search on top, campus as one select, grouped by campus; no chip rows with scrollbars */
+.phone .psearch,.phone .pselect{width:100%;box-sizing:border-box;height:48px;border:1px solid #c9cdca;border-radius:8px;padding:0 14px;font:16px var(--sys,system-ui);background:#fff;margin:0 0 10px}
+.phone .psearch{padding-left:40px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23666' stroke-width='2'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m13 13 4 4'/%3E%3C/svg%3E") 14px center no-repeat}
+.phone .plist .off{opacity:.45;pointer-events:none}
+.phone .filter{scrollbar-width:none}.phone .filter::-webkit-scrollbar{display:none}
+.phone .filter a.on{background:#1f2321;color:#fff;border-color:#1f2321}
+
+/* support thread: plain messages, mine on the right; no bubbles inside cards */
+.thread{display:flex;flex-direction:column;gap:14px;margin:8px 0 16px}
+.thread .msg{max-width:85%;align-self:flex-start;padding:10px 12px;border-radius:12px;background:#f1f2f1}
+.thread .msg.me{align-self:flex-end;background:#fff;border:1px solid #d9dcda}
+.thread .msg p{margin:0 0 4px;font-size:15px;line-height:1.45}
+.thread .msg small{font-size:12px;color:#6b716d}
+
+/* program picker search: keep the icon and its padding over the generic phone input rule */
+.phone input.psearch,.phone .psearch{padding-left:40px!important;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23666' stroke-width='2'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m13 13 4 4'/%3E%3C/svg%3E") 14px center no-repeat!important}

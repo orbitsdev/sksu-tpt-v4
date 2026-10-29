@@ -62,6 +62,7 @@ svg.wires{position:absolute;left:0;top:0;z-index:1;pointer-events:none;overflow:
 .node .new{position:absolute;bottom:-9px;right:8px;background:var(--gold);color:var(--gold-ink);font:700 10px Geist,sans-serif;padding:2px 6px;border-radius:99px}
 .node.dec{--c:#a87900;border:1.5px solid var(--gold);background:var(--gold-tint);text-align:center;max-width:200px;border-radius:999px;padding:9px 14px}
 .node.dec .t:before{content:"◆ ";color:#c99a00}
+.node.later{border-style:dashed;opacity:.7}.node .new.later{background:#e6e8e7;color:#4a514d}
 .node.end{border-style:dashed;border-color:#f3c4c4;border-left:5px solid var(--red);background:var(--red-tint)}
 .node.sel{box-shadow:0 0 0 3px var(--mint),0 6px 18px rgba(11,77,44,.18)}
 .dim .node:not(.lit){opacity:.28}
@@ -179,44 +180,44 @@ const NODES = [
     links: [["Setup step 5: Review and publish", "admin/setup-5.html"], ["Publish a schedule", "admin/schedules.html#publish"], ["Unpublish a schedule", "admin/schedules.html#unpublish"]] },
 
   // 2 · Apply and pay (same as tptv3, plus the cashier counter)
-  { id: "apply", row: 9, col: "C", actor: "applicant", t: "Applies and submits", s: "Profile, school, documents, 3 programs",
+  { id: "apply", row: 9, col: "C", actor: "applicant", t: "Applies and submits", s: "Details, school, 2×2 photo, 3 programs",
     what: "Signs in with Google or an email link. Fills in about you, school, documents (2×2 photo, Form 138, valid ID) and 3 program choices, then submits. Same steps as tptv3.",
     status: ["Draft", "Submitted"], notify: "Applicant: “Application submitted” (in app, email)",
     links: [["About you", "applicant/apply-personal.html"], ["School and documents", "applicant/apply-school.html"], ["Programs", "applicant/apply-programs.html"], ["Review and submit", "applicant/apply-review.html"]] },
-  { id: "ask", row: 9, col: "R", actor: "applicant", t: "Asks the office a question", s: "Any time, from the app", isNew: true,
+  { id: "ask", row: 9, col: "R", actor: "applicant", t: "Opens a support request", s: "Questions or a change to details", isNew: true,
     note: "New: tptv3 has no way to ask. Listed in docs/SCOPE-CHECK.",
-    what: "From Notifications, the applicant picks a topic (payment, application, exam slot, result, other) and writes the question. One open question at a time, so the office isn't flooded.",
-    links: [["Ask a question", "applicant/notifications.html#ask"], ["Question sent", "applicant/notifications.html#asked"]] },
-  { id: "answer", row: 10, col: "R", actor: "admin", t: "Office answers", s: "Reply goes to the app and email",
-    what: "New questions appear in the admin bell and in Messages, oldest first. The admin answers from the applicant's page, where the application, payment and history are on screen. The reply goes in the history.",
-    notify: "Applicant: “Reply from the admission office” (in app, email)",
-    links: [["Open questions", "admin/messages.html"], ["Answer on the applicant's page", "admin/applicant.html#q"], ["Reply the applicant sees", "applicant/notifications.html#reply"], ["Admin bell", "admin/messages.html#q-open"]] },
+    what: "From Notifications or Account, the applicant opens a support request: topic (payment, application, change my details, exam slot, result, other), a message and an optional photo. Limits stop abuse: one open request at a time, 5 per school year, one reply a minute, 10–1,000 characters, links shown as plain text.",
+    links: [["New request", "applicant/support.html#new"], ["Request a change", "applicant/support.html#new-change"], ["Limit reached", "applicant/support.html#one-open"]] },
+  { id: "answer", row: 10, col: "R", actor: "admin", t: "Office answers the request", s: "Open → Answered → Closed",
+    what: "New requests appear in the bell and on the Support page, oldest waiting first. The admin replies beside the applicant's key details, can change details for a change request (with a reason, linked to the request), assign, close, close duplicates, or pause a student's support for 7 days. A student reply reopens it; it closes by itself after 7 days.",
+    notify: "Applicant: “Reply to your request #1042” (in app, email)",
+    links: [["Support list", "admin/support.html"], ["One request", "admin/support-ticket.html"], ["Change details", "admin/support-ticket.html#change"], ["What the applicant sees", "applicant/support-ticket.html"]] },
   { id: "transferee", row: 10, col: "L", actor: "admin", t: "Transferee schedule: chairperson approves", s: "Then pay at the cashier", isNew: true,
     note: "New: today a paper walk-in form signed by the chairperson.",
     what: "Only on a schedule set for transferees (2nd semester). The applicant picks 2 programs and uploads their grades. The program chairperson of the 1st choice approves (slot available, grades OK) or declines with a reason; a decline passes to the 2nd choice. Approved applicants pay ₱275 at the cashier.",
     status: ["Submitted", "Chairperson approved"], notify: "Applicant: approved or declined, with the reason (in app, email)",
     links: [["Program chair page", "admin/chair.html"], ["Waiting for the chairperson", "applicant/payment-chair.html"], ["Transferee schedule form", "admin/schedules.html#round-t"]] },
   { id: "pay", row: 10, col: "C", actor: "dec", t: "How do they pay?",
-    what: "Online with a receipt upload (as in tptv3), or at the cashier counter (new)." },
-  { id: "cashier", row: 11, col: "L", actor: "cashier", t: "Pays at the cashier counter", s: "OR no. typed in, approved at once", isNew: true,
-    what: "The only new step. The cashier finds the applicant by name or code, types the official receipt number and presses Enter. It counts as approved straight away, so there's nothing to review.",
+    what: "For now, at an SKSU cashier only. Online payment with a receipt upload (as in tptv3) is a later switch in the school year settings; its steps are drawn dashed." },
+  { id: "cashier", row: 11, col: "L", actor: "cashier", t: "Pays at the cashier counter", s: "For now the only way · approved at once", isNew: true,
+    what: "The way to pay for now. The cashier finds the applicant by name or code, types the official receipt number and presses Enter. It counts as approved straight away, so there's nothing to review.",
     bullets: ["Each OR number can only be used once.", "Already paid and not found are caught."],
     status: ["Submitted", "Approved"], links: [["Cashier console", "cashier/console.html"], ["Paid", "cashier/console.html#done"]] },
-  { id: "upload", row: 11, col: "C", actor: "applicant", t: "Uploads the receipt", s: "Reference no. + receipt",
-    what: "Pays online or at a bank, then enters the reference number and uploads the receipt. Same as tptv3's payment section.",
+  { id: "upload", row: 11, col: "C", actor: "applicant", t: "Uploads the receipt", s: "Later: when online payment is on", later: true,
+    what: "Only when online payment is turned on for the school year. Pays online or at a bank, then enters the reference number and uploads the receipt. Same as tptv3's payment section.",
     status: ["Submitted", "For review"], notify: "Applicant: “Receipt received” (in app, email)",
     links: [["Payment screen", "applicant/payment.html"], ["Waiting for review", "applicant/payment-waiting.html"]] },
-  { id: "check", row: 12, col: "C", actor: "dec", t: "Admin approves?",
-    what: "Same as tptv3's View payment: the admin sees the application, photo, documents and receipt on one screen, then approves or sends it back with remarks. The reference must be unused. Two admins can't decide the same one.",
+  { id: "check", row: 12, col: "C", actor: "dec", t: "Admin approves the receipt?", later: true,
+    what: "Only when online payment is on. Same as tptv3's View payment: the admin sees the application, photo, documents and receipt on one screen, then approves or sends it back with remarks. The reference must be unused. Two admins can't decide the same one.",
     links: [["Payment review queue", "admin/payments.html"], ["One applicant", "admin/applicant.html"], ["Two reviewers conflict", "admin/payments.html#conflict"]] },
-  { id: "payreject", row: 12, col: "R", actor: "admin", t: "Sent back with remarks", s: "Student fixes that part and sends again",
-    what: "The admin picks what to fix (receipt, photo, details or documents), a reason, and types remarks. The applicant fixes that part and sends it again. Nothing else is lost. If the schedule closes first, they can apply for the next one.",
+  { id: "payreject", row: 12, col: "R", actor: "admin", t: "Sent back with remarks", s: "Photo or details, any time · receipt when online",
+    what: "From the applicant's page, the admin can send back the photo or details at any time. When online payment is on, a bad receipt is sent back the same way. The admin picks what to fix, a reason, and types remarks. The applicant fixes that part and sends it again. Nothing else is lost. If the schedule closes first, they can apply for the next one.",
     status: ["For review", "Sent back"], notify: "Applicant: the remarks (in app, email, SMS)",
-    links: [["Send back dialog", "admin/payments.html#reject"], ["What the applicant sees", "applicant/payment-rejected.html"], ["Email", "docs/email-rejected.html"]] },
+    links: [["Send back from the applicant's page", "admin/applicant.html#sendback"], ["Receipt version (online)", "admin/payments.html#reject"], ["What the applicant sees", "applicant/payment-rejected.html"], ["Email", "docs/email-rejected.html"]] },
   { id: "approved", row: 13, col: "C", actor: "system", t: "Approved: examinee no. issued", s: "From the school year counter",
-    what: "Same as tptv3: approval issues the examinee number. In v4 the number comes from a counter, so two people never get the same one.",
-    status: ["For review", "Approved"], notify: "Applicant: “Payment approved, exam no. 500214” (in app, email, SMS)",
-    links: [["Approved toast", "admin/payments.html#approved"], ["Approval email", "docs/email-approved.html"]] },
+    what: "When the cashier records the payment, the application is approved and the examinee number is issued (in tptv3 this happened when the admin approved the receipt). The number comes from a counter, so two people never get the same one. From here the student's details are locked; changes go through Support.",
+    status: ["Submitted", "Approved"], notify: "Applicant: “Payment recorded, exam no. 500214” (in app, email, SMS)",
+    links: [["Cashier: recorded", "cashier/console.html#done"], ["Email", "docs/email-approved.html"]] },
 
   // 4 · Exam slot and permit
   { id: "pick", row: 15, col: "C", actor: "applicant", t: "Picks an exam slot", s: "Campus + date with seats left",
@@ -269,9 +270,9 @@ const NODES = [
 // [from, to, label, how, offset]. how: down (default) | side (same row) | drop (down the source column, into the target's side) | loopL / loopR (around the outside)
 const EDGES = [
   ["season", "rounds"], ["rounds", "campus"], ["campus", "rooms"], ["rooms", "days"], ["days", "open"], ["open", "apply"],
-  ["apply", "pay"], ["apply", "ask", "", "side"], ["apply", "transferee", "Transferees"], ["transferee", "cashier"], ["ask", "answer"], ["pay", "cashier", "At the counter"], ["pay", "upload", "Online / bank"],
-  ["upload", "check"], ["check", "payreject", "Fix", "side"], ["check", "approved", "Approve"],
-  ["payreject", "upload", "Sends again", "loopR", 30], ["cashier", "approved", "", "drop"],
+  ["apply", "pay"], ["apply", "ask", "", "side"], ["apply", "transferee", "Transferees"], ["transferee", "cashier"], ["ask", "answer"], ["pay", "cashier", "At the cashier"], ["pay", "upload", "Online (later)", "", 0, true],
+  ["upload", "check", "", "", 0, true], ["check", "payreject", "Fix", "side", 0, true], ["check", "approved", "Approve", "", 0, true],
+  ["payreject", "upload", "Sends again", "loopR", 30, true], ["cashier", "approved", "", "drop"],
   ["approved", "pick"], ["pick", "seat"], ["seat", "permit"], ["permit", "exam"], ["exam", "checkin", "", "sideDash"],
   ["exam", "import"], ["import", "absent", "No score"], ["import", "approve", "Has a score"],
   ["absent", "pick", "Next schedule", "loopL", 22],
@@ -288,7 +289,7 @@ const BETTER = {
   days: "tptv3 split seats in half for AM/PM in the code. Here each slot uses real rooms with real seat counts.",
   open: "Same Activate / Deactivate idea, but two schedules can never be open by mistake, and the close date stops registration by itself.",
   apply: "Clear fields with limits shown, autosave, and the photo is shrunk on the phone (tptv3 kept photos up to 100 MB: 26 GB). One application per schedule, so a student can apply again next schedule (tptv3 allowed one per account).",
-  ask: "tptv3 has no way to ask the office inside the system. Here the question and answer sit on the applicant's page.",
+  ask: "tptv3 has no way to ask the office inside the system. Here requests are tickets with limits, and change requests are logged against the change they caused.",
   upload: "The same reference number can't be used twice.",
   cashier: "No receipt photo to check: the OR number is the proof, and each one can only be used once.",
   check: "Two admins can't decide the same application. Every approve or reject is logged with who, when and the remarks.",
@@ -323,8 +324,8 @@ function renderGrid() {
   const parts = PHASES.map(p => `<div class="phase" style="grid-row:${p.row}"><span class="n">${p.n}</span><b>${esc(p.title)}</b></div>`);
   for (const n of NODES) {
     const cls = n.actor === "dec" ? "dec" : n.actor === "end" ? "end a-end" : `a-${n.actor}`;
-    parts.push(`<button type="button" class="node ${cls} ${n.col}" style="grid-row:${n.row}" data-id="${n.id}">`
-      + (n.isNew ? '<span class="new">NEW</span>' : "")
+    parts.push(`<button type="button" class="node ${cls} ${n.col}${n.later ? " later" : ""}" style="grid-row:${n.row}" data-id="${n.id}">`
+      + (n.later ? '<span class="new later">LATER</span>' : n.isNew ? '<span class="new">NEW</span>' : "")
       + (n.actor !== "dec" ? `<span class="who">${ACTOR[n.actor]}</span>` : "")
       + `<span class="t">${esc(n.t)}</span>` + (n.s ? `<span class="s">${esc(n.s)}</span>` : "") + "</button>");
   }
@@ -367,11 +368,11 @@ function drawWires() {
   svg.setAttribute("width", diagram.scrollWidth);
   svg.setAttribute("height", diagram.scrollHeight);
   const out = [];
-  for (const [from, to, label, how, off] of EDGES) {
+  for (const [from, to, label, how, off, dash] of EDGES) {
     const pts = route(box(from), box(to), how, off || 0);
     const d = "M" + pts.map(p => p.join(" ")).join(" L");
     const hot = selected === from || selected === to;
-    const loop = how === "loopL" || how === "loopR" || how === "sideDash";
+    const loop = how === "loopL" || how === "loopR" || how === "sideDash" || dash;
     out.push(`<path class="halo" d="${d}"/><path class="wire${loop ? " loop" : ""}${hot ? " hot" : ""}" d="${d}" marker-end="url(#${hot ? "arrow-hot" : "arrow"})"/>`);
     if (label) {
       const [x, y, anchor, vertical] = labelPoint(pts, how);

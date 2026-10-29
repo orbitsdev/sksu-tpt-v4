@@ -46,6 +46,9 @@ Never a dialog on top of a dialog. Never a step form for something done every da
 - Labels above the field, help or error text under it. Required fields are not marked with stars; optional ones say "(optional)".
 - **Every list that can grow** has search, the filters people actually use (schedule, campus, status), sorting on the columns that matter (name, date, oldest waiting), and pages of 25. Short fixed lists (under about 10 rows) don't need them.
 
+- **Locked after approval:** once an application is approved, the student's details are read-only with a short lock note and a **Request a change** link to Support. Only admins edit after that, always with a reason.
+- **Exam times** are shown wherever an exam day appears ("Sat, Apr 25 · report by 7:30 AM"), with one line that times are a guide.
+
 ## 6. Every screen has these states
 
 Loading (grey placeholders), empty (what to do first), error (what went wrong and what to do), success (toast), no permission (who to ask). The mockups show them in the yellow "States on this page" bar.

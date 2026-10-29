@@ -22,7 +22,7 @@ Everything changed in the mockups and docs today. ✅ = done.
 ## New on purpose (listed in the scope check)
 
 - ✅ **Cashier counter**: find the person, type the OR no., press Enter. Counter and Applicants are now **one screen** (list left, payment right). Tabs: Counter · Paid · Info.
-- ✅ **Student questions**: "Ask the admission office" from Notifications; the admin answers on the applicant's page; the reply arrives in the app and by email.
+- ✅ **Support requests** (was "Ask the admission office"): see below.
 - ✅ **Official email setting** (sender, reply-to, footer, test email).
 - ✅ **Admin bell**: small dropdown with new questions, finished imports, failed messages.
 - ✅ **Landing page settings**: announcement, requirements, questions and answers, contact.
@@ -78,6 +78,16 @@ Everything changed in the mockups and docs today. ✅ = done.
 - ✅ Search, filters, sortable columns and pages of 25 on every list that can grow.
 - ✅ Public landing, sign-in and the proctor app in the same calm style.
 
+## Payment, support and locking (later on Oct 29)
+
+- ✅ **Cashier only for now.** Students see "Pay at an SKSU cashier" with their application code, where to pay and office hours. Online payment (receipt upload + admin review) is a **switch per school year, off**; its screens stay as "later" states and dashed steps in the flow. Payment review is out of the sidebar.
+- ✅ Dashboard shows **Paid today** at the cashiers; "Sent back with remarks" is now about the photo or details, from the applicant's page.
+- ✅ **Support requests** replace "Ask the office": topic, message, optional photo, a thread with the office, Open → Answered → Closed. Admin Support page with search, filters, assign, close, change details, pause a student.
+- ✅ **Support limits:** one open request at a time, 5 per school year, 1 reply a minute and 20 a day, 10–1,000 characters, one photo up to 2 MB, links as plain text.
+- ✅ **Details locked after approval**; changes through a support request or an admin, with a reason.
+- ✅ **Exam guide times** on the slot picker, confirm sheet, permit, Home and notifications.
+- ✅ Program picker: search with an icon, campus as one dropdown, grouped by campus, chosen programs greyed out.
+
 ## Docs
 
 - ✅ **UI rules** (new): when to use a page, dialog, drawer or step form; buttons; what happens after a click; errors; long-term rules.
@@ -92,7 +102,7 @@ Everything changed in the mockups and docs today. ✅ = done.
 2. Can an absent examinee take a later schedule without paying again?
 3. Can someone with a result retake in the same school year?
 4. Transferees: if the 1st-choice chairperson declines, does the 2nd choice get a turn?
-5. Online payment accounts (GCash / Maya / Landbank).
+5. When online payment is added later: which accounts (GCash / Maya / Landbank)?
 6. Will cashiers type the OR no. in the system?
 7. Cut-off score per program; official stanine labels.
 8. Official sender email; SMS provider and budget.
