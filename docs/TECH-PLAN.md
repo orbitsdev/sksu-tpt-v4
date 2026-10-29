@@ -47,6 +47,30 @@ flowchart LR
 - Every action is rate-limited per student; support has its own limits.
 - **Load test** with 10,000 simulated students (k6) on a copy of the server before going live.
 
+## 3b. Best practices for speed (how we build every screen)
+
+**Server (Laravel 13)**
+- Only send what the screen shows: small props per page, never whole records or lists of thousands.
+- Database: indexes on every column we filter or sort by (status, schedule, campus, examinee no., OR no.); load related data together (no N+1 queries); lists paged 25 at a time.
+- Cache what many people read: programs, campuses, exam slots, a student's status and result summary (Redis), cleared when the data changes.
+- Heavy work always in the queue (PDFs, emails, Excel), with queue routing so PDFs never block emails; Horizon to watch it.
+- Production settings: config, routes, views and events cached; PHP OPcache on; logs rotated.
+- Rate limits per student and per action; one database transaction (with a lock) for payments and examinee numbers.
+
+**Screens (Inertia 3 + Vue 3)**
+- Each page loads only its own code (code splitting); the student app keeps its screens on the phone (PWA cache).
+- **Deferred props** for slow parts of a page (e.g. charts on the dashboard) so the page shows first.
+- **Infinite scroll / paging** for long lists; **polling only on screens that need it**, paused when the tab is in the background.
+- **Optimistic updates** for quick actions (e.g. marking a ticket solved), rolled back if the server says no.
+- **Prefetch** the next likely page (e.g. hovering a row) so it opens instantly.
+
+**Phone (PWA)**
+- App files cached on the phone; images small (photos shrunk before upload, about 200 KB); no heavy libraries; fonts kept to one family.
+- The permit and the student's own status work offline.
+
+**Check it**
+- Lighthouse score on a low-end Android profile before each release; a load test with 10,000 simulated students before go-live; Laravel's own performance tools during development.
+
 ## 4. Server: the existing TPT server
 
 Decision: v4 runs on the **existing TPT server** (128.199.96.48), next to tptv3 until the switch.
