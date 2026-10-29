@@ -445,3 +445,10 @@ System status → Maintenance (super admin only). Each switch asks for a reason 
 | Hide results | Students stop seeing results (Results page control) | Everything else |
 
 Scheduled maintenance: a date and time window plus a message; students see a notice on Home before it starts. While the student app is paused, the admin header shows a thin line "Student app paused · Resume".
+
+
+## Where, when creating
+
+- The schedule form has a **Where** section: one checkbox per campus that holds the exam (all ticked by default), each showing its exam rooms and seats from Rooms. Saving creates one exam slot per campus and exam day with that campus's rooms; staff adjust them on Exam slots.
+- A transferee schedule picks one campus and one room (venue).
+- **Check-in** is a per-schedule switch (off by default). When on, the live monitor opens from that schedule's row and from Exam slots, and the Dashboard shows the count on exam day.

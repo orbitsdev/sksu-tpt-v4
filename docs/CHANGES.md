@@ -130,6 +130,9 @@ Everything changed in the mockups and docs today. ✅ = done.
 
 - ✅ Maintenance controls in System status: pause the student app, new applications or cashier payments, schedule maintenance; each says what stops and what still works.
 
+- ✅ Campus visible when creating: the schedule form has a Where section (campus checkboxes with rooms and seats, "Creates 7 exam slots · 2,950 seats"); transferee form picks one campus and room; New school year step 2 shows Where, step 4 is grouped by campus.
+- ✅ Check-in is per schedule (Edit schedule → "Check-in at the door", off by default), no longer in the sidebar; reached from the schedule row and Exam slots; the Dashboard shows a check-in line on exam day.
+
 ## Decided
 
 - ✅ **Student app = installable web app (PWA).** Students install it from the website (Android: Install; iPhone: Share → Add to Home Screen). No APK, no Expo Go, no store accounts. One system for phones and computers.

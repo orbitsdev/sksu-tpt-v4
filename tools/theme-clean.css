@@ -368,3 +368,8 @@ main:has(#info:target) .ptabs a[data-pane="info"],main:has(#settings:target) .pt
 .pubmaint{display:none;position:fixed;inset:0;z-index:90;background:#fff;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px}
 .pubmaint:target{display:flex}.pubmaint p{margin:0;color:#3f4542}
 .maintscreen .gh{text-align:center}
+.examday{display:none;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14px}.examday:target{display:block}
+.fsec{margin:10px 0 0;font-size:14px;color:var(--ink)}
+.campchecks{display:grid;grid-template-columns:1fr;gap:6px}
+.dialog:has(.campchecks){width:600px;max-height:88vh;overflow:auto}
+.fld label.chkrow{text-transform:none;letter-spacing:0;font-weight:400;font-size:14px;color:var(--ink)}
