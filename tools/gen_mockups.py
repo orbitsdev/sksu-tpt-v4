@@ -265,19 +265,19 @@ doc("public/landing.html", "Home", f"""<div class="pub">{pubnav()}
 <dt>Schedule 2</dt><dd>Registration Mar 1 – Apr 10</dd><dd>Exam Sat–Sun, Apr 25–26</dd>
 <dt>Testing fee</dt><dd>₱275.00</dd></dl></section>
 <section id="install" class="pinstall"><div><h2>Install the app</h2><p>Use SKSU TPT like an app, with its own icon. No Play Store or App Store needed.</p></div>
-<div class="pinstall-how"><a class="btn primary" href="#">Install the app</a><span class="muted">On iPhone: tap Share, then Add to Home Screen, then Add.</span></div></section>
+<div class="pinstall-how"><a class="btn primary" href="#install-guide">Install the app</a><a href="#install-guide" class="muted">How to install, step by step</a></div></section>
 <section id="how" class="road"><h2>How it works</h2>
 <ol class="tline">
-<li class="now"><i>1</i><b>Apply</b><span>Details, school, 3 programs</span><em>Jan 1 – Feb 28 · open now</em></li>
-<li><i>2</i><b>Pay</b><span>At an SKSU cashier, with your application code</span><em>Before Feb 28</em></li>
+<li class="now"><i>1</i><b>Apply</b><span>Details, school, 3 programs</span><em>Schedule 2 · Mar 1 – Apr 10 · open now</em></li>
+<li><i>2</i><b>Pay</b><span>At an SKSU cashier, with your application code</span><em>By Apr 10</em></li>
 <li><i>3</i><b>Pick your exam slot</b><span>Choose your campus and date; we give you a room and seat</span><em>After approval</em></li>
-<li><i>4</i><b>Take the test</b><span>Show your permit QR at the door</span><em>Mar 14 – 15</em></li>
-<li><i>5</i><b>See your result</b><span>Scores and the programs you qualify for</span><em>Apr 20, 9:00 AM</em></li>
+<li><i>4</i><b>Take the test</b><span>Show your permit QR at the door</span><em>Apr 25 – 26</em></li>
+<li><i>5</i><b>See your result</b><span>Scores and the programs you qualify for</span><em>May 15</em></li>
 </ol>
-<h2 style="margin-top:24px">On exam day, bring</h2><p class="muted">Pencil No. 2 with eraser · this permit · school ID or any valid ID · official receipt (if paid at the cashier)</p>
-<p class="muted">Schedule 1 registration closes Feb 28; Schedules 2 and 3 open later. Tests are held at 7 SKSU campuses · <a href="#centers">See test centers</a></p></section>
+<h2 style="margin-top:24px">On exam day, bring</h2><p class="muted">Pencil No. 2 with eraser · this permit · school ID or any valid ID · official receipt</p>
+<p class="muted">Schedule 2 registration closes Apr 10; Schedule 3 opens Apr 11. Tests are held at 7 SKSU campuses · <a href="#centers">See test centers</a></p></section>
 <div class="modal" id="centers"><a class="scrim" href="#"></a><div class="dialog" role="dialog"><h3>Test centers</h3><ul class="centers"><li><b>ACCESS Campus</b><span>EJC Montilla, Tacurong City</span></li><li><b>Isulan Campus</b><span>Kalawag II, Isulan</span></li><li><b>Tacurong Campus</b><span>Tacurong City</span></li><li><b>Kalamansig Campus</b><span>Kalamansig</span></li><li><b>Bagumbayan Campus</b><span>Bagumbayan</span></li><li><b>Palimbang Campus</b><span>Palimbang</span></li><li><b>Lutayan Campus</b><span>Lutayan</span></li></ul><div class="acts"><a class="btn" href="#">Close</a></div></div></div>
-<footer class="pfoot"><span>Guidance and Testing Center · SKSU ACCESS Campus, EJC Montilla, Tacurong City</span><span>© Sultan Kudarat State University</span><a href="privacy.html">Privacy and terms</a><a href="staff-login.html" style="margin-left:auto">Staff sign-in</a></footer></div>""", states=[("maintenance", "Maintenance screen")])
+<div class="modal" id="install-guide"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog iguide" role="dialog" aria-labelledby="ig-t"><h3 id="ig-t">Install SKSU TPT on your phone</h3><p class="muted" style="margin:0">Free, about 1 MB, no Play Store or App Store. It opens like an app and keeps your permit even without signal.</p><div class="igcols"><div><h4>Android (Chrome)</h4><ol><li>Open <b>sksu-tpt.com</b> in <b>Chrome</b>.</li><li>Tap <b>Install app</b> when it appears, or tap <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg> then <b>Install app</b>.</li><li>Tap <b>Install</b>. The SKSU TPT icon is now on your home screen.</li></ol></div><div><h4>iPhone (Safari)</h4><ol><li>Open <b>sksu-tpt.com</b> in <b>Safari</b>.</li><li>Tap <b>Share</b> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 11v9h14v-9"/></svg> at the bottom.</li><li>Scroll down, tap <b>Add to Home Screen</b> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>, then <b>Add</b>.</li></ol></div></div><p class="muted" style="margin:0;font-size:13px">No space or an old phone? You can also use SKSU TPT in the browser. Everything works the same.</p><div class="acts"><a class="btn primary" href="#">Got it</a></div></div></div><footer class="pfoot"><span>Guidance and Testing Center · SKSU ACCESS Campus, EJC Montilla, Tacurong City</span><span>© Sultan Kudarat State University</span><a href="privacy.html">Privacy and terms</a><a href="staff-login.html" style="margin-left:auto">Staff sign-in</a></footer></div>""", states=[("install-guide", "Install guide"), ("maintenance", "Maintenance screen")])
 
 doc("public/login.html", "Sign in", f"""<div class="pub">{pubnav()}
 <div class="auth"><div class="authcard">
@@ -286,7 +286,7 @@ doc("public/login.html", "Sign in", f"""<div class="pub">{pubnav()}
 <p class="muted" style="margin:0;text-align:center">Use the Google account you check most. Your result and permit will be linked to it.</p>
 <a class="gbtn" href="#loading"><span style="font-weight:700;color:#4285f4">G</span>Continue with Google</a>
 <div id="error-box"></div>
-<label class="chk consent"><input type="checkbox" required> I have read the <a href="privacy.html#privacy">Privacy notice</a> and the <a href="privacy.html#terms">Terms of use</a>.</label>
+<label class="chk consent"><input type="checkbox" required><span>I have read the <a href="privacy.html#privacy">Privacy notice</a> and the <a href="privacy.html#terms">Terms of use</a>.</span></label>
 <a href="../applicant/home.html" class="btn">Mockup: continue as a signed-in applicant →</a>
 </div></div></div>
 {modal("loading", "info", '<span class="spin"></span>', "Signing you in…", '<p class="muted" style="margin:0">Waiting for Google. Keep this tab open.</p>', btn("Cancel", "#"))}
@@ -594,7 +594,7 @@ phone("apply-review", "Review", """<h1 class="gh">Review</h1>
 """ + plist(row("Personal details", "Maria Santos Dela Cruz · May 12, 2008 · Female · +63 917 123 4567", "Edit", "apply-personal.html"),
             row("School", "Isulan National High School · 2026 · STEM · 91.4", "Edit", "apply-school.html"),
             row("Programs", "1 BS Civil Engineering, Isulan · 2 BS Information Technology, ACCESS · 3 BS Criminology, Isulan", "Edit", "apply-programs.html")) + """
-<label class="chk"><input type="checkbox" required>I certify that all information is true and correct. I understand that misrepresentation may cause disqualification. I have read the <a href="../public/privacy.html#privacy">Privacy notice</a> and the <a href="../public/privacy.html#terms">Terms of use</a>.</label>""",
+<label class="chk"><input type="checkbox" required><span>I certify that all information is true and correct. I understand that misrepresentation may cause disqualification. I have read the <a href="../public/privacy.html#privacy">Privacy notice</a> and the <a href="../public/privacy.html#terms">Terms of use</a>.</span></label>""",
       cta=("#confirm", "Submit application"), back="apply-programs.html",
       overlays=modal("confirm", "warn", WARN, "Submit the application?", '<p style="margin:0">You can change your program choices until Feb 28. Your name and date of birth can only be changed by the admission office.</p>', '<a class="go" href="#submitting">Submit</a><a class="back" href="#">Cancel</a>')
       + modal("submitting", "info", '<span class="spin"></span>', "Submitting", '<p style="margin:0">Keep this screen open.</p>', '<a class="mocklink" href="payment.html#submitted">Mockup: finish →</a>')

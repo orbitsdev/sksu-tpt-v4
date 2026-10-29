@@ -1115,6 +1115,11 @@ td .act a[href*="result-pdf"]:before{content:"";display:inline-block;width:14px;
 
 /* features planned for later (e.g. SMS): grey, clearly off */
 .laterbar{margin:10px 0;padding:10px 14px;border:1px dashed #cfd5d1;border-radius:8px;color:#5f6662;font-size:13px;background:#fafbfa}.laterbar b{color:#3f4542;margin-right:6px}
+.chk{display:flex;gap:10px;align-items:flex-start}.chk>input{flex:none;margin-top:3px}.chk>span{flex:1;line-height:1.45}
+.iguide{width:640px;max-width:calc(100vw - 32px)}.igcols{display:grid;grid-template-columns:1fr 1fr;gap:20px}.igcols h4{margin:0 0 6px;font-size:15px}
+.igcols ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.5}.igcols svg{vertical-align:-4px;color:var(--deep-2)}
+@media(max-width:640px){.igcols{grid-template-columns:1fr}}
+.pinstall-how{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
