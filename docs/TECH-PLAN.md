@@ -114,7 +114,7 @@ Decision: v4 runs on the **existing TPT server** (128.199.96.48), next to tptv3 
 | Ubuntu 20.04 | Out of standard support. Upgrade (20.04 → 22.04 → 24.04) in a quiet month, **after a snapshot**, or later move to a fresh 24.04 droplet |
 | Disk cleanup (after the switch) | tptv3's old uploads (about 40 GB) stay while tptv3 runs. After v4 is live: back them up off the server, shrink the oversized photos or archive old school years, delete only what the office agrees to. Expected: 40 GB down to a few GB |
 
-Nothing on the server is changed until you say go.
+**The server is not touched until the app is finished.** Development and testing happen on the developer's machine (and a local test copy); the server prep (snapshot, /root fix, backups, Redis, v4 next to tptv3) is done only at go-live.
 
 ## 5. Build order
 
