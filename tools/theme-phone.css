@@ -284,3 +284,4 @@ body.boardpage .legend,body.boardpage .legend *{color:#3f4542}
 /* result outcome word above the score */
 .outcome{display:inline-block;align-self:flex-start;font:600 14px var(--sys,system-ui);color:#3f4542;background:#eef0ef;border-radius:4px;padding:3px 10px;margin-bottom:6px}
 .outcome.ok{color:#0b5a2e;background:#e6f2ea}
+.phone .twobtn{display:flex;gap:8px}.phone .twobtn a{flex:1;text-align:center}
