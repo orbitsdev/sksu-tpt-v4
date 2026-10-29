@@ -1080,6 +1080,11 @@ header.top:before,.ctop:before{content:"";position:absolute;inset:0;z-index:-1;p
 .stabs a span{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:#f1f2f1;color:#3f4542;font-size:12px;font-weight:500;line-height:18px}
 .stabs a.on span{background:#e2e5e3;color:var(--ink)}
 
+/* result PDF panel: what's ready, a quiet bar, the actions */
+.pdfpanel{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;margin:0 0 16px}
+.pdfpanel>div{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.pdfpanel .meter{max-width:420px}
+
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
    No gradients, glows, pills on every row or cards inside cards. ===== */
