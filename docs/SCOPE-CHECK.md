@@ -15,7 +15,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 | 3 | Application forms (personal, school, 3 programs) | Old | Keep (cleaner fields) |
 | 4 | Extra uploads: Form 138, valid ID | New (from the tpt-recreate-v2 plan) | **Cut**: only the 2×2 photo and the receipt are collected; the ID is shown at the door |
 | 5 | Photo shrunk on the phone | New | Keep (fixes 26 GB of uploads) |
-| 6 | Receipt upload + reviewer approval | Old | Keep |
+| 6 | Receipt upload + reviewer approval | Old | **Later**: a school-year switch, off (cashier only for now) |
 | 7 | Cashier console (record the OR no.) | Asked | Keep, simple version |
 | 8 | Fee waiver | New | Optional |
 | 9 | Refunds | New | **Cut** for v1 (accounting handles it) |
@@ -63,7 +63,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 
 1. Sign in.
 2. Apply.
-3. Pay (cashier or upload).
+3. Pay at the cashier (online upload later, behind a switch).
 4. Approve.
 5. Pick a date.
 6. Permit.

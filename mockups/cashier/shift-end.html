@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>End of shift · SKSU TPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&family=Lexend:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add("framed");</script>
+</head>
+<body>
+<div class="states"><b>States on this page:</b><a href="#closed">Shift closed</a><a href="#">Reset</a></div>
+<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
+<div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav><a href="console.html" class="on">Counter</a><a href="paid.html" class="">Paid</a><a href="info.html" class="">Info</a></nav>
+<span class="ctally">Today: 36 · ₱9,900</span><span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><a class="btn sm" href="shift-end.html">End shift</a><a class="btn sm" href="#signout">Sign out</a></header>
+<main class="cmain"><section class="cleft"><h1 style="margin:0">End of shift</h1><p class="muted" style="margin:0">Isulan counter 1 · Cashier 1 · opened 7:58 AM</p>
+<div class="kv"><span>Payments</span><span>36 · ₱9,900.00</span><span>ORs used</span><span class="mono">0048175–0048214</span><span>Spoiled</span><span class="mono">0048208</span><span>Voided by admin</span><span class="mono">0048209</span><span>Recorded late</span><span>1 (system was down)</span><span>Fee waived</span><span>1 · no OR</span></div>
+<a class="btn " href="paid.html">See the list</a></section>
+<section class="cright"><span class="clabel">Count the cash</span>
+<div class="camount"><span>Expected</span><b>₱10,900.00</b></div><small class="muted">₱9,900.00 payments + ₱1,000.00 starting cash</small>
+<div class="fld"><label for="ec">Counted</label><div class="money"><span>₱</span><input id="ec" inputmode="decimal" value="10,850.00"></div></div>
+<div class="cchange"><span>Difference</span><b class="neg">−₱50.00</b></div>
+<div class="fld"><label for="en">Note (required when the difference isn't zero)</label><input id="en" value="₱50 given as change twice by mistake"></div>
+<div class="cdone-acts"><a class="btn " href="../docs/shift-report.html">Print end-of-shift list</a><a class="btn primary" href="#closed">Close shift</a></div></section></main></div><div class="toast" id="closed" role="status"><div class="ico ok" style="width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg></div><div><b>Shift closed</b><span class="muted">Your list and count are with the admin. Sign out when you're done.</span></div><a class="x" href="#" aria-label="Dismiss">×</a></div><div class="modal" id="signout"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="signout-t"><div class="ico warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17.5v.01"/></svg></div><h3 id="signout-t">Your shift is still open</h3><p class="muted" style="margin:0">You can sign out; the shift stays open and you continue where you left off. End the shift when you stop taking payments today.</p><div class="acts"><a class="btn " href="shift-end.html">End shift</a><a class="btn primary" href="../public/staff-login.html">Sign out anyway</a></div></div></div>
+</body>
+</html>

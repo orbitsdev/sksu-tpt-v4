@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start of shift · SKSU TPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&family=Lexend:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add("framed");</script>
+</head>
+<body>
+<div class="states"><b>States on this page:</b><a href="#skipcheck">OR numbers don't continue</a><a href="#">Reset</a></div>
+<div class="strip"><strong>SKSU TPT · CASHIER MOCKUP</strong><span class="muted">sample data</span><a class="sp" href="../index.html">All pages</a></div>
+<div class="cshell"><header class="ctop"><img src="../assets/sksu-seal.png" alt="SKSU seal"><b>Cashier</b><nav><a href="console.html" class="on">Counter</a><a href="paid.html" class="">Paid</a><a href="info.html" class="">Info</a></nav>
+<span class="ctally">Today: 36 · ₱9,900</span><span class="cwho"><span class="dot"></span>Cashier 1 · Isulan counter 1</span><a class="btn sm" href="shift-end.html">End shift</a><a class="btn sm" href="#signout">Sign out</a></header>
+<main class="cmain"><section class="cleft" style="grid-column:1/-1;max-width:560px;margin:0 auto"><h1 style="margin:0">Start your shift</h1>
+<p class="muted" style="margin:0">Isulan counter 1 · Mon, Mar 15 · shown on your first sign-in of the day</p>
+<div class="fld"><label for="ss1">First OR no. in your booklet</label><input id="ss1" class="orno" inputmode="numeric" value="0048215"><small class="muted">Booklet 0048001–0048500 · last used yesterday: 0048214</small></div>
+<div class="fld"><label for="ss2">Starting cash (change fund)</label><div class="money"><span>₱</span><input id="ss2" inputmode="decimal" value="1,000.00"></div></div>
+<a class="btn primary xl" href="console.html">Open the counter</a></section></main></div><div class="cnotice warn" id="skipcheck"><b>This booklet starts at 0048217</b><span>Yesterday ended at 0048214. Were 0048215–0048216 spoiled?</span><a class="btn sm" href="console.html#spoil">Mark as spoiled</a></div><div class="modal" id="signout"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="signout-t"><div class="ico warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9.5 17h-19z"/><path d="M12 10v4M12 17.5v.01"/></svg></div><h3 id="signout-t">Your shift is still open</h3><p class="muted" style="margin:0">You can sign out; the shift stays open and you continue where you left off. End the shift when you stop taking payments today.</p><div class="acts"><a class="btn " href="shift-end.html">End shift</a><a class="btn primary" href="../public/staff-login.html">Sign out anyway</a></div></div></div>
+</body>
+</html>

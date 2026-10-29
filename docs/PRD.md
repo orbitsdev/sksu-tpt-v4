@@ -125,18 +125,18 @@ Every send is logged with delivery status and can be resent.
 
 ```mermaid
 erDiagram
-    SEASON ||--o{ ROUND : has
-    SEASON ||--o{ PROGRAM_OFFERING : offers
+    SCHOOL_YEAR ||--o{ SCHEDULE : has
+    SCHOOL_YEAR ||--o{ PROGRAM_OFFERING : offers
     CAMPUS ||--o{ PROGRAM : has
     CAMPUS ||--o{ ROOM : has
     PROGRAM ||--o{ PROGRAM_OFFERING : "offered as"
-    ROUND ||--o{ SCHEDULE_DAY : has
-    SCHEDULE_DAY }o--|| CAMPUS : at
-    SCHEDULE_DAY ||--o{ SCHEDULE_DAY_ROOM : uses
+    SCHEDULE ||--o{ EXAM_SLOT : has
+    EXAM_SLOT }o--|| CAMPUS : at
+    EXAM_SLOT ||--o{ SCHEDULE_DAY_ROOM : uses
     ROOM ||--o{ SCHEDULE_DAY_ROOM : "used in"
     USER ||--o{ APPLICATION : files
-    APPLICATION }o--|| SEASON : for
-    APPLICATION }o--|| ROUND : takes
+    APPLICATION }o--|| SCHOOL_YEAR : for
+    APPLICATION }o--|| SCHEDULE : takes
     APPLICATION ||--o{ PROGRAM_CHOICE : ranks
     APPLICATION ||--o{ UPLOAD : has
     APPLICATION ||--o{ PAYMENT : has
@@ -144,7 +144,7 @@ erDiagram
     SEAT_ASSIGNMENT }o--|| SCHEDULE_DAY_ROOM : in
     APPLICATION ||--o| CHECK_IN : "marked at"
     APPLICATION ||--o{ SCORE : has
-    ROUND ||--o{ SCORE_IMPORT : has
+    SCHEDULE ||--o{ SCORE_IMPORT : has
     SCORE_IMPORT ||--o{ SCORE : loads
     APPLICATION ||--o{ APPLICATION_EVENT : history
     APPLICATION ||--o{ NOTIFICATION : receives
@@ -222,7 +222,7 @@ flowchart LR
     H --> I[Permit in app + PDF]
     I --> J[Exam day]
     J -->|Present| K[Scored] --> L[Result: qualified programs] --> M[Choose program]
-    J -->|Absent| N[Move to next round, if allowed]
+    J -->|Absent| N[Apply for a later schedule, if allowed]
 ```
 
 ### Application status
@@ -251,13 +251,13 @@ stateDiagram-v2
 
 ```mermaid
 flowchart LR
-    S1[New season wizard: basics, rounds, campuses, rooms, days] --> S2[Open registration]
+    S1[New school year: basics, schedules, campuses, rooms, exam slots] --> S2[Open registration]
     S2 --> S3[Payments: cashier + review queue]
     S3 --> S4[Seats: picked or auto-assigned]
     S4 --> S5[Exam day; check-in optional]
     S5 --> S6[Import Testing Center Excel, check, approve; no score = absent]
     S6 --> S7[Schedule release, notify]
-    S7 --> S8[Reports, exports, next round]
+    S7 --> S8[Reports, exports, next schedule]
 ```
 
 ### Architecture
@@ -360,7 +360,7 @@ flowchart TB
 
 ## 15. Seats on the dashboard
 
-The dashboard shows the round's seats (total, taken, left, open exam days) and each exam day and campus with a meter. "Nearly full" appears under 60 seats and "Full" at 0. Applicants see seats left per day on the schedule picker.
+The dashboard shows the schedule's seats (total, taken, left, open exam days) and each exam day and campus with a meter. "Nearly full" appears under 60 seats and "Full" at 0. Applicants see seats left per day on the schedule picker.
 
 ## Examinee numbers
 
@@ -453,3 +453,46 @@ Scheduled maintenance: a date and time window plus a message; students see a not
 - The schedule form has a **Where** section: one checkbox per campus that holds the exam (all ticked by default), each showing its exam rooms and seats from Rooms. Saving creates one exam slot per campus and exam day with that campus's rooms; staff adjust them on Exam slots.
 - A transferee schedule picks one campus and one room (venue).
 - **Check-in** is a per-schedule switch (off by default). When on, the live monitor opens from that schedule's row and from Exam slots, and the Dashboard shows the count on exam day.
+
+
+## Decisions from the final gap check (29 Oct)
+
+- **Two exam slots on the same day and campus are allowed** (for example a later guide time); the form shows a note, not a block.
+- **Super admin**: an Admin with the Super admin switch manages System, maintenance and staff roles. At least one super admin always exists.
+- **Voids**: a voided OR stays on the list as voided; the examinee number it issued is retired, never reused.
+- **Score corrections** are stored exactly as the Testing Center gives them (never recomputed); the student is notified and the result PDF is rebuilt; old and new values stay in the history.
+- **Duplicates**: until the office decides the once-per-school-year rule, the cashier and the import show "possible duplicate" warnings (same name + birth date, or same mobile).
+- **Separation of duties**: cashiers take payments; the office creates applications. An admin can switch on "Can also create walk-in applications" for a cashier (logged).
+- **Dates** close at 11:59 PM, Philippine time. "Pay at the cashier by" comes after registration closes. "Change exam slot until" is set per schedule.
+- **Unpublishing** a schedule keeps drafts; publishing a schedule with no exam slots shows a warning.
+- **Closing a school year** runs a checklist (open support requests, programs not chosen, shifts closed, office summary exported), then the year is read-only.
+
+## Cashier: real-world scenarios
+
+| Situation | What happens |
+|---|---|
+| Brownout or no internet | The counter can't record (no offline recording). The cashier issues the paper OR as usual and later uses **Record a paper payment** (OR no., when it was paid, reason). It is flagged **Recorded late** for admin review; the examinee no. is issued when recorded. |
+| Same OR no. already used (any counter) | Blocked: "OR 0048213 was already used at 9:41 for Ricky P. Ulangkaya (Isulan counter 1)." |
+| OR no. outside the counter's booklet | Blocked: "0051002 is not in your booklet (0048001–0048500)." |
+| Skipped OR numbers | Warning, not a block: "You skipped 0048215–0048216. Were they spoiled?" Mark as spoiled (reason) or fix the number. Spoiled ORs appear on the end-of-shift list. |
+| Wrong OR format | Field error: "OR no. is 7 digits." |
+| Booklet runs out mid-shift | "Last OR in this booklet." The cashier adds the next booklet if the admin allows it, else asks the admin. |
+| Record pressed twice | "Already recorded by you at 10:02." Nothing is recorded twice. |
+| Lost code or forgotten email | Search by name, then check birth date or mobile and the photo. |
+| Someone pays for a friend | Allowed. The photo and name check is about the applicant; the slip shows the applicant's name. |
+| Wrong amount offered | The fee is fixed; no partial payments. Change is computed. |
+| Paid but the app still says waiting | Paid list → **Resend confirmation** (app and email). |
+| After registration closed | Blocked, unless the admin extended this applicant ("Extended until Apr 12 by Ana R."). |
+| Fee waived | "Fee waived · nothing to collect"; recorded without an OR. |
+| Possible duplicate | "Jomar Abdullah (same mobile) already paid today, 509783." Ask before taking money. |
+| Not in the list | "They need to apply first (Admission office)", unless this cashier may create walk-in applications. |
+| Signs out or switches counter mid-shift | The shift stays open; sign-out warns "Your shift is still open". |
+| Two cashiers at one campus | Each has their own counter and booklet; totals per counter and per campus. |
+| Start of the day | **Start of shift**: confirm the first OR no. and the starting cash. |
+| End of the day | **End of shift**: expected vs counted cash; a note is required if they differ; list of payments, spoiled and voided ORs; print, close shift. The admin sees every shift. |
+| After recording | **Print slip**: name, examinee no., OR no., amount, counter, and "Next: pick your exam slot" with a QR to the app. |
+
+## Open questions added (29 Oct)
+
+- Once per school year: may someone who already got a result take the test again in the same school year?
+- Does the office want a printed slip for every payment, or only on request?

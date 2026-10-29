@@ -51,6 +51,8 @@ Never a dialog on top of a dialog. Never a step form for something done every da
 
 ## 6. Every screen has these states
 
+The shared patterns (skeleton rows, empty message, inline error) are shown once in `design-system.html`; pages show their own when the wording matters.
+
 Loading (grey placeholders), empty (what to do first), error (what went wrong and what to do), success (toast), no permission (who to ask). The mockups show them in the yellow "States on this page" bar.
 
 ## 7. Errors

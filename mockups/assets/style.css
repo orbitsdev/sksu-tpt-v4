@@ -982,6 +982,15 @@ header.top,.ctop{position:relative;isolation:isolate}
 header.top:before,.ctop:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%2728%27%20height%3D%2728%27%20viewBox%3D%270%200%2028%2028%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23ffffff%27%20stroke-width%3D%271.4%27%20opacity%3D%27.09%27%3E%3Cpath%20d%3D%27M14%202%2026%2014%2014%2026%202%2014Z%27/%3E%3Cpath%20d%3D%27M14%208%2020%2014%2014%2020%208%2014Z%27/%3E%3C/g%3E%3Ccircle%20cx%3D%2714%27%20cy%3D%2714%27%20r%3D%271.4%27%20fill%3D%27%23f2c200%27%20opacity%3D%27.18%27/%3E%3C/svg%3E") repeat;
   -webkit-mask-image:linear-gradient(90deg,transparent 18%,#000 70%);mask-image:linear-gradient(90deg,transparent 18%,#000 70%)}
 
+/* printable slip and end-of-shift sheet; quiet link list on the applicant page */
+.slip{max-width:340px;margin:24px auto;padding:20px;background:#fff;border:1px dashed var(--line-2);display:flex;flex-direction:column;gap:10px;font-size:14px}
+.slip .kv{grid-template-columns:110px 1fr}.slipqr{display:flex;align-items:center;gap:10px}
+.sheet{max-width:860px;margin:24px auto;padding:28px;background:#fff;border:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.linklist{display:flex;flex-direction:column;gap:8px}.linklist a{color:var(--deep-2);text-decoration:none;font-size:14px}.linklist a:hover{text-decoration:underline}
+.tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:#f1f2f1;color:var(--muted);font-size:12px}
+@media print{.crumbs,.strip,.stbar{display:none}.slip,.sheet{border:0;margin:0}}
+.cchange b.neg{color:var(--bad)}
+
 /* ===== student app: a plain native phone app (loaded last).
    Flat white screen, hairline dividers, grouped lists, one emphasised surface at most.
    No gradients, glows, pills on every row or cards inside cards. ===== */

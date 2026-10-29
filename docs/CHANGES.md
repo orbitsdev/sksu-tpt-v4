@@ -93,7 +93,7 @@ Everything changed in the mockups and docs today. ✅ = done.
 
 ## Header and lists
 
-- ✅ White header with a thin line under it; green only as an accent. Seal + SKSU TPT, search, bell, name and avatar.
+- ✅ Solid SKSU green header with a thin gold line and a quiet woven motif. Seal + SKSU TPT, search, bell, name and avatar.
 - ✅ Schedule picker under the page title ("Schedule 2 · Apr 25–26 ▾" + status), instead of the boxed tab bar. Works for any number of schedules.
 - ✅ Lists use the full width with roomy rows, initials + name, a ⋮ row menu, sortable headers, and "Showing 1 to 25 of 4,980 results" with page numbers.
 - ✅ One filter bar above each list: wide search, labelled dropdowns, Reset, Columns, rows per page (Applications, Support, Results, Exam slots, Activity log, Staff, Rooms, cashier Paid).
@@ -154,3 +154,12 @@ Everything changed in the mockups and docs today. ✅ = done.
 
 - Nothing committed or pushed yet.
 - No production server changes.
+
+
+## Final gap check (29 Oct)
+
+- ✅ Cashier counter for the real world: OR checks (used, outside booklet, skipped → spoiled, format, pressed twice), brownout → Record a paper payment, booklet running out, registration closed / extended, possible duplicate, not in the list, start and end of shift with cash count, printable payment slip, sign-out warning.
+- ✅ Cashier counters (admin): booklets per counter, shifts with expected vs counted, recorded-late list, totals per campus.
+- ✅ New screens: move or cancel an exam slot (typhoon) with delivery report; new application for someone (walk-in); change sign-in email; correct OR no.; extend payment; seat now; office summary report; close school year checklist; transferee slots per program; deactivate a chair with pending approvals.
+- ✅ Rules: super admin; voided examinee numbers retired; corrected scores stored as given; same-day exam slots allowed; dates until 11:59 PM; change-slot deadline; drafts kept on unpublish; publish with no slots warns.
+- ✅ Sample data agrees across pages (people, OR and examinee numbers, today's totals, pause time, Schedule 1 results released).
