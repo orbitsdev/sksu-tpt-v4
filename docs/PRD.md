@@ -368,6 +368,11 @@ The dashboard shows the round's seats (total, taken, left, open exam days) and e
 - v4: the school year has a **First examinee number** setting (6 digits). Numbers are issued in order when a payment is recorded (or the chairperson-approved transferee pays), from a counter locked in the same transaction, so two people never get the same number. The range can't overlap an earlier school year. An admin can correct a number with a reason (logged), like tptv3's "examinee_number_updated".
 - To confirm with the office: the start number for the next school year, and whether transferee schedules share the same series.
 
+## Permit format
+
+- **Keep tptv3's permit format** (layout, wording and order of fields the office and proctors already know): see tptv3 `resources/views/applicant/permit.blade.php` and `resources/views/livewire/permit-layout.blade.php`. The v4 mockup permit is a placeholder for the data, not the final layout.
+- What changes is speed and cleanliness: the permit is built once when the exam slot is booked (not on every view), saved as a small PDF, cached on the phone so it opens without signal, and the QR verifies on the public page.
+
 ## 16. Transferee test (2nd semester)
 
 Today the Guidance and Testing Center runs a separate walk-in test for transferees (for example Dec 13, 2026, ₱275, Testing Room, SKSU ACCESS Campus; the post still lists a 1st and 2nd batch, which v4 drops). The paper form asks for personal details, current school, current course and two preferred programs, and the program chairperson or college dean signs it after checking grades and slots.
