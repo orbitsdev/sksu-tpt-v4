@@ -402,3 +402,9 @@ header.top:before,.ctop:before{content:"";position:absolute;inset:0;z-index:-1;p
 .mwrap{position:relative;display:inline-flex}
 .mwrap .menu{right:0;top:calc(100% + 6px)}
 .menu a:hover{background:#f3f4f3}
+
+/* sample 2×2 photo in drawers and the student app */
+.pimg{width:100%;height:100%;object-fit:cover;display:block}
+.drawhead{display:flex;gap:14px;align-items:center}.drawhead .pimg{width:88px;height:88px;border:1px solid var(--line);border-radius:6px;flex:none}
+.mehead{display:flex;gap:14px;align-items:center;padding:4px 0 12px}.mehead .pimg{width:72px;height:72px;border:1px solid #dde1de;border-radius:6px;flex:none}
+.mehead b{display:block;font-weight:500}.mehead small{color:#6b726e;font-size:13px}

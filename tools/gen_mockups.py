@@ -547,7 +547,7 @@ phone("apply-personal", "About you", """<h1 class="gh">Personal details</h1>
 <div class="fld"><label class="cap" for="mc">Municipality or city</label><select id="mc">""" + "".join(f"<option{' selected' if t == 'Isulan' else ''}>{t}</option>" for t in PROVINCES["Sultan Kudarat"]) + """</select><small>The list follows the province you picked.</small></div>
 <div class="fld"><label class="cap" for="bg">Barangay</label><select id="bg"><option>Kalawag II</option><option>Kalawag I</option><option>Kalawag III</option><option>Bambad</option><option>New Pangasinan</option></select></div>
 <div class="fld"><label class="cap" for="st">House no. and street (optional)</label><input id="st" value="" autocomplete="address-line1"></div>
-<div class="fld"><label class="cap">2×2 ID photo</label><a class="picker" href="#photo-pick"><span class="ph"></span><span class="grow"><b>photo.jpg</b><small>Made smaller on your phone: 3.9 MB to 248 KB</small></span><span class="end">Change</span></a><small>White background, face clearly seen. Used on your permit.</small></div>""",
+<div class="fld"><label class="cap">2×2 ID photo</label><a class="picker" href="#photo-pick"><span class="ph" style="padding:0;overflow:hidden"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)" class="pimg"></span><span class="grow"><b>photo.jpg</b><small>Made smaller on your phone: 3.9 MB to 248 KB</small></span><span class="end">Change</span></a><small>White background, face clearly seen. Used on your permit.</small></div>""",
       cta=("apply-school.html", "Next"), back="home.html",
       overlays=SAVED + OFFLINE
       + modal("cal", "info", "", "Date of birth", '<div class="calhead"><span>‹</span><span>May 2008</span><span>›</span></div><div class="cal">' + "".join(f"<b>{d}</b>" for d in "SMTWTFS") + "<span></span>" * 4 + "".join(f'<span class="{"on" if i == 12 else ""}">{i}</span>' for i in range(1, 32)) + '</div>', '<a class="go" href="#">Done</a><a class="back" href="#">Cancel</a>')
@@ -583,6 +583,7 @@ phone("apply-programs", "Programs", """<h1 class="gh">Programs</h1><p>Choose 3, 
       states=[("picker", "Program picker"), ("dup", "Duplicate choice error")])
 
 phone("apply-review", "Review", """<h1 class="gh">Review</h1>
+<div class="mehead"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)" class="pimg"><div><b>Maria Santos Dela Cruz</b><small>Check that this is a clear photo of you</small></div></div>
 """ + plist(row("Personal details", "Maria Santos Dela Cruz · May 12, 2008 · Female · +63 917 123 4567", "Edit", "apply-personal.html"),
             row("School", "Isulan National High School · 2026 · STEM · 91.4", "Edit", "apply-school.html"),
             row("Programs", "1 BS Civil Engineering, Isulan · 2 BS Information Technology, ACCESS · 3 BS Criminology, Isulan", "Edit", "apply-programs.html")) + """
@@ -725,6 +726,7 @@ phone("result", "Result", f"""<p class="eyebrow">SKSU TPT · Schedule 1 · relea
       states=[("cutoffs", "Cut-offs"), ("choose", "Choose a program"), ("chosen", "Chosen")])
 
 phone("profile", "My account", """<h1 class="gh">Account</h1>
+<div class="mehead"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)" class="pimg"><div><b>Maria Santos Dela Cruz</b><small>2×2 photo · locked after approval</small></div></div>
 """ + plist(row("Maria Santos Dela Cruz", "maria.delacruz@gmail.com · Google"), row("Examinee no.", "", '<span class="mono">500214</span>'), row("Status", "", '<span class="dot"></span>Exam slot picked')) + """
 <div class="ghead">My details</div>""" + plist(
     row("Personal details", "Maria Santos Dela Cruz · May 12, 2008 · +63 917 123 4567"), row("School", "Isulan National High School · 2026 · STEM"),
@@ -1115,7 +1117,7 @@ apps = [("509771", "Ramon T. Villanueva", "BS Agriculture", "Tacurong", "Exam sl
         ("", "Noel B. Guiamal", "BS Criminology", "Isulan", "Sent back", "", ""),
         ("509752", "Hasmin T. Usman", "BS Accountancy", "ACCESS, Tacurong", "Exam slot picked", "Sat, Apr 25", "Room 7 · seat 41")]
 APP_ROWS = [app_row(i, a) for i, a in enumerate(apps)] + [app_row(9, ("", "Kenneth L. Abo · Transferee", "BS Information Technology", "ACCESS, Tacurong", "Waiting for payment", "", ""))]
-VIEW_DRAWER = drawer("view", "Ramon T. Villanueva", "509771 · SY 2027–2028 · Schedule 2", f"""<div>{B("info", "Exam slot picked")}</div>
+VIEW_DRAWER = drawer("view", "Ramon T. Villanueva", "509771 · SY 2027–2028 · Schedule 2", f"""<div class="drawhead"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)" class="pimg"><div>{B("info", "Exam slot picked")}</div></div>
 <div class="kv"><span>Email</span><span>ramon.v@gmail.com</span><span>Mobile</span><span>0918 220 4471</span><span>1st choice</span><span>BS Agriculture · Tacurong</span>
 <span>Payment</span><span>Paid Mar 4 at Tacurong counter 1 · OR <span class="mono">0048160</span></span><span>Seat</span><span>Tacurong · Sun, Apr 26 · Room 12 · seat 3</span></div>
 <h4>Steps</h4>{steps_list(RAMON_STEPS)}""",
