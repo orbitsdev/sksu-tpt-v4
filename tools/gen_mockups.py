@@ -254,7 +254,7 @@ def pubnav(active=""):
 
 
 doc("public/landing.html", "Home", f"""<div class="pub">{pubnav()}
-<p class="announce pub-announce">Schedule 2 registration is open until Apr 10, 11:59 PM (Philippine time).</p>
+<p class="announce pub-announce">Cashier offices close at 12:00 noon on Saturdays. Bring your application code.</p>
 <div class="pubmaint" id="maintenance"><img src="../assets/sksu-seal.png" alt="SKSU seal" width="64" height="64"><h1>SKSU TPT is under maintenance</h1><p>Back by 3:00 PM today. Your application is saved.</p><a href="#">Back to the page</a></div>
 <section class="phero"><div class="ptext">
 <p class="pkick">Guidance and Testing Center</p>
@@ -531,7 +531,7 @@ HOME = {
         None, "Schedule 1 · registration closed"),
 }
 
-phone("home", "Home", '<p class="announce">Schedule 2 registration is open until Apr 10, 11:59 PM (Philippine time).</p>' + home_view("Application submitted · Jan 11", 1,
+phone("home", "Home", '<p class="announce">Cashier offices close at 12:00 noon on Saturdays. Bring your application code.</p>' + home_view("Application submitted · Jan 11", 1,
     '<div class="hero"><span class="lbl">Pay ₱275.00 at an SKSU cashier · show this code</span><span class="amt mono" style="font-size:28px">APP-27-10422</span><span class="lbl">The cashier records it and your examinee number appears here.</span></div>'
     + CASHIER_HOURS + plist(row("Where to pay", "Cashier offices per campus", "", "payment.html")),
     ("payment.html", "Show my code")),
@@ -1720,7 +1720,7 @@ admin("landing", "Student app", f"""<div class="head"><span class="muted">What s
 {ptabs([("home", "Home"), ("info", "Info"), ("settings", "Settings")])}
 <section class="pane" id="pane-home"><div class="appedit"><div class="appform">
 <div class="panel"><div class="head"><h2>Announcement</h2><a class="switch on" href="#announce" aria-label="Show the announcement"></a></div>
-<div class="fld"><label for="l1">Shown at the top of the student Home and the landing page</label><input id="l1" value="Schedule 2 registration is open until Apr 10, 11:59 PM (Philippine time)."></div>
+<div class="fld"><label for="l1">Shown at the top of the student Home and the landing page</label><input id="l1" value="Cashier offices close at 12:00 noon on Saturdays. Bring your application code."></div>
 <small class="muted">Up to 120 characters. Leave it off when there is nothing new.</small></div>
 <div class="panel"><h2>Filled in by the system</h2><div class="kv">
 <span>Registration</span><span>Open · Schedule 2 · until Apr 10 (from Exam schedules)</span>
