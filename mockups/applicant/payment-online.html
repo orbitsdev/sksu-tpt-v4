@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Online payment · SKSU TPT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600;700&family=Lexend:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add("framed");</script>
+</head>
+<body class="phone-page">
+<div class="states"><b>States on this page:</b><a href="#uploading">Uploading</a><a href="#ref-used">Reference already used</a><a href="#">Reset</a></div>
+<div class="crumbs"><a href="../index.html">All pages</a> | <a href="../public/login.html">1 Sign in</a> · <a href="home.html">Home</a> · <a href="apply-personal.html">2 About you</a> · <a href="apply-school.html">3 School</a> · <a href="apply-programs.html">4 Programs</a> · <a href="apply-review.html">5 Review and submit</a> · <a href="payment.html">6 Pay at the cashier</a> · <b>6b Online payment</b> · <a href="payment-waiting.html">6c Waiting for approval</a> · <a href="payment-rejected.html">6d Sent back</a> · <a href="seat.html">8 Pick an exam slot</a> · <a href="permit.html">9 Permit</a> · <a href="result-pending.html">10 Waiting for results</a> · <a href="result.html">11 Result</a> · <a href="survey.html">12 Survey</a> · <a href="notifications.html">Notifications</a> · <a href="support.html">Support</a> · <a href="support-ticket.html">Support request</a> · <a href="profile.html">My account</a> · <a href="apply-t-school.html">Transferee: school</a> · <a href="apply-t-programs.html">Transferee: programs</a> · <a href="payment-chair.html">Transferee: chairperson</a></div>
+<div class="phone app"><div class="sbar"><b>9:41</b><span><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg><svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="currentColor"/><rect x="2" y="2" width="15" height="8" rx="1.5"/><rect x="23" y="4" width="1.5" height="4" rx=".75"/></svg></span></div>
+<header class="apph"><a class="hbtn" href="payment.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a><span class="ttl"></span><a href="notifications.html" class="hbtn bell" aria-label="Notifications, 2 unread"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><i>2</i></a></header>
+<div class="appb"><span class="offtag">Online payment (off for now)</span><h1 class="gh">Pay online</h1>
+<div class="hero"><span class="lbl">Send ₱275.00 to</span><span class="amt" style="font-size:20px">[GCASH OR BANK ACCOUNT]</span><span class="lbl">Account name: Sultan Kudarat State University</span></div>
+<div class="ghead">Then send your receipt</div>
+<div class="fld"><label class="cap" for="r">Reference number</label><input id="r" inputmode="numeric" value="1009 284 551 203" class="mono"><small>13 digits, from the GCash or bank receipt.</small></div>
+<div class="fld"><label class="cap">Receipt photo</label><a class="picker" href="#uploading"><span class="ph"></span><span class="grow"><b>receipt.jpg</b><small>Made smaller on your phone: 4.8 MB to 310 KB</small></span><span class="end">Change</span></a></div>
+<small>Shown instead of the cashier screen only when the office turns on online payment for the school year.</small></div>
+<div class="appcta"><a class="go" href="payment-waiting.html#sent">Send for checking</a></div>
+
+<div class="modal" id="uploading"><a class="scrim" href="#" aria-label="Close"></a><div class="dialog" role="dialog" aria-labelledby="uploading-t"><div class="ico info"><span class="spin"></span></div><h3 id="uploading-t">Sending receipt · 72%</h3><div class="progress"><span style="width:72%"></span></div><div class="acts"><a class="back" href="#">Cancel</a></div></div></div><div class="toast" id="ref-used" role="status"><div class="ico bad" style="width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div><div><b>Reference number already used</b><span class="muted">Another applicant sent this reference. Check your receipt.</span></div><a class="x" href="#" aria-label="Dismiss">×</a></div></div>
+</body>
+</html>

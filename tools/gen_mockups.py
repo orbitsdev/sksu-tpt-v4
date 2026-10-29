@@ -323,7 +323,7 @@ PRIVACY_RIGHTS = ["Be told how your data is used (this notice)", "See a copy of 
                   "Ask us to delete it when we no longer need it", "Get your data in a common file format", "Complain to the National Privacy Commission (privacy.gov.ph)"]
 
 doc("public/privacy.html", "Privacy and terms", f"""<div class="pub">{pubnav()}
-<div class="legal"><h1>Privacy and terms</h1><p class="muted">SKSU Tertiary Placement Test · version 1 · effective Jan 1, 2027</p>
+<div class="legal"><p class="draftnote">Draft — for review by the SKSU Data Protection Officer</p><h1>Privacy and terms</h1><p class="muted">SKSU Tertiary Placement Test · version 1 (draft) · effective [DATE]</p>
 <nav class="legaltabs"><a class="on" href="#privacy">Privacy notice</a><a href="#terms">Terms of use</a></nav>
 <section id="privacy"><h2>Privacy notice</h2>
 <h3>Who we are</h3><p>Sultan Kudarat State University, through its Guidance and Testing Center, EJC Montilla, Tacurong City, runs the SKSU Tertiary Placement Test (SKSU TPT). Data Protection Officer: [DPO NAME], [DPO EMAIL].</p>
@@ -334,7 +334,7 @@ doc("public/privacy.html", "Privacy and terms", f"""<div class="pub">{pubnav()}
 <h3>How long we keep it</h3><p>Applications and results are kept for [RETENTION PERIOD, to confirm with the DPO], then deleted or made anonymous. Photos are deleted [PHOTO RETENTION] after the school year ends.</p>
 <h3>How we protect it</h3><p>The site uses an encrypted connection. Staff see only what their role needs, and every staff action is logged.</p>
 <h3>Your rights</h3><ul>{"".join(f"<li>{r}</li>" for r in PRIVACY_RIGHTS)}</ul>
-<p>To use them, open Support in the app and pick the topic <b>Privacy request</b>, or email the Data Protection Officer.</p>
+<p>To use them, open Support in the app and pick the topic <b>Privacy request</b>, email sksutpt@gmail.com, or email the Data Protection Officer.</p>
 <h3>Cookies</h3><p>We use only what is needed to keep you signed in. No advertising or tracking cookies.</p>
 <h3>Applicants under 18</h3><p>[To confirm with the DPO: whether a parent or guardian must also agree.]</p>
 <h3>Changes</h3><p>If this notice changes, we show the new version and date here and ask you to agree again.</p></section>
@@ -354,12 +354,13 @@ doc("public/error.html", "Error pages", f"""<div class="pub">{pubnav()}
 
 
 # ---------------------------------------------------------------- applicant pages
-FLOW = [("notifications", "Notifications"), ("home", "Home"), ("apply-personal", "About you"), ("apply-school", "School"), ("apply-programs", "Programs"),
-        ("apply-review", "Review"), ("apply-t-school", "Transferee: school"), ("apply-t-programs", "Transferee: programs"), ("payment-chair", "Transferee: chairperson"), ("payment", "Payment"), ("payment-waiting", "Waiting"), ("payment-rejected", "Sent back"),
-        ("seat", "Pick an exam slot"), ("permit", "Permit"), ("result-pending", "Result not yet"), ("survey", "Survey"),
-        ("result", "Result"), ("profile", "My account"), ("support", "Support"), ("support-ticket", "Support request")]
+FLOW = [("home", "Home"), ("apply-personal", "2 About you"), ("apply-school", "3 School"), ("apply-programs", "4 Programs"), ("apply-review", "5 Review and submit"),
+        ("payment", "6 Pay at the cashier"), ("payment-online", "6b Online payment"), ("payment-waiting", "6c Waiting for approval"), ("payment-rejected", "6d Sent back"),
+        ("seat", "8 Pick an exam slot"), ("permit", "9 Permit"), ("result-pending", "10 Waiting for results"), ("result", "11 Result"), ("survey", "12 Survey"),
+        ("notifications", "Notifications"), ("support", "Support"), ("support-ticket", "Support request"), ("profile", "My account"),
+        ("apply-t-school", "Transferee: school"), ("apply-t-programs", "Transferee: programs"), ("payment-chair", "Transferee: chairperson")]
 DOTS = {"notifications": 0, "home": 0, "apply-personal": 0, "apply-school": 1, "apply-programs": 2, "apply-review": 3, "apply-t-school": 1, "apply-t-programs": 2, "payment-chair": 4, "payment": 4,
-        "payment-waiting": 4, "payment-rejected": 4, "seat": 0, "permit": 0, "result-pending": 0, "survey": 0, "result": 0, "profile": 0, "support": 0, "support-ticket": 0}
+        "payment-online": 4, "payment-waiting": 4, "payment-rejected": 4, "seat": 0, "permit": 0, "result-pending": 0, "survey": 0, "result": 0, "profile": 0, "support": 0, "support-ticket": 0}
 
 
 TAB_OF = {"home": "home", "notifications": "alerts", "seat": "schedule", "permit": "permit", "profile": "me"}
@@ -380,7 +381,7 @@ def phone(key, title, content, cta=None, back=None, extra="", overlays="", state
     status bar, slim nav, big title, scrolling body; tab pages get a floating tab bar, task pages a sticky action."""
     n = DOTS[key]
     in_flow = key.startswith("apply") or key == "payment"
-    crumbs = " · ".join(f'<a href="{k}.html">{t}</a>' if k != key else f"<b>{t}</b>" for k, t in FLOW)
+    crumbs = '<a href="../public/login.html">1 Sign in</a> · ' + " · ".join(f'<a href="{k}.html">{t}</a>' if k != key else f"<b>{t}</b>" for k, t in FLOW)
     left = f'<a class="hbtn" href="{back}" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>' if back else '<img src="../assets/sksu-seal.png" alt="SKSU seal">'
     # top app bar: the step while applying, the test name on Home, nothing else (the screen has its own heading)
     ttl = f"Application · step {n + 1} of 5" if in_flow else ("SKSU TPT<small>SY 2027–2028</small>" if key == "home" else "")
@@ -512,7 +513,7 @@ HOME = {
         ("result.html", "See result")),
     "chosen": home_view("Program chosen · Apr 22", 5,
         '<div class="hero"><span class="lbl">Your program</span><span class="amt" style="font-size:22px">BS Civil Engineering</span><span class="lbl">Isulan Campus</span></div>'
-        '<small>The Registrar’s Office will contact you about enrolment.</small>' + plist(row("Result PDF", "Official copy with a verify link", "", "../docs/result-pdf.html"))),
+        '<small>The Registrar’s Office will contact you about enrolment.</small>' + plist(row("Full result", "Download PDF", "", "../docs/result-pdf.html"))),
     "absent": home_view("Absent · Mar 14", 3,
         '<div class="alertbox warn">There is no score for you in the Testing Center file, so you are marked absent.</div>'
         '<small>You can take the exam in Schedule 2 (Apr 25–26), without paying again if the office allows it. Your details are filled in.</small>'
@@ -623,14 +624,22 @@ phone("payment", "Payment", """<h1 class="gh">Pay at an SKSU cashier</h1>
     row("Kalamansig, Bagumbayan, Lutayan, Palimbang", "Campus cashier", "Mon–Fri")) + """
 <small>Open 8:00 AM – 5:00 PM (Saturday until 12:00 noon). Bring this code. After you pay, the cashier records it and you get your examinee number here.</small>""",
       cta=("home.html", "Done"), back="apply-review.html",
-      extra='<a class="mocklink" href="seat.html#approved">Mockup: cashier recorded the payment →</a>',
-      overlays=toast("submitted", "ok", OK, "Application submitted", "Next, pay at an SKSU cashier.")
-      + modal("online", "info", "", "Online payment (when turned on)", '<p style="margin:0">Shown instead of the cashier screen only if the office turns on online payment for the school year.</p><div class="hero"><span class="lbl">Send ₱275.00 to</span><span class="amt" style="font-size:20px">[GCASH OR BANK ACCOUNT]</span></div><div class="fld"><label class="cap" for="r">Reference number</label><input id="r" inputmode="numeric" value="1009 284 551 203" class="mono"><small>13 digits, from the GCash receipt.</small></div><div class="fld"><label class="cap">Receipt</label><a class="picker" href="#uploading"><span class="ph"></span><span class="grow"><b>receipt.jpg</b><small>Made smaller on your phone: 4.8 MB to 310 KB</small></span><span class="end">Change</span></a></div>', '<a class="go" href="payment-waiting.html#sent">Send receipt</a><a class="back" href="#">Close</a>')
-      + toast("ref-used", "bad", BAD, "Reference number already used", "Another applicant sent this GCash reference. Check your receipt.")
-      + modal("uploading", "info", '<span class="spin"></span>', "Sending receipt · 72%", '<div class="progress"><span style="width:72%"></span></div>', '<a class="back" href="#">Cancel</a>'),
-      states=[("submitted", "Arrived after submit"), ("online", "Online payment (when turned on)"), ("uploading", "Online: uploading"), ("ref-used", "Online: reference already used")])
+      extra='<a class="mocklink" href="seat.html#approved">Mockup: cashier recorded the payment →</a><a class="mocklink" href="payment-online.html">Later: online payment screen →</a>',
+      overlays=toast("submitted", "ok", OK, "Application submitted", "Next, pay at an SKSU cashier."),
+      states=[("submitted", "Arrived after submit")])
 
-phone("payment-waiting", "Waiting for approval", """<p class="eyebrow">Only when online payment is turned on</p><h1 class="gh">Receipt sent</h1><p>The admission office checks receipts within one working day. You will get a notification and an email.</p>
+phone("payment-online", "Online payment", """<span class="offtag">Online payment (off for now)</span><h1 class="gh">Pay online</h1>
+<div class="hero"><span class="lbl">Send ₱275.00 to</span><span class="amt" style="font-size:20px">[GCASH OR BANK ACCOUNT]</span><span class="lbl">Account name: Sultan Kudarat State University</span></div>
+<div class="ghead">Then send your receipt</div>
+<div class="fld"><label class="cap" for="r">Reference number</label><input id="r" inputmode="numeric" value="1009 284 551 203" class="mono"><small>13 digits, from the GCash or bank receipt.</small></div>
+<div class="fld"><label class="cap">Receipt photo</label><a class="picker" href="#uploading"><span class="ph"></span><span class="grow"><b>receipt.jpg</b><small>Made smaller on your phone: 4.8 MB to 310 KB</small></span><span class="end">Change</span></a></div>
+<small>Shown instead of the cashier screen only when the office turns on online payment for the school year.</small>""",
+      cta=("payment-waiting.html#sent", "Send for checking"), back="payment.html",
+      overlays=modal("uploading", "info", '<span class="spin"></span>', "Sending receipt · 72%", '<div class="progress"><span style="width:72%"></span></div>', '<a class="back" href="#">Cancel</a>')
+      + toast("ref-used", "bad", BAD, "Reference number already used", "Another applicant sent this reference. Check your receipt."),
+      states=[("uploading", "Uploading"), ("ref-used", "Reference already used")])
+
+phone("payment-waiting", "Waiting for approval", """<span class="offtag">Online payment (off for now)</span><h1 class="gh">Waiting for approval</h1><p>The admission office checks receipts within one working day. You will get a notification and an email.</p>
 """ + plist(row("Reference no.", "", '<span class="mono">1009 284 551 203</span>'), row("Sent", "", "Jan 12, 8:10 AM"), row("Status", "", '<span class="dot a"></span>For review')),
       extra='<a class="mocklink" href="seat.html#approved">Mockup: payment approved →</a><a class="mocklink" href="payment-rejected.html">Mockup: sent back →</a>',
       overlays=toast("sent", "ok", OK, "Receipt sent", "You will be notified when it is checked."), states=[("sent", "Just sent")])
@@ -643,7 +652,7 @@ phone("payment-rejected", "Sent back", """<h1 class="gh">Please fix your applica
       overlays=modal("voided", "warn", WARN, "Payment cancelled", '<div class="alertbox warn"><div>Reason: the OR number was recorded for another applicant.</div></div><p style="margin:0">Your exam slot was released. Pay again at an SKSU cashier, then pick an exam slot. Your application stays as it is.</p>', '<a class="go" href="payment.html">Pay again</a><a class="back" href="#">Close</a>')
       + modal("closed-out", "warn", WARN, "Schedule 2 registration has closed", '<p style="margin:0">It closed before you sent the fix. You can apply for Schedule 3. Your details are copied from this application.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="#">Close</a>')
       + toast("resent", "ok", OK, "Sent again", "The admission office will check it. You will get a notification.")
-      + modal("receipt", "warn", WARN, "Please fix your receipt (online payment)", '<div class="alertbox warn"><div>“The receipt photo is blurry. The reference number cannot be read.”</div></div><div class="fld"><label class="cap" for="r2">Reference number</label><input id="r2" inputmode="numeric" value="1009 284 551 203" class="mono"></div>', '<a class="go" href="payment-waiting.html#sent">Send again</a><a class="back" href="#">Close</a>'),
+      + modal("receipt", "warn", WARN, "Please fix your receipt", '<span class="offtag">Online payment (off for now)</span><div class="alertbox warn"><div>“The receipt photo is blurry. The reference number cannot be read.”</div></div><div class="fld"><label class="cap" for="r2">Reference number</label><input id="r2" inputmode="numeric" value="1009 284 551 203" class="mono"></div>', '<a class="go" href="payment-waiting.html#sent">Send again</a><a class="back" href="#">Close</a>'),
       states=[("resent", "Sent again"), ("receipt", "Online: receipt sent back"), ("voided", "Payment voided by the admission office"), ("closed-out", "Too late for this schedule")])
 
 phone("seat", "Pick an exam slot", """<h1 class="gh">Exam slot</h1><p>Choose a campus and date. Your room and seat are assigned when you confirm.</p>
@@ -709,21 +718,21 @@ phone("survey", "Survey", """<h1 class="gh">Exam survey</h1><p>10 statements, ab
       states=[("missing", "Missing answer"), ("thanks", "Sent"), ("already", "Already answered")])
 
 subj = [("English", 612, 8), ("Science", 548, 6), ("Mathematics", 571, 7), ("Filipino", 655, 9), ("Social Studies", 530, 6), ("ESM Competency", 566, 7)]
-sbars = "".join(f'<div class="subj"><div class="h"><span>{n}</span><span><b class="mono">{s}</b><span style="color:#5f6662"> · stanine {t}</span></span></div><div class="t"><span style="width:{round((s - 200) / 6)}%"></span></div></div>' for n, s, t in subj)
 phone("result", "Result", f"""<p class="eyebrow">SKSU TPT · Schedule 1 · released Apr 20</p>
-<div class="score"><span class="lbl" style="color:#5f6662;font-size:13px">Overall standard score</span><span class="n">584</span><span>Stanine 7 of 9 · Above average</span></div>
+<div class="score"><span class="outcome ok">Qualified</span><span class="lbl" style="color:#5f6662;font-size:13px">Overall standard score</span><span class="n">584</span><span>Stanine 7 of 9 · Above Average</span></div>
 <div class="ghead">Programs you qualify for</div>""" + plist(
     row("BS Civil Engineering", "Isulan · cut-off 530", '<span class="dot g"></span>1st choice'),
     row("BS Information Technology", "ACCESS · cut-off 500", '<span class="dot g"></span>2nd choice'),
     row("BS Criminology", "Isulan · cut-off 480", '<span class="dot g"></span>3rd choice'),
-    row("41 other programs", "", "", "#cutoffs")) + f"""
-<div class="ghead">By subject</div>{sbars}<small>Scores are as given by the SKSU Testing Center. 500 is the average.</small>
-<small>Before you choose, answer the 10-statement exam survey.</small>""",
-      cta=("survey.html", "Choose your program"), extra='<a class="back" href="../docs/result-pdf.html">Save result as PDF</a>',
+    row("Other programs you qualify for", "", "41", "#cutoffs")) + """
+<small>Next: answer the 10-statement exam survey, then choose your program. Your full result, with every subject, is in the PDF.</small>""",
+      cta=("survey.html", "Choose your program"), extra='<a class="back" href="../docs/result-pdf.html">Download full result (PDF)</a>',
       overlays=modal("cutoffs", "info", "", "Programs you qualify for", plist(row("BS Civil Engineering", "Isulan", "530"), row("BS Information Technology", "ACCESS", "500"), row("BS Criminology", "Isulan", "480"), row("BS Agriculture", "Tacurong", "450")) + '<small>Cut-off = lowest overall score that qualifies.</small>', '<a class="back" href="#">Close</a>')
-      + modal("choose", "info", "", "Choose your program", '<div class="plist" style="margin:0">' + row("BS Civil Engineering", "Isulan · cut-off 530 · your score 584", "1st choice", "#chosen", "on", RADIO) + row("BS Information Technology", "ACCESS · cut-off 500 · your score 584", "2nd choice", "#chosen", "", RADIO) + '</div><small>The campus registrar contacts you about enrolment.</small>', '<a class="go" href="#chosen">Confirm</a><a class="back" href="#">Cancel</a>')
+      + modal("not-qualified", "info", "", "Your result", '<span class="outcome">Not qualified for your choices</span><div class="score" style="margin:0"><span class="lbl" style="color:#5f6662;font-size:13px">Overall standard score</span><span class="n">452</span><span>Stanine 4 of 9 · Low Average</span></div><p style="margin:0">Your score is below the cut-off of your three choices. This is not the end: you can still choose from programs that are open to your score, or apply again in a later schedule.</p>' + plist(row("BS Agriculture", "Tacurong · cut-off 450", "Open to you", "#chosen"), row("BSEd Filipino", "Kalamansig · cut-off 440", "Open to you", "#chosen")) + '<small>Questions? Open a support request.</small>', '<a class="go" href="survey.html">Choose from open programs</a><a class="back" href="../docs/result-pdf.html">Download full result (PDF)</a>')
+      + modal("absent", "info", "", "Your result", '<span class="outcome">Absent</span><p style="margin:0">There is no score for you in the Testing Center’s file, so you are marked absent for Schedule 1.</p><p style="margin:0">You can apply for Schedule 3 (registration Apr 11 – May 15). Your details are copied.</p>', '<a class="go" href="apply-review.html">Apply for Schedule 3</a><a class="back" href="support.html#new">Ask the office</a>')
+      + modal("choose", "info", "", "Choose your program", '<div class="plist" style="margin:0">' + row("BS Civil Engineering", "Isulan · cut-off 530 · your score 584", "1st choice", "#chosen", "on", RADIO) + row("BS Information Technology", "ACCESS · cut-off 500 · your score 584", "2nd choice", "#chosen", "", RADIO) + '</div>', '<a class="go" href="#chosen">Confirm</a><a class="back" href="#">Cancel</a>')
       + toast("chosen", "ok", OK, "BS Civil Engineering chosen", "The Isulan registrar will contact you."),
-      states=[("cutoffs", "Cut-offs"), ("choose", "Choose a program"), ("chosen", "Chosen")])
+      states=[("not-qualified", "Not qualified"), ("absent", "Absent"), ("cutoffs", "Programs you qualify for"), ("choose", "Choose a program"), ("chosen", "Chosen")])
 
 phone("profile", "My account", """<h1 class="gh">Account</h1>
 <div class="mehead"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)" class="pimg"><div><b>Maria Santos Dela Cruz</b><small>2×2 photo · locked after approval</small></div></div>
@@ -781,12 +790,33 @@ doc("docs/permit-pdf.html", "Permit PDF", f"""<div class="crumbs" style="text-al
 <div class="kv" style="flex:1"><span>Examinee no.</span><b class="mono" style="font-size:20px">500214</b><span>Name</span><b>DELA CRUZ, Maria Santos</b><span>Schedule</span><span>Schedule 1</span><span>Test center</span><span>Isulan Campus</span><span>Date and time</span><span>Saturday, March 14, 2027 · report by 7:30 AM, exam starts 8:00 AM</span><span>Room / seat</span><span>Room 4 · Seat 27</span></div>{QR}</div>
 <div class="alertbox info">Bring: Pencil No. 2 with eraser, this permit, school ID or any valid ID, and the official receipt if you paid at the cashier. Arrive by 7:30 AM.</div>
 <div style="margin-top:auto;display:flex;justify-content:space-between" class="muted"><span>Scan the QR to verify: sksu-tpt.com/v/…</span><span>Generated Jan 13, 2027</span></div></div>""")
-doc("docs/result-pdf.html", "Result PDF", f"""<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a> | <a href="../applicant/result.html">Back to result</a></div>
-<div class="paper">{LETTERHEAD}<h1 style="text-align:center">SKSU TPT · SY 2027–2028 · RESULT</h1>
-<div class="kv"><span>Examinee no.</span><b class="mono">500214</b><span>Name</span><b>DELA CRUZ, Maria Santos</b><span>Tested</span><span>March 14, 2027 · Isulan, Room 4</span></div>
-{table(["Subject", "Standard score", "Stanine", "Meaning"], [(n, f'<span class="mono">{s}</span>', t, ["", "Very low", "Low", "Below average", "Low average", "Average", "High average", "Above average", "Very high", "Outstanding"][t]) for n, s, t in subj] + [("<b>Overall</b>", '<b class="mono">584</b>', "<b>7</b>", "<b>Above average</b>")])}
-<small class="muted">Scores as provided by the SKSU Testing Center.</small>
-<div style="margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end"><span class="muted">Verify: sksu-tpt.com/v/…</span><div style="text-align:center"><div style="border-top:1px solid #18181b;width:220px;padding-top:4px">[DIRECTOR, TESTING CENTER]</div></div></div></div>""")
+# tptv3's own stanine words (result-pdf-2026.blade.php)
+MEANING = ["", "Low", "Below Average", "Below Average", "Low Average", "Middle Average", "High Average", "Above Average", "Above Average", "Outstanding"]
+QR = '<svg width="84" height="84" viewBox="0 0 7 7" role="img" aria-label="Verify QR" shape-rendering="crispEdges"><rect width="7" height="7" fill="#fff"/><path d="M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z" fill="#1b1d1c"/><path d="M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z" fill="#fff"/></svg>'
+SUBJ_ROWS = [("ENGLISH", 612, 8), ("SCIENCE", 548, 6), ("MATHEMATICS", 571, 7), ("FILIPINO", 655, 9), ("SOCIAL STUDIES", 530, 6), ("ESM COMPETENCY SCORE", 566, 7), ("OVERALL SCORE", 584, 7)]
+CUTOFFS = [("ACCESS CAMPUS", [("Bachelor in Elementary Education", 500), ("Bachelor of Science in Nursing", 650), ("Bachelor of Science in Criminology", 450)]),
+           ("TACURONG CAMPUS", [("Bachelor of Science in Biology", 450), ("Bachelor of Science in Accountancy", 600), ("Bachelor of Science in Hospitality Management", 450)]),
+           ("ISULAN CAMPUS", [("Bachelor of Science in Civil Engineering", 530), ("Bachelor of Science in Information Technology", 500), ("Bachelor of Science in Computer Science", 500)])]
+cut_rows = "".join(f'<tr><td colspan="2" class="camp">{c}</td></tr>' + "".join(f'<tr><td>{n}</td><td class="sc">{v}</td></tr>' for n, v in rows) for c, rows in CUTOFFS)
+doc("docs/result-pdf.html", "Result paper", f"""<div class="crumbs noprint" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a> | <a href="../applicant/result.html">Back to result</a></div>
+<p class="noprint muted" style="text-align:center;margin:6px 0">Preview of the result PDF the server builds for each student before release (tptv3 layout).</p>
+<div class="paper tptpaper">
+<div class="tphead"><img src="../assets/sksu-seal.png" alt="SKSU seal"><div><small>Republic of the Philippines</small><b>SULTAN KUDARAT STATE UNIVERSITY</b><small>EJC Montilla, City of Tacurong, 9800 · Province of Sultan Kudarat</small><small>www.sksu.edu.ph · [OFFICE EMAIL] · [OFFICE PHONE]</small></div></div>
+<p class="tpoffice">Guidance and Testing Center</p>
+<h1 class="tptitle">SKSU TERTIARY PLACEMENT TEST RESULT 2027</h1>
+<div class="tpinfo"><div class="kv"><span>NAME OF EXAMINEE</span><b>: DELA CRUZ, MARIA SANTOS</b><span>EXAMINEE NUMBER</span><b>: 500214</b><span>PREFERRED PROGRAM</span><b>: Isulan – BS Civil Engineering</b><span>DATE OF EXAMINATION</span><b>: March 14, 2027</b></div>
+<div class="tpside"><img src="../assets/sample-photo.svg" alt="2×2 photo (sample)">{QR}</div></div>
+<table class="tptable"><thead><tr><th>SUBJECT</th><th>STANDARD SCORE</th><th>STANINE</th><th>QUALITATIVE INTERPRETATION</th></tr></thead><tbody>{"".join(f'<tr><td><b>{n}</b></td><td class="sc">{sc}</td><td class="sc">{t}</td><td>{MEANING[t]}</td></tr>' for n, sc, t in SUBJ_ROWS)}</tbody></table>
+<p class="tpnote"><b>OVERALL SCORE</b> – The composite score based on all subjects taken in the SKSU TPT. This score is used for admission to all other college programs not included under the ESM Score.</p>
+<p class="tpnote"><b>ESM COMPETENCY SCORE</b> – The composite score based only on English, Mathematics, and Science. This score is used for admission to the following college programs: Nursing, Midwifery, Medical Technology, Electronics Engineering, Civil Engineering, Computer Engineering, Computer Science, Fisheries, Biology, Accountancy, Management Accounting, Accounting Information Systems, Mathematics Education, and Science Education.</p>
+<h2 class="tpsub">SKSU Tertiary Placement Test Cut-off Scores Per Program</h2>
+<p class="tpnote">The cut-off score is the minimum required score to qualify for a specific program and only applicants who meet or exceed the prescribed standard are eligible for selection.</p>
+<table class="tptable cut"><thead><tr><th>PROGRAM</th><th>STANDARD SCORE</th></tr></thead><tbody>{cut_rows}<tr><td colspan="2" class="muted">… every campus and program, from Campuses and programs</td></tr></tbody></table>
+<div class="tpsign"><div><small>Prepared by:</small><b>[NAME], LPT</b><small>PRC License No.: [NUMBER]</small><small>Personnel, Guidance and Testing Center</small></div>
+<div><small>Interpreted by:</small><b>[NAME], RPm, RPsy</b><small>PRC License No.: [NUMBER]</small><small>University Psychometrician</small></div>
+<div><small>Noted:</small><b>[NAME], RGC</b><small>PRC License No.: [NUMBER]</small><small>Director, Guidance and Testing Center</small></div></div>
+<p class="tpfoot">Scan the QR to check this result is genuine (it shows only valid or not, the name and the examinee number). · VISION · MISSION · MAXIM · CORE VALUES of the university, as on tptv3's result.</p>
+</div>""")
 doc("docs/sms.html", "Text messages", """<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a> | <a href="../admin/messages.html">Messages admin</a></div>
 <div class="smsgrid">""" + "".join(f'<div class="smsw"><b>{t}</b><div class="sms">{m}</div><small class="muted">{len(m)} of 160 characters</small></div>' for t, m in [('Payment recorded', 'SKSU TPT: Paid at Isulan cashier, OR 0048190. Exam no. 500214. Pick your exam slot by Mar 1: sksu-tpt.com/slot'), ('Sent back', 'SKSU TPT: Please fix your application: the photo is not a 2x2 ID photo. Open sksu-tpt.com/fix'), ('Exam slot booked', 'SKSU TPT: Isulan, Sat Mar 14, Room 4 seat 27. Report by 7:30AM. Permit: sksu-tpt.com/permit'), ('Exam slot changed', 'SKSU TPT: Your exam moved to ACCESS, Sun Mar 15, Room 18 seat 6. New permit: sksu-tpt.com/permit'), ('Exam tomorrow', 'SKSU TPT: Exam tomorrow, Isulan Room 4. Report by 7:30AM, exam 8:00AM. Bring permit, ID, Pencil No. 2.'), ('Results out', 'SKSU TPT: Your result is ready: sksu-tpt.com/result')]) + """</div>""")
 doc("docs/email-approved.html", "Email: approved", """<div class="crumbs" style="text-align:center;padding-top:12px"><a href="../index.html">All pages</a></div>
@@ -1350,10 +1380,12 @@ admin("scores", "Import scores", f"""{rounds_bar(1)}{rail(SCORE_STEPS, 3, f'''<d
       + modal("commit", "warn", WARN, "Approve 9,088 scores?", '<p class="muted" style="margin:0">They are saved exactly as in the file. Students cannot see them until you publish. The file and your approval go in the activity log.</p>', btn("Cancel", "#") + btn("Approve", "results.html#committed", "primary")),
       states=[("rail-min", "Steps hidden"), ("uploading", "Uploading"), ("checking", "Checking rows"), ("bg", "Running in background"), ("summary", "Import summary"), ("map", "Match columns"), ("missing", "Required column missing"), ("wrongsched", "Wrong schedule's file"), ("commit", "Approve confirm")])
 
-RESULTS_BAR = ('<div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st">Not released</span><label for="rel">Release on</label><input id="rel" type="datetime-local" value="2027-04-20T09:00"></span>'
-               '<span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + btn("Publish now", "#release", "primary") + '</span></div>')
+RESULTS_BAR = ('<div class="setrow"><span>Result PDFs: <b>6,210 of 9,088</b> ready · building in the background</span><span class="muted">Publish opens when all are ready</span></div>'
+               '<div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st">Not released</span><label for="rel">Release on</label><input id="rel" type="datetime-local" value="2027-04-20T09:00"></span>'
+               '<span style="display:flex;gap:8px">' + btn("Save date", "#date-ok") + '<a class="btn primary disabled" aria-disabled="true" title="Waiting for result PDFs">Publish now</a>' + '</span></div><label class="chkrow"><input type="checkbox" checked> Publish when the PDFs are ready (if the release date has passed)</label>')
 admin("results", "Results", f"""{rounds_bar(1)}<div class="kpis"><div class="kpi"><span>Scored</span><b>9,088</b></div><div class="kpi"><span>Absent</span><b>635</b></div></div>
 <div class="setrow"><span style="display:flex;gap:10px;align-items:center"><span class="st live">Published</span>Released Apr 20, 9:00 AM · 9,088 examinees can see their scores</span>{btn("Hide results", "#hide")}</div>
+<p class="guideline">Result PDFs: 9,088 of 9,088 ready · a corrected score rebuilds only that student's PDF</p>
 {list_page(stabs([("All scored", "9,088"), ("Qualified for 1st choice", "6,214"), ("Not qualified", "2,874"), ("Absent", "635")]), filters("Name or examinee no.", [("Campus", ["Any campus", "Isulan", "ACCESS, Tacurong"]), ("Program", ["Any program (type to search)", "BS Civil Engineering", "BS Nursing"])], more=True, right=btn("Export (Excel)", "exports.html#queued"), showing="Showing <b>412</b> · Qualified for 1st choice · BS Civil Engineering"),
 table(["Examinee", "1st choice", "Overall standard score", "Stanine", ""], [(two(f'<span class="ink">{nm}</span>', no), two(pr, cp), f'<span class="num">{sc}</span>', stn, rowact("result-detail.html", "")) for no, nm, pr, cp, sc, stn in [
     ("500214", "Maria S. Dela Cruz", "BS Civil Engineering", "Isulan", "584", "7"), ("500176", "Datu R. Mamalinta", "BS Fisheries", "Palimbang", "512", "6"),
@@ -1737,8 +1769,11 @@ def board(path, title, intro, sections, rules):
             if f:
                 run.append(f)
         return out
-    secs = "".join(f'<h2 class="sec" id="stage-{i}">{name}</h2>{rows(frames)}' for i, (name, frames) in enumerate(sections))
-    chips = "".join(f'<a href="#stage-{i}">{name}</a>' for i, (name, _) in enumerate(sections))
+    def sec(i, name, frames, kind=""):
+        body = rows(frames)
+        return f'<h2 class="sec" id="stage-{i}">{name}</h2>' + (f'<div class="later">{body}</div>' if kind == "later" else body)
+    secs = "".join(sec(i, *section) for i, section in enumerate(sections))
+    chips = "".join(f'<a href="#stage-{i}">{section[0]}</a>' for i, section in enumerate(sections))
     rule_html = "".join(f"<div><b>{t}</b>{d}</div>" for t, d in rules)
     doc(path, title, f"""<div class="board">
 <div class="crumbs"><a href="{pre}index.html">All pages</a></div>
@@ -1750,86 +1785,67 @@ def board(path, title, intro, sections, rules):
 
 
 P, D = "phone", "desk"
-board("APPLICANT-JOURNEY-MOCKUP.html", "Applicant: the full journey",
-      "Every screen a student sees, from the public page to the result, drawn on a phone because most applicants use one. "
-      "Click any screen to open it.",
-      [("Start", [
-          (P, "applicant/splash.html", "S", "Splash", "Seal and wordmark while the app loads."),
-          (P, "applicant/welcome-1.html", "W1", "Welcome 1 of 3", "Big type, one idea, Skip on top."),
-          (P, "applicant/welcome-2.html", "W2", "Welcome 2 of 3", ""),
-          (P, "applicant/welcome-3.html", "W3", "Welcome 3 of 3", "Get started, or sign in if you already applied.")]),
-       ("Find and sign in", [
-          (D, "public/landing.html", "1", "Public home", "What the test is, the four steps and the school year dates. One green button."),
-          (P, "public/landing.html", "1b", "Public home on a phone", "Same page at phone width; the menu folds away.", True),
-          (P, "public/login.html", "2", "Sign in", "Continue with Google, as in tptv3."),
-          (P, "public/login.html#loading", "2a", "Signing in", "Shown while Google answers.", True),
-          (P, "public/login.html#google-error", "2b", "Sign-in failed", "Nothing saved; one Try again button.", True),
-          (P, "public/login.html#closed", "2c", "Registration closed", "Per schedule; can still sign in to see a permit or result.", True)]),
-       ("Apply", [
-          (P, "applicant/home.html#not-started", "3", "Home: first time", "The four steps and the closing date. One button: Start."),
-          (P, "applicant/home.html#draft", "3b", "Home: draft", "Where they stopped; Continue.", True),
-          (P, "applicant/home.html#offline", "3a", "Offline", "Typing is kept and saved when the signal is back.", True),
-          (P, "applicant/apply-personal.html", "4", "About you", "Name, birth date, contact and a 2×2 photo made smaller on the phone."),
-          (P, "applicant/apply-personal.html#photo-bad", "4a", "Photo rejected", "No face found or too dark; choose another.", True),
-          (P, "applicant/apply-personal.html#upload-failed", "4b", "Upload failed", "Signal dropped; tap to retry.", True),
-          (P, "applicant/apply-personal.html#saved", "4c", "Autosaved", "A quiet confirmation, no button to press.", True),
-          (P, "applicant/apply-personal.html#age", "4d", "Birth date error", "Says what is wrong and how to fix it.", True),
-          (P, "applicant/apply-school.html", "5", "School", "Type, school, year, GWA, strand and documents."),
-          (P, "applicant/apply-programs.html", "6", "Programs", "Three choices in order; a nudge to add the third."),
-          (P, "applicant/apply-programs.html#picker", "6a", "Program picker", "Campus first, then program.", True),
-          (P, "applicant/apply-programs.html#dup", "6b", "Duplicate choice", "Can’t pick the same program twice.", True),
-          (P, "applicant/apply-review.html", "7", "Review", "Everything on one screen with Edit links."),
-          (P, "applicant/apply-review.html#confirm", "7a", "Submit?", "Says what can and can’t change after.", True),
-          (P, "applicant/apply-review.html#submitting", "7b", "Submitting", "Don’t close the page.", True),
-          (P, "applicant/apply-review.html#missing", "7c", "Something missing", "Names exactly what is missing.", True)]),
-       ("Pay", [
-          (P, "applicant/home.html", "8", "Home: submitted", "The code to show the cashier, office hours, Show my code."),
-          (P, "applicant/home.html#chair", "8b", "Home: waiting for chairperson", "Transferees only.", True),
-          (P, "applicant/home.html#sent-back", "8c", "Home: sent back", "What to fix; Fix and send again.", True),
-          (P, "applicant/payment.html#submitted", "8d", "Pay at an SKSU cashier", "A code to show, where to pay, office hours. Nothing to upload."),
-          (P, "applicant/payment.html#online", "8a", "Later: online payment", "Only when the office turns it on.", True),
-          (P, "applicant/payment-waiting.html#sent", "9", "Later: receipt sent", "Online payment only.", True),
-          (P, "applicant/payment-rejected.html", "10", "Sent back: please fix", "Photo or details, the office’s remarks, Send again."),
-          (P, "applicant/payment-rejected.html#voided", "10a", "Payment cancelled", "An admin voided it; the reason, then pay again.", True),
-          (P, "applicant/payment-rejected.html#closed-out", "10b", "Too late for this schedule", "Apply for the next schedule, details filled in.", True),
-          (D, "docs/email-approved.html", "11", "Email: payment recorded", "OR no., examinee number and one button: pick an exam slot."),
-          (D, "docs/email-rejected.html", "12", "Email: sent back", "What to fix and a link straight back.")]),
-       ("Exam slot and permit", [
-          (P, "applicant/home.html#approved", "12b", "Home: paid", "Examinee number; Pick exam slot by Mar 1."),
-          (P, "applicant/seat.html#approved", "13", "Pick an exam slot", "Live seats left per exam slot; full ones are greyed."),
-          (P, "applicant/seat.html#loading", "13a", "Loading exam slots", "Skeleton rows, never a blank screen.", True),
-          (P, "applicant/seat.html#confirm", "13b", "Confirm exam slot", "One change allowed until Mar 1.", True),
-          (P, "applicant/seat.html#taken", "13c", "Exam slot just filled", "Someone booked the last seat first.", True),
-          (P, "applicant/home.html#booked", "13d", "Home: exam slot booked", "Date, campus, room and seat, report time; View permit.", True),
-          (P, "applicant/permit.html#booked", "14", "Permit", "QR, number, room and seat. Works offline once opened."),
-          (P, "applicant/permit.html#making", "14a", "Making the PDF", "Built once, saved for next time.", True),
-          (D, "docs/permit-pdf.html", "15", "Permit PDF", "A4 with letterhead, photo and verify QR.")]),
-       ("After exam day", [
-          (P, "applicant/home.html#exam-done", "16", "Home: waiting for results", "Release date."),
-          (P, "applicant/home.html#absent", "16b", "Home: absent", "Apply for Schedule 2 without paying again.", True),
-          (P, "applicant/result-pending.html", "16c", "Waiting for results (detail)", "Release date and the exam taken.", True),
-          (P, "applicant/result-pending.html#absent", "16a", "Marked absent", "No score in the file; apply for the next schedule or ask the office.", True),
-          (D, "docs/email-results.html", "18", "Email: results out", "One button to the result."),
-          (P, "applicant/home.html#result-out", "18b", "Home: result out", "Overall score and stanine; See result."),
-          (P, "applicant/result.html", "19", "Result", "Overall score, stanine, plain meaning, each subject."),
-          (P, "applicant/result.html#cutoffs", "19a", "Program cut-offs", "Qualified or not per choice.", True),
-          (P, "applicant/survey.html", "19b", "Exam survey", "The 10 tptv3 statements; needed before choosing.", True),
-          (P, "applicant/survey.html#missing", "19c", "Survey: missing answer", "All 10 are required; comments optional.", True),
-          (P, "applicant/result.html#choose", "19d", "Choose a program", "Only programs they qualify for.", True),
-          (P, "applicant/result.html#chosen", "19e", "Program chosen", "The registrar contacts them.", True),
-          (P, "applicant/home.html#chosen", "19d", "Home: program chosen", "Done; result PDF.", True),
-          (D, "docs/result-pdf.html", "20", "Result PDF", "Official copy with verify link.")]),
-       ("Notifications and support", [
-          (P, "applicant/notifications.html", "21", "Notifications", "Every update in one list, newest first."),
-          (P, "applicant/support.html#new", "21a", "New support request", "Topic, message, optional photo.", True),
-          (P, "applicant/support-ticket.html", "21b", "Office reply", "A thread; reply or mark as solved.", True),
-          (P, "applicant/support.html#one-open", "21c", "Limit reached", "One open request; 5 per school year.", True),
-          (D, "docs/sms.html", "22", "Text messages", "Every SMS, under 160 characters.")]),
-       ("Account", [
-          (P, "applicant/profile.html", "23", "My account", "Details locked after approval; request a change through Support."),
-          (P, "applicant/profile.html#photo", "23a", "Change photo", "", True),
-          (P, "applicant/profile.html#history", "23b", "My history", "Every step with its date.", True),
-          (D, "public/error.html", "24", "Error pages", "404, busy queue and server error, each with a next step.")])],
+board("APPLICANT-JOURNEY-MOCKUP.html", "Student flow",
+      "The path every student takes, in order: sign in, fill up the application, submit, pay, get approved, see the exam schedule, wait for results, see them. "
+      "Click any screen to open it. Side paths and extra screens are further down.",
+      [("1 · Sign in", [
+          (P, "public/login.html", "1", "Sign in with Google", "One button, as in tptv3.")]),
+       ("2–5 · Fill up the application", [
+          (P, "applicant/home.html#not-started", "2", "Home: start", "The steps and the closing date; Start."),
+          (P, "applicant/apply-personal.html", "2", "About you", "Name, birth date, address, contact, 2×2 photo."),
+          (P, "applicant/apply-school.html", "3", "School", "School, year, general average, strand."),
+          (P, "applicant/apply-programs.html", "4", "Programs", "Three choices in order."),
+          (P, "applicant/apply-review.html", "5", "Review and submit", "Everything on one screen; consent; Submit.")]),
+       ("6 · Submitted: pay at the cashier", [
+          (P, "applicant/payment.html#submitted", "6", "Pay at an SKSU cashier", "The code to show, where and when. Nothing to upload."),
+          (P, "applicant/home.html", "6", "Home: submitted", "Status and the code; Show my code.")]),
+       ("6b–6d · When online payment is turned on (off for now)", [
+          (P, "applicant/payment-online.html", "6b", "Upload receipt", "Reference no. and receipt photo."),
+          (P, "applicant/payment-waiting.html#sent", "6c", "Waiting for approval", "The office checks it within a working day."),
+          (P, "applicant/payment-rejected.html#receipt", "6d", "Sent back with remarks", "What to fix; send again.")], "later"),
+       ("7 · Approved: examinee number", [
+          (P, "applicant/home.html#approved", "7", "Home: approved", "Paid · OR no. · examinee no.; Pick exam slot by Mar 1."),
+          (D, "docs/email-approved.html", "7", "Email: payment recorded", "Examinee no. and one button.")]),
+       ("8 · Pick an exam slot", [
+          (P, "applicant/seat.html#approved", "8", "Pick an exam slot", "Campus, date, seats left, report time."),
+          (P, "applicant/seat.html#confirm", "8", "Confirm", "One change allowed until the deadline.")]),
+       ("9 · Exam slot booked: your schedule", [
+          (P, "applicant/home.html#booked", "9", "Home: schedule", "Date, campus, room, seat, report time."),
+          (P, "applicant/permit.html#booked", "9", "Permit", "QR, examinee no., photo; works offline.")]),
+       ("10 · Exam done: waiting for results", [
+          (P, "applicant/home.html#exam-done", "10", "Home: waiting for results", "Release date; we'll notify you."),
+          (P, "applicant/result-pending.html", "10", "Results not yet", "Release date and the exam taken.")]),
+       ("11 · Results are out", [
+          (P, "applicant/notifications.html", "11", "Notification", "“Your result is out.”"),
+          (P, "applicant/result.html", "11a", "Result: qualified", "Summary on screen: score, stanine, programs; Choose your program."),
+          (P, "applicant/result.html#not-qualified", "11b", "Result: not qualified", "Score, kind wording, what they can do next."),
+          (P, "applicant/result.html#absent", "11c", "Result: absent", "No score; apply for the next schedule."),
+          (D, "docs/result-pdf.html", "11d", "Full result (PDF)", "Built by the server before release, in tptv3’s layout; ready to download.")]),
+       ("12 · Survey", [
+          (P, "applicant/survey.html", "12", "Survey", "The 10 tptv3 statements; needed before choosing.")]),
+       ("13 · Choose program: done", [
+          (P, "applicant/result.html#choose", "13", "Choose a program", "Only programs they qualify for."),
+          (P, "applicant/result.html#chosen", "13", "Program chosen", "The registrar contacts them."),
+          (P, "applicant/home.html#chosen", "13", "Home: done", "Download full result (PDF).")]),
+       ("Side paths", [
+          (P, "applicant/home.html#sent-back", "S1", "Sent back (photo or details)", "Fix and send again.", True),
+          (P, "applicant/support.html#new", "S2", "Support request", "One open at a time.", True),
+          (P, "applicant/support-ticket.html", "S3", "Office reply", "Reply or mark as solved.", True),
+          (P, "applicant/home.html#absent", "S4", "Absent", "Apply for the next schedule.", True),
+          (P, "applicant/apply-t-programs.html", "S5", "Transferee: 2 choices", "Plus current school and grades.", True),
+          (P, "applicant/payment-chair.html", "S6", "Transferee: chairperson", "Approved, then pay at the cashier.", True)]),
+       ("More screens", [
+          (P, "applicant/splash.html", "M", "Splash", "", True),
+          (P, "applicant/welcome-1.html", "M", "Welcome", "", True),
+          (D, "public/landing.html", "M", "Public home", "Install the app section.", True),
+          (P, "applicant/apply-personal.html#photo-bad", "M", "Photo rejected", "", True),
+          (P, "applicant/apply-review.html#missing", "M", "Something missing", "", True),
+          (P, "applicant/home.html#draft", "M", "Home: draft", "", True),
+          (P, "applicant/home.html#offline", "M", "Offline", "", True),
+          (P, "applicant/seat.html#taken", "M", "Exam slot just filled", "", True),
+          (P, "applicant/profile.html", "M", "My account", "Locked after approval.", True),
+          (D, "docs/permit-pdf.html", "M", "Permit PDF", "", True),
+          (D, "public/error.html", "M", "Error pages", "", True)])],
       [("Few words, one action", "System font, 16 px text, 48 px tap targets, one main button per screen."), ("Never lose work", "Autosave, offline typing, retry on upload."),
        ("Say what happens next", "Every success says the next step; every error says how to fix it."), ("Safe answer first", "Dialogs put Cancel or Back below the main action."),
        ("Status in words", "Colour never carries meaning alone."), ("Phone first", "Every applicant screen is drawn at 390 px.")])
@@ -2216,7 +2232,7 @@ flow_links = " ".join(f'<a class="btn" href="{h}">{t} →</a>' for t, h in flows
 maptable = table(["Old route (tptv3)", "Old views", "New mockup page"], [(f'<span class="mono">{r}</span>', f'<span class="muted">{v}</span>', p) for r, v, p in MAP])
 doc("index.html", "All pages", f"""<div class="idx"><header><img src="assets/sksu-seal.png" alt="SKSU seal"><div><div class="wm"><b>Sultan Kudarat</b><span>State University</span></div><h1>Admission Test (TPT) v4 mockups</h1>
 <span class="muted">{len(PAGES) + 1} pages, one per screen. Light mode, sample data. Buttons and menus link like the real app. The yellow bar on a page lists its states (dialogs, toasts, loading, errors).</span></div></header>
-<div class="toplinks"><a href="ADMIN-FLOW.html"><b>Admin flow diagram</b><span>Setup to results with arrows; click any step</span></a><a href="ADMIN-JOURNEY-MOCKUP.html"><b>Admin journey</b><span>The whole school year in order, every form and state</span></a><a href="APPLICANT-JOURNEY-MOCKUP.html"><b>Applicant journey</b><span>Public page to result, on a phone</span></a><a href="PROCTOR-JOURNEY-MOCKUP.html"><b>Proctor journey</b><span>Exam day at the door</span></a></div>
+<div class="toplinks"><a href="APPLICANT-JOURNEY-MOCKUP.html"><b>Student flow</b><span>Sign in to results, in order, on a phone</span></a><a href="ADMIN-FLOW.html"><b>Admin flow diagram</b><span>Setup to results with arrows; click any step</span></a><a href="ADMIN-JOURNEY-MOCKUP.html"><b>Admin journey</b><span>The whole school year in order, every form and state</span></a><a href="PROCTOR-JOURNEY-MOCKUP.html"><b>Proctor journey</b><span>Exam day at the door</span></a></div>
 <section><h2 style="margin-bottom:10px">Walk a flow</h2><div style="display:flex;gap:8px;flex-wrap:wrap">{flow_links}</div></section>
 {grid}
 <section><h2 style="margin-bottom:10px">Coverage: every tptv3 route and view</h2><div class="mapt">{maptable}</div></section>

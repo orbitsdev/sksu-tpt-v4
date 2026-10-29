@@ -374,6 +374,10 @@ The dashboard shows the schedule's seats (total, taken, left, open exam days) an
 - **Keep tptv3's permit format** (layout, wording and order of fields the office and proctors already know): see tptv3 `resources/views/applicant/permit.blade.php` and `resources/views/livewire/permit-layout.blade.php`. The v4 mockup permit is a placeholder for the data, not the final layout.
 - What changes is speed and cleanliness: the permit is built once when the exam slot is booked (not on every view), saved as a small PDF, cached on the phone so it opens without signal, and the QR verifies on the public page.
 
+- **Result paper:** keep tptv3's layout (result-pdf-2026.blade.php): letterhead, "Guidance and Testing Center", "SKSU TERTIARY PLACEMENT TEST RESULT", NAME OF EXAMINEE / EXAMINEE NUMBER / PREFERRED PROGRAM / DATE OF EXAMINATION, the SUBJECT · STANDARD SCORE · STANINE · QUALITATIVE INTERPRETATION table (English, Science, Mathematics, Filipino, Social Studies, ESM Competency Score, Overall Score), the Overall and ESM explanations, the cut-off scores per campus and program, and the three signatories (Prepared by, Interpreted by, Noted). v4 only makes it lighter (an HTML page saved as PDF by the phone) and adds the photo and a verify QR. Stanine words as in tptv3: 9 Outstanding, 8–7 Above Average, 6 High Average, 5 Middle Average, 4 Low Average, 3–2 Below Average, 1 Low.
+- **ESM rule (from tptv3's result):** the cut-off for Nursing, Midwifery, Medical Technology, Electronics/Civil/Computer Engineering, Computer Science, Fisheries, Biology, Accountancy, Management Accounting, Accounting Information Systems, Mathematics Education and Science Education is checked against the **ESM Competency Score**; every other program uses the **Overall Score**. Each program in Campuses and programs needs a "Cut-off uses: Overall / ESM" setting.
+- **Privacy policy:** tptv3's privacy-policy.blade.php was reviewed and is likely outdated (it only covers Google sign-in data, not the application, photo, payment, scores or who sees them). v4 uses its own RA 10173 notice and terms, marked "Draft — for review by the SKSU Data Protection Officer"; only the office contact (sksutpt@gmail.com) is taken from tptv3. tptv3's terms text lives in its database (terms.blade.php only prints it).
+
 ## 16. Transferee test (2nd semester)
 
 Today the Guidance and Testing Center runs a separate walk-in test for transferees (for example Dec 13, 2026, ₱275, Testing Room, SKSU ACCESS Campus; the post still lists a 1st and 2nd batch, which v4 drops). The paper form asks for personal details, current school, current course and two preferred programs, and the program chairperson or college dean signs it after checking grades and slots.
@@ -496,3 +500,11 @@ Scheduled maintenance: a date and time window plus a message; students see a not
 
 - Once per school year: may someone who already got a result take the test again in the same school year?
 - Does the office want a printed slip for every payment, or only on request?
+
+
+## Student result: on screen, then a ready PDF
+
+- **On screen first:** the result screen shows the summary only: Qualified / Not qualified for your choices / Absent, overall standard score and stanine, the programs they qualify for, and the next step (survey, then choose a program; or apply in a later schedule / open a support request). It is light, so results day stays fast.
+- **Full result PDF, pre-built:** so the official tptv3 layout looks identical on every phone, the server builds each student's result PDF **in the background between Approve and Publish** (for example overnight). At release the student taps "Download full result (PDF)" and gets a ready file: nothing is built at peak time. A corrected score rebuilds only that student's PDF.
+- **Admin Results page:** shows "Result PDFs: 9,088 of 9,088 ready" (while building: "6,210 of 9,088"). Publish now is disabled until all are ready; "Publish when the PDFs are ready" releases automatically once the release date has passed.
+- **Student flow board:** mockups/APPLICANT-JOURNEY-MOCKUP.html shows the whole path in order, numbered 1–13, with online payment (6b–6d) drawn dashed as "off for now".

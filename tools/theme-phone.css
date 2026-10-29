@@ -278,3 +278,9 @@ body.boardpage .legend,body.boardpage .legend *{color:#3f4542}
 .phone .permit{flex-shrink:0}
 .permit .pname .mono{display:block;margin-top:2px}
 .permit .pg div.wide{grid-column:1/-1;border-right:0}
+
+/* screens that only exist when online payment is turned on */
+.offtag{display:inline-block;align-self:flex-start;font:500 12px var(--sys,system-ui);color:#5f6662;background:#eef0ef;border-radius:4px;padding:2px 8px;margin:0 0 8px}
+/* result outcome word above the score */
+.outcome{display:inline-block;align-self:flex-start;font:600 14px var(--sys,system-ui);color:#3f4542;background:#eef0ef;border-radius:4px;padding:3px 10px;margin-bottom:6px}
+.outcome.ok{color:#0b5a2e;background:#e6f2ea}
