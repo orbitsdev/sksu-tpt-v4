@@ -108,11 +108,11 @@ def plist_admin(items):
 
 
 def rowact(view, more="#menu", action=None):
-    """Row actions, all visible as quiet text: View, at most one action that fits the row, then ··· for rare or risky ones."""
-    act = f'<a class="btn" href="{action[1]}">{action[0]}</a> ' if action else ""
-    dots = f'<a class="btn" href="{more}" aria-label="More actions">···</a>' if more else ""
-    view_html = f'<a class="btn" href="{view}">View</a> ' if view else ""
-    return f'<span class="act">{view_html}{act}{dots}</span>'
+    """Row actions in three fixed slots so every row lines up: the row's action (green), View, then ··· for rare or risky ones."""
+    act = f'<a class="btn a-act" href="{action[1]}">{action[0]}</a>' if action else '<span></span>'
+    view_html = f'<a class="btn a-view" href="{view}">View</a>' if view else '<span></span>'
+    dots = f'<a class="btn a-more" href="{more}" aria-label="More actions">···</a>' if more else '<span></span>'
+    return f'<span class="act">{act}{view_html}{dots}</span>'
 
 
 def stabs(items, on=0):
@@ -1121,7 +1121,7 @@ STATUS_ACTION = {"Waiting for payment": ("Remind", "#bulk-remind"), "Approved": 
 def app_row(i, a):
     no, name, prog, campus, status, day, room = a
     action = STATUS_ACTION.get(status)
-    acts = '<span class="act">' + (f'<a class="btn" href="{action[1]}">{action[0]}</a> ' if action else "") + '<a class="btn" href="#view">View</a></span>' + (ROW_MENU if i == 0 else "")
+    acts = rowact("#view", "#menu", action) + (ROW_MENU if i == 0 else "")
     return (f'<tr data-href="#view" onclick="if(event.target.closest(\'a,input\'))return;location.hash=\'view\'"><td class="selcol"><input type="checkbox" aria-label="Select {name}"></td>'
             f'<td>{two(f"<span class=ink>{name}</span>", no or "no examinee no. yet")}</td><td>{two(prog, campus)}</td><td><span class="st">{status}</span></td>'
             f'<td>{two(day, room) if day else "—"}</td><td>{acts}</td></tr>')
