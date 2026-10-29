@@ -35,5 +35,6 @@ if(c)document.body.classList.add("side-collapsed")})();
 function topIfPane(){var t=location.hash&&document.getElementById(location.hash.slice(1));if(t&&t.classList.contains("pane"))window.scrollTo(0,0)}
 addEventListener("hashchange",topIfPane);addEventListener("load",topIfPane);
 </script>
+<script>(function(){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;function run(){document.querySelectorAll("[data-count]:not([data-done])").forEach(function(el){if(!el.offsetParent)return;el.dataset.done=1;var end=+el.dataset.count,t0=performance.now();(function step(t){var k=Math.min((t-t0)/600,1);el.textContent=Math.round(end*k).toLocaleString("en-US");if(k<1)requestAnimationFrame(step)})(t0)})}addEventListener("load",run);addEventListener("hashchange",function(){setTimeout(run,30)})})();</script>
 </body>
 </html>

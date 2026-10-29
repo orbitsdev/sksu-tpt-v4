@@ -69,3 +69,13 @@ Loading (grey placeholders), empty (what to do first), error (what went wrong an
 - Every change by staff goes in the **activity log**: who, what, when, old and new value.
 - Technical pages (Email and SMS, System status, Activity logs) sit in the **System** group at the bottom of the sidebar, for the super admin only.
 - Fast by design: lists load 25 rows at a time, search answers as you type (name, examinee no., OR no., reference), heavy work runs in the background.
+
+## 9. Motion
+
+Motion only explains what just happened; it never decorates.
+
+- **Where:** the check mark when the cashier records a payment, the student's result summary appearing, dialogs, bottom sheets, drawers and toasts opening, loading placeholders, progress bars and live counts (PDF building, release in progress), sidebar collapse, tab underlines, a finished step's circle on the step rail.
+- **How long:** under 0.3 s, ease-out. Only the check mark (0.4 s) and the loading shimmer (while loading) are longer.
+- **Never:** loops (except the shimmer while loading), bounces, confetti, autoplay, or anything that moves on its own.
+- **Cheap:** transform and opacity only, so low-end Android phones stay smooth. Numbers count up once.
+- **Reduce motion:** all of it is off when the phone or computer is set to reduce motion.
