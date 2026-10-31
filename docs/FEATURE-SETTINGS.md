@@ -58,3 +58,15 @@ Receipts to check (approver page), program chair/dean approval, results release,
   printed before the survey; the student is asked to answer it in the app.
 - **Support tickets**: tabs Mine · Not assigned · All open; new tickets given out in turn to Support desk staff;
   Reply / Take it. Program or slot changes are done by staff from the ticket.
+
+## Reports and Statistics (approved Nov 1, 2026; mockup `mockups/admin/reports-v2.html`)
+
+- **Statistics** is its own page (menu: Reports → Statistics): KPI tiles compared with the previous exam, and
+  varied charts: applicants per day (area), drop-off (funnel), examinees by campus (donut with values), who
+  applied (split bar for sex, columns for strand).
+- **Reports** work like Settings: search + grouped list on the left, the report on the right. Groups: Overview,
+  Applicants, Payments, Exam, Results, Feedback. New: Compare exams and years, Who applied, Receipts checked per
+  staff, Sent-back receipts, Top students, Top programs, Top schools and towns, Results given at the office,
+  Support tickets.
+- **Export** on every report: PDF (print), HTML page (share), Excel; "Hide student names" for lists of students;
+  every export logged. Reports stay admin-only for now; admins with report access see names.

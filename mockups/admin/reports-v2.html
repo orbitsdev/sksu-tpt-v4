@@ -1,0 +1,666 @@
+<title>TPT Reports and Statistics</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: a mockup board. Each screen sits in a frame (desktop admin like the Euphoria v2 prototype, phone for students), with a short "what changes" note beside it. */
+:root{
+  --ink:#17201b;--text:#2c3830;--muted:#5d6c63;--faint:#8a978f;--line:#e2e7e3;--soft:#f1f4f2;
+  --bg:#f5f7f5;--card:#ffffff;--side:#fafbfa;
+  --green:#0b4d2c;--btn:#0f7a3d;--tint:#e6f4eb;--gold:#f2c200;--gold-ink:#3d3000;
+  --red:#b42318;--red-bg:#fdecea;--amber:#8a5d00;--amber-bg:#fff3d1;--blue:#1d4ed8;--blue-bg:#e9f0ff;
+  --sans:Geist,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Geist Mono",ui-monospace,Consolas,monospace;
+  --shadow:0 1px 2px rgba(16,40,26,.06),0 8px 24px -12px rgba(16,40,26,.12);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e9efea;--text:#d4ddd7;--muted:#9eb0a5;--faint:#71837a;--line:#27332c;--soft:#1c2620;
+  --bg:#0e1411;--card:#161f1a;--side:#131b16;--tint:#143022;--red-bg:#3a1714;--amber-bg:#3a2e0f;--blue-bg:#16233f;--amber:#f0c25a;--red:#f28b82;--blue:#8fb0ff;--btn:#2fa565;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ink:#e9efea;--text:#d4ddd7;--muted:#9eb0a5;--faint:#71837a;--line:#27332c;--soft:#1c2620;
+  --bg:#0e1411;--card:#161f1a;--side:#131b16;--tint:#143022;--red-bg:#3a1714;--amber-bg:#3a2e0f;--blue-bg:#16233f;--amber:#f0c25a;--red:#f28b82;--blue:#8fb0ff;--btn:#2fa565;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.55 var(--sans);color:var(--text);background:var(--bg)}
+.wrap{max-width:1280px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:26px;line-height:1.2;color:var(--ink);margin:6px 0;text-wrap:balance}
+h2{font-size:19px;color:var(--ink);margin:44px 0 6px;display:flex;align-items:center;gap:10px;text-wrap:balance}
+h2 .n{font:600 12px var(--mono);background:var(--gold);color:var(--gold-ink);border-radius:6px;padding:2px 7px}
+h3{font-size:15px;color:var(--ink);margin:0 0 10px}
+p{margin:0 0 8px}.lead{color:var(--muted);max-width:780px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.small{font-size:12.5px}.muted{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--tint);color:var(--btn);white-space:nowrap}
+.tag.old{background:var(--soft);color:var(--muted)}.tag.new{background:var(--blue-bg);color:var(--blue)}.tag.warn{background:var(--amber-bg);color:var(--amber)}.tag.bad{background:var(--red-bg);color:var(--red)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}.toc a{border:1px solid var(--line);border-radius:99px;padding:4px 12px;text-decoration:none;color:var(--text);background:var(--card)}
+.toc a:hover{border-color:var(--btn)}
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:16px}
+.answer>div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.answer b{color:var(--ink)}
+.board{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:1000px){.board{grid-template-columns:1fr}}
+.why{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px}
+.why ul{margin:6px 0 0;padding-left:18px;columns:2 320px;column-gap:28px}.why li{margin:4px 0}
+/* desktop frame, Euphoria-v2 style: slim band + grouped sidebar */
+.desk{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--side);box-shadow:var(--shadow);min-width:0}
+.band{display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;background:linear-gradient(100deg,#073a21,#0b4d2c 55%,#0e5c34);color:#fff;border-bottom:3px solid var(--gold)}
+.band b{font-size:14.5px}.band .sp{flex:1}.band .who{font-size:12.5px;opacity:.9}
+.band .ava{width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--gold-ink);display:grid;place-items:center;font-weight:700;font-size:11.5px}
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:540px}
+
+.side{background:var(--card);border-right:1px solid var(--line);padding:8px 10px 16px;font-size:13.5px}
+.grp{font-size:11.5px;font-weight:600;color:var(--faint);padding:14px 10px 4px;letter-spacing:.03em;text-transform:uppercase}
+.nav{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:var(--text)}
+.nav.on{background:var(--tint);color:var(--btn);font-weight:600}
+.nav .c{margin-left:auto;font-size:11px;font-weight:600;background:var(--red-bg);color:var(--red);border-radius:99px;padding:0 7px}
+.nav .off{margin-left:auto;font-size:10.5px;color:var(--faint)}
+.nav.dim{color:var(--faint)}
+.page{padding:18px 20px 26px;min-width:0}
+.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ph h1{font-size:20px;margin:0}.ph .sp{flex:1}
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media (max-width:900px){.cards2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+/* Euphoria setting rows: words left, control right */
+.sw-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+.sw-row:last-child{border-bottom:none}
+.sw-row>span{min-width:0}.sw-row b{color:var(--ink);font-weight:600}
+.sw-row small{display:block;color:var(--muted);font-size:12.5px}
+.sw{position:relative;width:38px;height:22px;border-radius:99px;background:var(--line);flex:none;border:none;cursor:pointer}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--card);transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw.on{background:var(--btn)}.sw.on::after{left:19px}
+.sw:focus-visible,.btn:focus-visible,.opt:focus-visible{outline:2px solid var(--btn);outline-offset:2px}
+.opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.opt{display:flex;gap:8px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:13.5px}
+.opt.on{border-color:var(--btn);background:var(--tint)}
+.opt i{width:16px;height:16px;border-radius:50%;border:2px solid var(--faint);flex:none;margin-top:2px}
+.opt.on i{border:5px solid var(--btn)}
+.opt small{display:block;color:var(--muted)}
+.sel{border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:13px;background:var(--card);color:var(--ink);white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:var(--card);font:600 13.5px var(--sans);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--btn);border-color:var(--btn);color:#fff}
+.btn.ghost{border-color:transparent;background:none;color:var(--btn)}
+.btn.danger{color:var(--red)}
+.btn.big{height:46px;font-size:15px;width:100%}
+.savebar{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:14px}
+.note{border-radius:10px;padding:9px 12px;font-size:13px;margin:8px 0}
+.note.info{background:var(--blue-bg);color:var(--blue)}.note.warn{background:var(--amber-bg);color:var(--amber)}.note.ok{background:var(--tint);color:var(--btn)}
+/* queue */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:0;overflow-x:auto}
+.tabs span{padding:8px 11px;color:var(--muted);border-bottom:2px solid transparent;font-weight:500;white-space:nowrap}
+.tabs span.on{color:var(--ink);border-color:var(--btn)}
+.tabs i{font-style:normal;font-size:11px;background:var(--soft);color:var(--muted);border-radius:99px;padding:0 6px;margin-left:4px}
+.tabs span.on i{background:var(--tint);color:var(--btn)}
+.split{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);gap:14px}@media (max-width:900px){.split{grid-template-columns:1fr}}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
+.qr{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line)}
+.qr:last-child{border-bottom:none}
+.qr.on{background:var(--tint);box-shadow:inset 3px 0 0 var(--btn)}
+.av{width:38px;height:38px;border-radius:9px;background:var(--soft);display:grid;place-items:center;font-weight:700;color:var(--muted);font-size:12px}
+.nm{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt{text-align:right;font-size:12px;color:var(--muted);white-space:nowrap}
+.receipt{background:#fffdf4;border:1px dashed #d6cca2;border-radius:10px;padding:14px;font:12px var(--mono);color:#5a5236;min-height:190px;display:flex;flex-direction:column;justify-content:space-between}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13px;margin:10px 0}.facts dt{color:var(--muted)}.facts dd{margin:0;color:var(--ink);min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}@media (max-width:700px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi small{display:block;color:var(--muted);font-size:12px}.kpi b{font:650 22px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th.act,td.act{text-align:right;width:1%;white-space:nowrap}
+.btn.sm{height:32px;padding:0 12px;font-size:13px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+td b{color:var(--ink)}
+.chk{display:flex;flex-wrap:wrap;gap:6px}
+.chk span{border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:12.5px}
+.chk span.on{border-color:var(--btn);background:var(--tint);color:var(--btn);font-weight:600}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;max-width:460px}
+label.l{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+.field{border:1px solid var(--line);border-radius:9px;padding:8px 10px;color:var(--ink);background:var(--card)}
+/* phone frame */
+.phones{display:flex;flex-wrap:wrap;gap:18px}
+.phone{width:300px;max-width:100%;border:8px solid #1b231e;border-radius:34px;background:var(--bg);overflow:hidden;box-shadow:var(--shadow)}
+.pbar{background:linear-gradient(120deg,#073a21,#0b4d2c);color:#fff;padding:12px 14px;font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center}
+.pbody{padding:14px;display:flex;flex-direction:column;gap:10px;min-height:470px;font-size:13.5px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.dots{display:flex;gap:4px}.dots i{flex:1;height:4px;border-radius:9px;background:var(--line)}.dots i.on{background:var(--btn)}
+.upl{border:1.5px dashed var(--btn);border-radius:12px;padding:16px;text-align:center;color:var(--btn);font-weight:600}
+.cap{font-size:12.5px;color:var(--muted);margin-top:8px;max-width:300px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.flow span{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.flow em{font-style:normal;color:var(--faint)}
+/* settings: Euphoria / Claude style, sections left, one card right */
+.set{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start}
+.stabs{display:flex;flex-direction:column;gap:2px}
+.stab{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-radius:9px;padding:8px 10px;font:500 14px var(--sans);color:var(--text);cursor:pointer}
+.stab svg{color:var(--faint);flex:none}.stab:hover{background:var(--soft)}
+.stab.on{background:var(--tint);color:var(--btn);font-weight:600}.stab.on svg{color:var(--btn)}
+.stab .tag{margin-left:auto}
+.stab:focus-visible{outline:2px solid var(--btn);outline-offset:1px}
+.ssearch{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:0 10px;height:38px;background:var(--card);margin-bottom:8px;color:var(--faint)}
+.ssearch input{border:none;outline:none;background:none;font:14px var(--sans);color:var(--ink);width:100%;min-width:0}
+.spane h3{font-size:16px}
+@media (max-width:760px){.set{grid-template-columns:1fr}.stabs{flex-direction:row;flex-wrap:wrap;gap:4px}.stab{width:auto;white-space:nowrap}.ssearch{width:100%}}
+/* approver: search + 2x2 photo */
+.qsearch{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 0}
+.qsearch .box{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;height:42px;border:1.5px solid var(--btn);border-radius:10px;padding:0 12px;background:var(--card);color:var(--faint)}
+.qsearch .box input{border:none;outline:none;background:none;font:15px var(--sans);color:var(--ink);width:100%;min-width:0}
+.pic{display:block;border-radius:9px;background:var(--soft);overflow:hidden;flex:none}
+.pic svg{display:block;width:100%;height:100%}
+.qr .pic{width:38px;height:38px}
+.viewsw{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;justify-content:flex-end;padding:8px 0;pointer-events:none}
+.viewsw div{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;box-shadow:var(--shadow);pointer-events:auto}
+.viewsw button{border:none;background:none;border-radius:7px;padding:6px 14px;font:600 13px var(--sans);color:var(--muted);cursor:pointer}
+.viewsw button.on{background:var(--btn);color:#fff}
+body.asphone .desk{max-width:390px;margin:0 auto}
+body.asphone .board{grid-template-columns:1fr}
+
+body.asphone .set,body.asphone .split,body.asphone .cards2{grid-template-columns:1fr}
+body.asphone .stabs{flex-direction:row;flex-wrap:wrap;gap:4px}body.asphone .stab{width:auto;white-space:nowrap}
+body.asphone .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.asphone .band .who{display:none}
+body.asphone .page{padding:14px 12px}
+/* approver detail: header, photo + receipt, checks, details, actions */
+.det{display:flex;flex-direction:column;gap:14px}
+.det-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.det-h h3{margin:0 0 2px;font-size:16px}
+.compare{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;margin:0}
+.compare figure{margin:0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.compare figcaption{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.compare .pic{display:block;width:140px;height:140px;border:1px solid var(--line)}
+.compare .receipt{min-height:140px;height:140px;padding:12px}
+.zoom{text-align:right;opacity:.7;font-size:11px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid var(--line);padding-top:12px}
+.dgrid h4{margin:0 0 4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.dgrid .facts{margin:0;grid-template-columns:84px 1fr}
+.actions{display:grid;grid-template-columns:1fr auto;gap:8px}
+.actions .btn.danger{width:auto;padding:0 18px}
+.qr .pic{display:block}
+@media (max-width:560px){.compare{grid-template-columns:110px minmax(0,1fr)}.compare .pic{width:110px;height:110px}.compare .receipt{height:110px;min-height:110px}.dgrid{grid-template-columns:1fr}}
+body.asphone .compare{grid-template-columns:110px minmax(0,1fr)}body.asphone .compare .pic{width:110px;height:110px}body.asphone .compare .receipt{height:110px;min-height:110px}body.asphone .dgrid{grid-template-columns:1fr}
+.btn.big{height:auto;min-height:46px;padding:10px 16px;white-space:normal;line-height:1.25;text-align:center}
+.desk{container-type:inline-size}
+.nav svg{color:var(--faint);flex:none}.nav.on svg{color:var(--btn)}
+.nav .nl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav .off{margin-left:auto;font-size:10.5px;font-weight:600;color:var(--faint);border:1px solid var(--line);border-radius:6px;padding:0 6px}
+.nav.dim .nl{color:var(--faint)}
+.side{width:auto}
+@container (max-width:900px){.shell{grid-template-columns:56px minmax(0,1fr) !important}.side{display:block !important;padding:8px 6px}.side .nl,.side .off,.side .c{display:none}.side .grp{height:1px;padding:0;margin:8px 4px;background:var(--line);overflow:hidden;color:transparent}.nav{justify-content:center;padding:9px 0}}
+@container (max-width:420px){.shell{grid-template-columns:1fr !important}.side{display:none !important}}
+.res{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:12px}
+.res h4{margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tiles{display:grid;grid-template-columns:1.6fr repeat(4,minmax(0,1fr));gap:8px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.tile small{display:block;font-size:12px;color:var(--muted)}
+.tile b{display:block;font:650 20px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
+.tile.main{background:var(--tint);border-color:transparent}.tile.main b{font-size:26px;color:var(--btn)}
+.tile span{display:block;font-size:12px;color:var(--muted)}
+.plist{border:1px solid var(--line);border-radius:10px}
+.prow{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13.5px}
+.prow:last-child{border-bottom:none}
+.pk{color:var(--muted)}.pn{color:var(--ink);font-weight:500;min-width:0}
+@container (max-width:640px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile.main{grid-column:1/-1}.prow{grid-template-columns:1fr auto}.pk{grid-column:1/-1;font-size:12px}}
+.idsteps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:13.5px}
+.idsteps b{color:var(--ink)}
+.idin{display:flex;align-items:center;gap:8px;margin:6px 0 2px;flex-wrap:wrap}
+.idin input{height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font:15px var(--mono);background:var(--card);color:var(--ink);width:170px;max-width:100%}
+.idchk{display:flex;align-items:center;gap:8px;margin-top:6px;font-weight:600;color:var(--ink);cursor:pointer}
+.idchk input{width:18px;height:18px;accent-color:var(--btn)}
+.res.locked{filter:blur(6px);opacity:.5;pointer-events:none;user-select:none}
+.lockmsg{margin:0;text-align:center;font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:8px}
+#res-act.locked{opacity:.45;pointer-events:none}
+.det{container-type:inline-size}
+.facts dd{overflow-wrap:anywhere}
+.dgrid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+@container (max-width:520px){.compare{grid-template-columns:110px minmax(0,1fr)}.compare .pic{width:110px;height:110px}.compare .receipt{height:110px;min-height:110px;font-size:11px}.actions{grid-template-columns:1fr}.actions .btn.danger{width:100%}}
+@container (max-width:900px){.split{grid-template-columns:1fr}}
+/* theme switch */
+.viewsw div+div{margin-left:8px}
+@media (prefers-reduced-motion:reduce){.sw::after{transition:none}}
+</style>
+<style>
+.kpis6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kpi .delta{font-size:12px;font-weight:600}.delta.up{color:var(--btn)}.delta.down{color:var(--red)}
+.card.soft{background:var(--side)}
+.card h4{margin:0 0 8px;font-size:13px;color:var(--ink)}
+.chart{width:100%;height:auto;display:block}
+.funnel div,.bars div{display:grid;grid-template-columns:110px minmax(0,1fr) 56px;gap:8px;align-items:center;font-size:12.5px;margin:5px 0}
+.funnel i,.bars i{display:block;height:10px;border-radius:99px;background:var(--btn);opacity:.75}
+.funnel b,.bars b{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;background:var(--soft);border-radius:9px;padding:3px}
+.seg span{padding:5px 10px;border-radius:7px;font-size:12.5px;color:var(--muted);cursor:pointer}
+.seg span.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.rank{font:600 13px var(--mono);color:var(--muted);width:28px}
+.mbar{display:inline-block;width:60px;height:6px;border-radius:99px;background:var(--soft);vertical-align:middle;margin-left:6px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--btn)}
+.exportrow{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.paper{background:#fff;color:#1b1b1b;border:1px solid var(--line);border-radius:6px;padding:18px 20px;width:360px;max-width:100%;box-shadow:var(--shadow);font-size:13px}
+.paper .muted{color:#666}.paper h3{color:#0b4d2c}
+.phd{display:flex;gap:10px;align-items:center;border-bottom:2px solid #0b4d2c;padding-bottom:8px}
+.seal{width:36px;height:36px;border-radius:50%;background:#0b4d2c;color:#f2c200;display:grid;place-items:center;font:700 9px var(--sans);flex:none}
+.pl{display:flex;justify-content:space-between;border-bottom:1px dotted #ccc;padding:4px 0}
+.allrep{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.allrep ul{margin:0;padding-left:18px}.allrep li{margin:4px 0}
+.rgrp{font-size:11px;font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;padding:10px 10px 2px}
+.stabs .stab{padding:6px 10px;font-size:13.5px}
+@container (max-width:640px){.kpis6{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* chart colours: categorical slots (validated default palette) and a green ordinal ramp for the funnel */
+:root{--c1:#2a78d6;--c2:#eb6834;--c3:#1baf7a;--c4:#eda100;--c5:#e87ba4;--f1:#0b4d2c;--f2:#0f6a3a;--f3:#15854a;--f4:#2fa565;--f5:#6cc392;--fn-ink:#ffffff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181;--f1:#1f7a4a;--f2:#2a8f58;--f3:#37a467;--f4:#57b97f;--f5:#86cfa2;--fn-ink:#0e1411}}
+:root[data-theme="dark"]{--c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181;--f1:#1f7a4a;--f2:#2a8f58;--f3:#37a467;--f4:#57b97f;--f5:#86cfa2;--fn-ink:#0e1411}
+.fn path{stroke:var(--side);stroke-width:2}.fn path:hover{opacity:.85}
+.fnt text{fill:var(--fn-ink);font-weight:600;font-family:var(--sans)}
+.fnt text:nth-child(5){fill:#0e1411}
+.fnt2 text{fill:var(--muted);font-family:var(--sans)}
+.donutwrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.donut{width:150px;height:150px;flex:none}
+.donut circle:hover{stroke-width:24}
+.dn-big{font:700 15px var(--sans);fill:var(--ink)}.dn-sm{font:11px var(--sans);fill:var(--muted)}
+.legend{list-style:none;margin:0;padding:0;flex:1;min-width:150px;font-size:13px}
+.legend li{display:flex;align-items:center;gap:8px;padding:3px 0}
+.legend i{width:10px;height:10px;border-radius:3px;flex:none}
+.legend b{margin-left:auto;color:var(--ink);font-variant-numeric:tabular-nums}
+.split{display:flex;gap:2px;height:30px;border-radius:8px;overflow:hidden}
+.split span{display:flex;align-items:center;padding:0 10px;color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap}
+</style>
+<div class="wrap">
+  <div class="viewsw"><div role="group" aria-label="View the admin screens as"><button id="v-desk" class="on">Desktop</button><button id="v-phone">Phone</button></div><div role="group" aria-label="Theme"><button data-th="light">Light</button><button data-th="dark">Dark</button><button data-th="" class="on">Auto</button></div></div>
+  <p class="small muted">SKSU TPT v4 · mockup for review · Nov 1, 2026 · sample numbers, not real students</p>
+  <h1>Reports and statistics</h1>
+  <p class="lead"><b>Statistics</b> and <b>Reports</b> are two separate pages. Statistics shows the numbers and charts at a glance. Reports works like the Settings page: a search box and the grouped list of reports on the left, the chosen report on the right. Each report has the same filters (school year, exam, campus) and the same <b>Export</b> menu: PDF, HTML page, or Excel.</p>
+
+  <div class="answer">
+    <div><b>Do we have reports today?</b><br>Yes, 12 reports and 4 charts on Admin → Reports. They are spread over one long page, and only some can be exported (Excel).</div>
+    <div><b>What changes</b><br>One organized Reports page, a <b>Statistics</b> overview that compares with the last exam, new <b>Top students</b> and <b>Top programs</b> reports, and PDF / HTML / Excel on every report.</div>
+    <div><b>Who sees it</b><br>Admins. Deans and chairs could later see their own college only (to decide).</div>
+  </div>
+
+  <nav class="toc" aria-label="Screens"><a href="#r1">1 · Statistics page</a><a href="#r2">2 · Top students</a><a href="#r3">3 · Top programs</a><a href="#r4">4 · Export</a><a href="#r5">5 · All reports</a></nav>
+
+  <!-- 1 STATISTICS -->
+  <h2 id="r1"><span class="n">1</span>Statistics (its own page)</h2>
+  <p class="lead">The numbers the office and the President ask for, each compared with the last exam. Its own page, separate from Reports (like Stats in Euphoria): numbers and charts at a glance. Click a number to open the matching report.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Admin</span><span class="sp"></span><span class="who">Brian O. · Admin</span><span class="ava">BO</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Overview</div>
+          <div class="nav" title="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="nl">Dashboard</span></div>
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">42</span></div>
+          <div class="nav" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">7</span></div>
+          <div class="grp">Applicants</div>
+          <div class="nav" title="Applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nl">Applications</span></div>
+          <div class="nav dim" id="nav-walkin" title="Walk-in applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m9 22 2-7 3 3v4M7 12l3-4 4 1 3 3"/></svg><span class="nl">Walk-in applications</span><span class="off">Off</span></div>
+          <div class="nav dim" id="nav-trans" title="Transferees"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg><span class="nl">Transferees</span><span class="off">Off</span></div>
+          <div class="grp">Exam</div>
+          <div class="nav" title="Schedules"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nl">Schedules</span></div>
+          <div class="nav" title="Exam slots"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nl">Exam slots</span></div>
+          <div class="nav" title="Rooms"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg><span class="nl">Rooms</span></div>
+          <div class="nav" title="Check-in"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="nl">Check-in</span></div>
+          <div class="grp">Results</div>
+          <div class="nav" title="Scores"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Scores</span></div>
+          <div class="nav" title="Results and release"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.5 7 22l5-3 5 3-1.2-8.5"/></svg><span class="nl">Results and release</span></div>
+          <div class="grp">Reports</div><div class="nav on" title="Statistics"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Statistics</span></div><div class="nav" title="Reports"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span class="nl">Reports</span></div><div class="nav" title="Survey results"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Survey results</span></div><div class="grp">Payments</div>
+          <div class="nav dim" id="nav-counter" title="Cashier counters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nl">Cashier counters</span><span class="off">Off</span></div>
+          <div class="grp">People</div>
+          <div class="nav" title="Staff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg><span class="nl">Staff</span></div>
+          <div class="grp">System</div>
+          <div class="nav" title="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="nl">Settings</span></div>
+          <div class="nav" title="Activity log"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg><span class="nl">Activity log</span></div>
+          </aside>
+        <main class="page">
+          <div class="ph"><h1>Statistics</h1><span class="sp"></span><span class="sel">SY 2027–2028 ▾</span><span class="sel">Exam: Dec 6–7 ▾</span><span class="sel">Campus: All ▾</span><button class="btn">Export ▾</button></div>
+          <div>
+            <div>
+              <div class="card">
+                <div class="ph" style="margin-bottom:10px"><h3 style="margin:0">Statistics</h3><span class="sp"></span><span class="small muted">compared with the Apr 25–26 exam</span></div>
+                <div class="kpis6">
+                  <div class="kpi"><small>Applied</small><b>10,482</b><span class="delta up">▲ 12%</span></div>
+                  <div class="kpi"><small>Paid (receipt approved)</small><b>9,615</b><span class="delta up">▲ 9%</span></div>
+                  <div class="kpi"><small>Took the exam</small><b>9,204</b><span class="delta up">▲ 8%</span></div>
+                  <div class="kpi"><small>Did not take the exam</small><b>411</b><span class="delta down">▲ 2%</span></div>
+                  <div class="kpi"><small>Qualified for 1st choice</small><b>6,140</b><span class="delta up">67%</span></div>
+                  <div class="kpi"><small>Fees collected</small><b>₱2.64M</b><span class="delta up">▲ 9%</span></div>
+                </div>
+                <div class="cards2" style="margin-top:12px">
+                  <div class="card soft"><h4>Applicants per day</h4>
+                    <svg class="chart" viewBox="0 0 300 110" role="img" aria-label="Applicants per day, rising to a peak near the deadline">
+                      <g stroke="var(--line)"><line x1="0" y1="100" x2="300" y2="100"/><line x1="0" y1="55" x2="300" y2="55"/><line x1="0" y1="10" x2="300" y2="10"/></g>
+                      <path d="M0 92 L30 88 L60 84 L90 80 L120 70 L150 74 L180 60 L210 52 L240 38 L270 22 L300 30 L300 100 L0 100 Z" fill="var(--tint)"/>
+                      <path d="M0 92 L30 88 L60 84 L90 80 L120 70 L150 74 L180 60 L210 52 L240 38 L270 22 L300 30" fill="none" stroke="var(--btn)" stroke-width="2"/>
+                      <circle cx="270" cy="22" r="3.5" fill="var(--btn)"/>
+                    </svg>
+                    <p class="small muted">Busiest day: Nov 28 (812 applied)</p></div>
+                  <div class="card soft"><h4>Where applicants drop off</h4>
+                    <svg class="chart" viewBox="0 0 300 150" role="img" aria-label="Funnel: applied 10,482, paid 9,615, exam slot 9,488, took exam 9,204, chose program 6,402">
+                      <g class="fn">
+                        <path d="M10 4 H290 L279 28 H21 Z" fill="var(--f1)"><title>Applied · 10,482</title></path>
+                        <path d="M21 30 H279 L276 54 H24 Z" fill="var(--f2)"><title>Paid · 9,615 (92%)</title></path>
+                        <path d="M24 56 H276 L272 80 H28 Z" fill="var(--f3)"><title>Exam slot · 9,488 (91%)</title></path>
+                        <path d="M28 82 H272 L246 106 H54 Z" fill="var(--f4)"><title>Took the exam · 9,204 (88%)</title></path>
+                        <path d="M54 108 H246 L236 132 H64 Z" fill="var(--f5)"><title>Chose a program · 6,402 (61%)</title></path>
+                      </g>
+                      <g class="fnt" font-size="10.5">
+                        <text x="150" y="20" text-anchor="middle">Applied · 10,482</text>
+                        <text x="150" y="46" text-anchor="middle">Paid · 9,615 · 92%</text>
+                        <text x="150" y="72" text-anchor="middle">Exam slot · 9,488</text>
+                        <text x="150" y="98" text-anchor="middle">Took the exam · 9,204</text>
+                        <text x="150" y="124" text-anchor="middle">Chose a program · 6,402</text>
+                      </g>
+                    </svg>
+                    <p class="small muted">Biggest drop: after the result (2,802 did not choose yet)</p></div>
+                  <div class="card soft"><h4>Examinees by campus</h4>
+                    <div class="donutwrap">
+                      <svg class="donut" viewBox="0 0 120 120" role="img" aria-label="Examinees by campus: ACCESS 39%, Isulan 23%, Tacurong 16%, Kalamansig 8%, others 14%">
+                        <g fill="none" stroke-width="20" transform="rotate(-90 60 60)">
+                          <circle cx="60" cy="60" r="44" stroke="var(--c1)" stroke-dasharray="106.3 170.2" stroke-dashoffset="0"><title>ACCESS · 4,120 (39%)</title></circle>
+                          <circle cx="60" cy="60" r="44" stroke="var(--c2)" stroke-dasharray="61.6 214.9" stroke-dashoffset="-108.3"><title>Isulan · 2,390 (23%)</title></circle>
+                          <circle cx="60" cy="60" r="44" stroke="var(--c3)" stroke-dasharray="42.2 234.3" stroke-dashoffset="-171.9"><title>Tacurong · 1,702 (16%)</title></circle>
+                          <circle cx="60" cy="60" r="44" stroke="var(--c4)" stroke-dasharray="19.5 257" stroke-dashoffset="-216.1"><title>Kalamansig · 788 (8%)</title></circle>
+                          <circle cx="60" cy="60" r="44" stroke="var(--c5)" stroke-dasharray="35.1 241.4" stroke-dashoffset="-237.6"><title>Others (4 campuses) · 1,482 (14%)</title></circle>
+                        </g>
+                        <text x="60" y="58" text-anchor="middle" class="dn-big">10,482</text>
+                        <text x="60" y="72" text-anchor="middle" class="dn-sm">applied</text>
+                      </svg>
+                      <ul class="legend">
+                        <li><i style="background:var(--c1)"></i>ACCESS<b>4,120</b></li>
+                        <li><i style="background:var(--c2)"></i>Isulan<b>2,390</b></li>
+                        <li><i style="background:var(--c3)"></i>Tacurong<b>1,702</b></li>
+                        <li><i style="background:var(--c4)"></i>Kalamansig<b>788</b></li>
+                        <li><i style="background:var(--c5)"></i>Others (4)<b>1,482</b></li>
+                      </ul>
+                    </div></div>
+                  <div class="card soft"><h4>Who applied</h4>
+                    <p class="small muted" style="margin:0 0 4px">Sex</p>
+                    <div class="split" role="img" aria-label="Female 58%, male 42%"><span style="width:58%;background:var(--c1)" title="Female · 6,080 (58%)">Female 58%</span><span style="width:42%;background:var(--c2)" title="Male · 4,402 (42%)">Male 42%</span></div>
+                    <p class="small muted" style="margin:12px 0 4px">Strand or kind</p>
+                    <svg class="chart" viewBox="0 0 300 120" role="img" aria-label="Strand: STEM 31%, ABM 15%, HUMSS 12%, GAS 18%, TVL 20%, old curriculum or ALS 4%">
+                      <g stroke="var(--line)"><line x1="0" y1="96" x2="300" y2="96"/></g>
+                      <g fill="var(--btn)">
+                        <rect x="12" y="20" width="32" height="76" rx="4"><title>STEM · 31%</title></rect>
+                        <rect x="60" y="47" width="32" height="49" rx="4"><title>TVL · 20%</title></rect>
+                        <rect x="108" y="52" width="32" height="44" rx="4"><title>GAS · 18%</title></rect>
+                        <rect x="156" y="59" width="32" height="37" rx="4"><title>ABM · 15%</title></rect>
+                        <rect x="204" y="67" width="32" height="29" rx="4"><title>HUMSS · 12%</title></rect>
+                        <rect x="252" y="86" width="32" height="10" rx="4"><title>Old curriculum or ALS · 4%</title></rect>
+                      </g>
+                      <g class="fnt2" font-size="10" text-anchor="middle">
+                        <text x="28" y="14">31%</text><text x="76" y="41">20%</text><text x="124" y="46">18%</text><text x="172" y="53">15%</text><text x="220" y="61">12%</text><text x="268" y="80">4%</text>
+                        <text x="28" y="110">STEM</text><text x="76" y="110">TVL</text><text x="124" y="110">GAS</text><text x="172" y="110">ABM</text><text x="220" y="110">HUMSS</text><text x="268" y="110">Old · ALS</text>
+                      </g>
+                    </svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this adds</b>
+      <ul><li>One screen with the numbers people ask for, each with the change from the last exam (▲ / ▼).</li>
+        <li>Charts are soft and simple: a line for days, bars for campuses and groups, a funnel for drop-off.</li>
+        <li>The same filters at the top apply to every report: school year, exam, campus.</li></ul></div>
+  </div>
+
+  <!-- 2 TOP STUDENTS -->
+  <h2 id="r2"><span class="n">2</span>Top students</h2>
+  <p class="lead">The highest scores, overall or per subject, for all campuses or one. Useful for scholarships and recognition.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Admin</span><span class="sp"></span><span class="ava">BO</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Overview</div>
+          <div class="nav" title="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="nl">Dashboard</span></div>
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">42</span></div>
+          <div class="nav" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">7</span></div>
+          <div class="grp">Applicants</div>
+          <div class="nav" title="Applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nl">Applications</span></div>
+          <div class="nav dim" id="nav-walkin" title="Walk-in applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m9 22 2-7 3 3v4M7 12l3-4 4 1 3 3"/></svg><span class="nl">Walk-in applications</span><span class="off">Off</span></div>
+          <div class="nav dim" id="nav-trans" title="Transferees"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg><span class="nl">Transferees</span><span class="off">Off</span></div>
+          <div class="grp">Exam</div>
+          <div class="nav" title="Schedules"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nl">Schedules</span></div>
+          <div class="nav" title="Exam slots"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nl">Exam slots</span></div>
+          <div class="nav" title="Rooms"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg><span class="nl">Rooms</span></div>
+          <div class="nav" title="Check-in"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="nl">Check-in</span></div>
+          <div class="grp">Results</div>
+          <div class="nav" title="Scores"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Scores</span></div>
+          <div class="nav" title="Results and release"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.5 7 22l5-3 5 3-1.2-8.5"/></svg><span class="nl">Results and release</span></div>
+          <div class="grp">Reports</div><div class="nav" title="Statistics"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Statistics</span></div><div class="nav on" title="Reports"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span class="nl">Reports</span></div><div class="nav" title="Survey results"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Survey results</span></div><div class="grp">Payments</div>
+          <div class="nav dim" id="nav-counter" title="Cashier counters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nl">Cashier counters</span><span class="off">Off</span></div>
+          <div class="grp">People</div>
+          <div class="nav" title="Staff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg><span class="nl">Staff</span></div>
+          <div class="grp">System</div>
+          <div class="nav" title="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="nl">Settings</span></div>
+          <div class="nav" title="Activity log"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg><span class="nl">Activity log</span></div>
+          </aside>
+        <main class="page">
+          <div class="ph"><h1>Reports</h1><span class="sp"></span><span class="sel">Exam: Dec 6–7 ▾</span><span class="sel">Campus: All ▾</span><button class="btn">Export ▾</button></div>
+          <div class="set">
+            <nav class="stabs" aria-label="Reports">
+<label class="ssearch"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="search" class="rq" placeholder="Search reports" aria-label="Search reports"></label>
+<div class="rgrp">Overview</div>
+<button class="stab">Office summary</button>
+<button class="stab">Compare exams and years</button>
+<div class="rgrp">Applicants</div>
+<button class="stab">Applicant list</button>
+<button class="stab">Registrations by day</button>
+<button class="stab">By home town</button>
+<button class="stab">By school</button>
+<button class="stab">Who applied</button>
+<div class="rgrp">Payments</div>
+<button class="stab">Fees collected</button>
+<button class="stab">Payments list</button>
+<button class="stab">Receipts checked per staff</button>
+<button class="stab">Sent-back receipts</button>
+<div class="rgrp">Exam</div>
+<button class="stab">Seats per exam day</button>
+<button class="stab">Exam attendance</button>
+<button class="stab">Seat plan per room</button>
+<div class="rgrp">Results</div>
+<button class="stab on">Top students</button>
+<button class="stab">Top programs</button>
+<button class="stab">Top schools and towns</button>
+<button class="stab">Ranking per program</button>
+<button class="stab">Qualified students</button>
+<button class="stab">Score distribution</button>
+<button class="stab">Results list</button>
+<button class="stab">Results given at the office</button>
+<div class="rgrp">Feedback</div>
+<button class="stab">Survey results</button>
+<button class="stab">Support tickets</button>
+</nav>
+            <div class="spanes"><div class="card">
+              <div class="ph" style="margin-bottom:8px"><h3 style="margin:0">Top students</h3><span class="sp"></span>
+                <div class="seg"><span class="on">Overall</span><span>ESM</span><span>English</span><span>Math</span><span>Science</span></div>
+                <span class="sel">Top 50 ▾</span></div>
+              <div class="tbl-wrap"><table>
+                <thead><tr><th>#</th><th>Student</th><th>School</th><th>Campus</th><th class="num">Overall</th><th class="num">Stanine</th><th>Program chosen</th></tr></thead>
+                <tbody>
+                  <tr><td class="rank">1</td><td><b>VILLANUEVA, ANGELA M.</b><br><span class="small muted mono">500812</span></td><td>Notre Dame of Tacurong · STEM</td><td>Tacurong</td><td class="num"><b>742</b></td><td class="num">9</td><td>BS Nursing · ACCESS</td></tr>
+                  <tr><td class="rank">2</td><td><b>MAMALINTA, JOHAIRA</b><br><span class="small muted mono">500133</span></td><td>Isulan NHS · STEM</td><td>Isulan</td><td class="num"><b>735</b></td><td class="num">9</td><td>BS Civil Engineering · ACCESS</td></tr>
+                  <tr><td class="rank">3</td><td><b>DELA PEÑA, MARK J.</b><br><span class="small muted mono">501920</span></td><td>SKSU Lab High · STEM</td><td>ACCESS</td><td class="num"><b>731</b></td><td class="num">9</td><td><span class="muted">not chosen yet</span></td></tr>
+                  <tr><td class="rank">4</td><td><b>SANTOS, BEA</b><br><span class="small muted mono">500044</span></td><td>Esperanza NHS · ABM</td><td>ACCESS</td><td class="num"><b>724</b></td><td class="num">9</td><td>BS Accountancy · ACCESS</td></tr>
+                  <tr><td class="rank">5</td><td><b>KUSAIN, ALI R.</b><br><span class="small muted mono">502210</span></td><td>Kalamansig NHS · HUMSS</td><td>Kalamansig</td><td class="num"><b>719</b></td><td class="num">8</td><td>BSEd English · ACCESS</td></tr>
+                </tbody></table></div>
+              <p class="small muted" style="margin-top:8px">Ties share a rank. Students who did not take the exam are left out. Names are private: export only for office use.</p>
+            </div></div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this adds</b>
+      <ul><li>Overall or one subject (ESM, English, Math, Science), Top 10 / 50 / 100, per campus or all.</li>
+        <li>Shows school and strand, so top schools can be recognized too (see "Top schools").</li></ul></div>
+  </div>
+
+  <!-- 3 TOP PROGRAMS -->
+  <h2 id="r3"><span class="n">3</span>Top programs</h2>
+  <p class="lead">Which programs students want most, which fill up, and where qualified students go. For the colleges' planning.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Admin</span><span class="sp"></span><span class="ava">BO</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Overview</div>
+          <div class="nav" title="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="nl">Dashboard</span></div>
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">42</span></div>
+          <div class="nav" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">7</span></div>
+          <div class="grp">Applicants</div>
+          <div class="nav" title="Applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nl">Applications</span></div>
+          <div class="nav dim" id="nav-walkin" title="Walk-in applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m9 22 2-7 3 3v4M7 12l3-4 4 1 3 3"/></svg><span class="nl">Walk-in applications</span><span class="off">Off</span></div>
+          <div class="nav dim" id="nav-trans" title="Transferees"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg><span class="nl">Transferees</span><span class="off">Off</span></div>
+          <div class="grp">Exam</div>
+          <div class="nav" title="Schedules"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nl">Schedules</span></div>
+          <div class="nav" title="Exam slots"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nl">Exam slots</span></div>
+          <div class="nav" title="Rooms"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg><span class="nl">Rooms</span></div>
+          <div class="nav" title="Check-in"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="nl">Check-in</span></div>
+          <div class="grp">Results</div>
+          <div class="nav" title="Scores"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Scores</span></div>
+          <div class="nav" title="Results and release"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.5 7 22l5-3 5 3-1.2-8.5"/></svg><span class="nl">Results and release</span></div>
+          <div class="grp">Reports</div><div class="nav" title="Statistics"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Statistics</span></div><div class="nav on" title="Reports"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span class="nl">Reports</span></div><div class="nav" title="Survey results"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Survey results</span></div><div class="grp">Payments</div>
+          <div class="nav dim" id="nav-counter" title="Cashier counters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nl">Cashier counters</span><span class="off">Off</span></div>
+          <div class="grp">People</div>
+          <div class="nav" title="Staff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg><span class="nl">Staff</span></div>
+          <div class="grp">System</div>
+          <div class="nav" title="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="nl">Settings</span></div>
+          <div class="nav" title="Activity log"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg><span class="nl">Activity log</span></div>
+          </aside>
+        <main class="page">
+          <div class="ph"><h1>Reports</h1><span class="sp"></span><span class="sel">Exam: Dec 6–7 ▾</span><span class="sel">Campus: All ▾</span><button class="btn">Export ▾</button></div>
+          <div class="set">
+            <nav class="stabs" aria-label="Reports">
+<label class="ssearch"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="search" class="rq" placeholder="Search reports" aria-label="Search reports"></label>
+<div class="rgrp">Overview</div>
+<button class="stab">Office summary</button>
+<button class="stab">Compare exams and years</button>
+<div class="rgrp">Applicants</div>
+<button class="stab">Applicant list</button>
+<button class="stab">Registrations by day</button>
+<button class="stab">By home town</button>
+<button class="stab">By school</button>
+<button class="stab">Who applied</button>
+<div class="rgrp">Payments</div>
+<button class="stab">Fees collected</button>
+<button class="stab">Payments list</button>
+<button class="stab">Receipts checked per staff</button>
+<button class="stab">Sent-back receipts</button>
+<div class="rgrp">Exam</div>
+<button class="stab">Seats per exam day</button>
+<button class="stab">Exam attendance</button>
+<button class="stab">Seat plan per room</button>
+<div class="rgrp">Results</div>
+<button class="stab">Top students</button>
+<button class="stab on">Top programs</button>
+<button class="stab">Top schools and towns</button>
+<button class="stab">Ranking per program</button>
+<button class="stab">Qualified students</button>
+<button class="stab">Score distribution</button>
+<button class="stab">Results list</button>
+<button class="stab">Results given at the office</button>
+<div class="rgrp">Feedback</div>
+<button class="stab">Survey results</button>
+<button class="stab">Support tickets</button>
+</nav>
+            <div class="spanes"><div class="card">
+              <div class="ph" style="margin-bottom:8px"><h3 style="margin:0">Top programs</h3><span class="sp"></span>
+                <div class="seg"><span class="on">Most wanted (1st choice)</span><span>Most qualified</span><span>Most chosen</span><span>Highest average</span></div></div>
+              <div class="tbl-wrap"><table>
+                <thead><tr><th>#</th><th>Program</th><th>Campus</th><th class="num">1st choice</th><th class="num">Qualified</th><th class="num">Chose it</th><th class="num">Cut-off</th><th class="num">Avg. score</th></tr></thead>
+                <tbody>
+                  <tr><td class="rank">1</td><td><b>BS Nursing</b></td><td>ACCESS</td><td class="num"><b>1,284</b> <span class="mbar"><i style="width:100%"></i></span></td><td class="num">402</td><td class="num">380</td><td class="num">600</td><td class="num">571</td></tr>
+                  <tr><td class="rank">2</td><td><b>BS Criminology</b></td><td>ACCESS</td><td class="num"><b>1,102</b> <span class="mbar"><i style="width:86%"></i></span></td><td class="num">935</td><td class="num">610</td><td class="num">450</td><td class="num">498</td></tr>
+                  <tr><td class="rank">3</td><td><b>BS Information Technology</b></td><td>Isulan</td><td class="num"><b>876</b> <span class="mbar"><i style="width:68%"></i></span></td><td class="num">701</td><td class="num">455</td><td class="num">480</td><td class="num">512</td></tr>
+                  <tr><td class="rank">4</td><td><b>BSEd Mathematics</b></td><td>ACCESS</td><td class="num"><b>640</b> <span class="mbar"><i style="width:50%"></i></span></td><td class="num">322</td><td class="num">298</td><td class="num">550</td><td class="num">540</td></tr>
+                  <tr><td class="rank">5</td><td><b>BS Agriculture</b></td><td>Kalamansig</td><td class="num"><b>512</b> <span class="mbar"><i style="width:40%"></i></span></td><td class="num">488</td><td class="num">301</td><td class="num">420</td><td class="num">466</td></tr>
+                </tbody></table></div>
+              <p class="small muted" style="margin-top:8px">"Qualified" = reached the cut-off. "Chose it" = picked it after the result. Tap a program for its applicants.</p>
+            </div></div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this adds</b>
+      <ul><li>Four views of the same list: most wanted, most qualified, most chosen, highest average.</li>
+        <li>Also: <b>Top schools</b> (most examinees and best average) and <b>Top towns</b>, in the list on the left.</li></ul></div>
+  </div>
+
+  <!-- 4 EXPORT -->
+  <h2 id="r4"><span class="n">4</span>Export: PDF, HTML or Excel</h2>
+  <p class="lead">The same Export menu on every report. The file shows the report title, the filters used, who made it and when, and the SKSU header.</p>
+  <div class="board">
+    <div class="exportrow">
+      <div class="modal" style="max-width:340px">
+        <h3>Export "Top programs"</h3>
+        <div class="opts">
+          <div class="opt on"><i></i><span><b>PDF</b><small>For printing and signing. A4, SKSU header, page numbers.</small></span></div>
+          <div class="opt"><i></i><span><b>HTML page</b><small>One file that opens in any browser and can be emailed or posted. Charts included.</small></span></div>
+          <div class="opt"><i></i><span><b>Excel</b><small>All rows, for the registrar and further counting.</small></span></div>
+        </div>
+        <label class="idchk" style="margin-top:10px"><input type="checkbox" checked> Include the charts</label>
+        <label class="idchk"><input type="checkbox"> Hide student names (for posting)</label>
+        <div class="savebar"><button class="btn">Cancel</button><button class="btn pri">Export</button></div>
+      </div>
+      <div class="paper">
+        <div class="phd"><span class="seal">SKSU</span><div><b>SULTAN KUDARAT STATE UNIVERSITY</b><br><span class="small">Guidance and Testing Center · Tertiary Placement Test</span></div></div>
+        <h3 style="margin:12px 0 2px">Top programs · Most wanted (1st choice)</h3>
+        <p class="small muted" style="margin:0 0 8px">SY 2027–2028 · Dec 6–7 exam · All campuses · made by Brian O., Dec 21, 2026 10:30 AM</p>
+        <div class="pl"><span>1. BS Nursing · ACCESS</span><b>1,284</b></div>
+        <div class="pl"><span>2. BS Criminology · ACCESS</span><b>1,102</b></div>
+        <div class="pl"><span>3. BS Information Technology · Isulan</span><b>876</b></div>
+        <div class="pl muted"><span>…</span><b></b></div>
+        <p class="small muted" style="margin-top:10px">Page 1 of 3</p>
+      </div>
+    </div>
+    <div class="why"><b>What this adds</b>
+      <ul><li>PDF for printing, HTML for sharing by email or Messenger, Excel for counting.</li>
+        <li>"Hide student names" makes a list safe to post (examinee numbers only).</li>
+        <li>Every export is logged (who, which report, which filters), since some contain personal data.</li></ul></div>
+  </div>
+
+  <!-- 5 ALL REPORTS -->
+  <h2 id="r5"><span class="n">5</span>All reports (the list on the left of Reports)</h2>
+  <p class="lead"><span class="tag new">new</span> marks reports to add; the rest exist today and move into this list.</p>
+  <div class="allrep">
+    <div class="card"><h3>Overview</h3><ul><li>Office summary (per campus and program)</li><li>Compare exams and school years <span class="tag new">new</span></li></ul></div>
+    <div class="card"><h3>Applicants</h3><ul><li>Applicant list (for the registrar)</li><li>Registrations by day</li><li>Applicants by home town</li><li>Applicants by school</li><li>Who applied: sex, age, strand, kind <span class="tag new">new</span></li><li>Where applicants drop off</li></ul></div>
+    <div class="card"><h3>Payments</h3><ul><li>Fees collected</li><li>Payments list</li><li>Receipts checked per staff, and how long they waited <span class="tag new">new</span></li><li>Sent-back receipts and why <span class="tag new">new</span></li></ul></div>
+    <div class="card"><h3>Exam</h3><ul><li>Seats on each exam day</li><li>Exam attendance (who did not take it)</li><li>Seat plan per room</li></ul></div>
+    <div class="card"><h3>Results</h3><ul><li>Top students <span class="tag new">new</span></li><li>Top programs <span class="tag new">new</span></li><li>Top schools and towns <span class="tag new">new</span></li><li>Ranking per program</li><li>Qualified students</li><li>Score distribution</li><li>Results list</li><li>Results given at the office <span class="tag new">new</span></li></ul></div>
+    <div class="card"><h3>Feedback and support</h3><ul><li>Survey results</li><li>Support tickets: topics, time to answer, per staff <span class="tag new">new</span></li></ul></div>
+  </div>
+
+  <h2><span class="n">?</span>To decide</h2>
+  <div class="answer" style="margin-top:6px">
+    <div><b>Deans and chairs:</b> should they see reports for their own college (Top programs, Ranking, Qualified)?</div>
+    <div><b>Top students list:</b> may it show names to all admins, or only examinee numbers unless asked?</div>
+    <div><b>Anything missing?</b> Reports the President, Registrar or colleges usually ask for that are not in the list.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function view(phone){document.body.classList.toggle('asphone',phone);document.getElementById('v-phone').classList.toggle('on',phone);document.getElementById('v-desk').classList.toggle('on',!phone);}
+  document.getElementById('v-phone').addEventListener('click',function(){view(true);});
+  document.getElementById('v-desk').addEventListener('click',function(){view(false);});
+  document.querySelectorAll('[data-th]').forEach(function(b){b.addEventListener('click',function(){
+    var t=b.dataset.th;if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');
+    document.querySelectorAll('[data-th]').forEach(function(x){x.classList.toggle('on',x===b);});
+  });});
+  document.querySelectorAll('.seg').forEach(function(g){g.querySelectorAll('span').forEach(function(s){s.addEventListener('click',function(){g.querySelectorAll('span').forEach(function(x){x.classList.toggle('on',x===s);});});});});
+  document.querySelectorAll('.stabs').forEach(function(nav){
+    nav.querySelectorAll('.stab').forEach(function(b){b.addEventListener('click',function(){nav.querySelectorAll('.stab').forEach(function(x){x.classList.toggle('on',x===b);});});});
+    var q=nav.querySelector('.rq');if(q)q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();nav.querySelectorAll('.stab').forEach(function(b){b.hidden=v&&b.textContent.toLowerCase().indexOf(v)<0;});nav.querySelectorAll('.rgrp').forEach(function(g){var n=g.nextElementSibling,any=false;while(n&&n.classList.contains('stab')){if(!n.hidden)any=true;n=n.nextElementSibling;}g.hidden=!any;});});
+  });
+})();
+</script>
