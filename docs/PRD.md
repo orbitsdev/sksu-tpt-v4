@@ -176,7 +176,7 @@ Times are a guide, not a booking rule, but students always see them: on the exam
 ```mermaid
 flowchart LR
     A[Landing] --> B[Sign in with Google]
-    B --> C[Apply: about you, school + documents, 3 programs]
+    B --> C[Apply: about you, school + documents, 2 programs]
     C --> D{Review and submit}
     D --> E{Pay}
     E -->|At the cashier| F[Recorded: approved at once]

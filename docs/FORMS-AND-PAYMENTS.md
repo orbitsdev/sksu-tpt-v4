@@ -33,8 +33,8 @@ Checked against tptv3's Livewire validation rules and migrations, and the live s
 
 ### Program choices (`ProgramInfo.php`, plus `select_courses` after the survey)
 
-- **Today:** 3 choices before the exam, then picked again after the survey. That's two tables (`program_choices`, `selected_courses`) for one decision [Certain].
-- **v4:** 3 ranked choices once. After results, the student picks one program they qualify for.
+- **Today:** 2 choices before the exam (1st priority and a backup; the old server shows almost every applicant picked 2), then picked again after the survey. That's two tables (`program_choices`, `selected_courses`) for one decision [Certain].
+- **v4:** 2 ranked choices once (1st choice and a backup), as in the old TPT. After results, the student picks one program they qualify for.
 
 ### Payment (`PaymentSection.php`)
 

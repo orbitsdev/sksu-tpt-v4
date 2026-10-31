@@ -12,7 +12,7 @@ The rule: **keep the old process**, and make it work better. Everything below is
 |---|---|---|---|
 | 1 | Sign in with Google | Old | Keep |
 | 2 | Email-link sign-in for students without Google | New | Optional (not in the mockups; Google only, as tptv3) |
-| 3 | Application forms (personal, school, 3 programs) | Old | Keep (cleaner fields) |
+| 3 | Application forms (personal, school, 2 programs) | Old | Keep (cleaner fields) |
 | 4 | Extra uploads: Form 138, valid ID | New (from the tpt-recreate-v2 plan) | **Cut**: only the 2×2 photo is collected (the receipt only when online payment is on; transferees add grades); the ID is shown at the door |
 | 5 | Photo shrunk on the phone | New | Keep (fixes 26 GB of uploads) |
 | 6 | Receipt upload + reviewer approval | Old | **Later**: a school-year switch, off (cashier only for now) |
