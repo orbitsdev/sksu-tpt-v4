@@ -1,0 +1,737 @@
+<title>TPT Settings and Approvers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: a mockup board. Each screen sits in a frame (desktop admin like the Euphoria v2 prototype, phone for students), with a short "what changes" note beside it. */
+:root{
+  --ink:#17201b;--text:#2c3830;--muted:#5d6c63;--faint:#8a978f;--line:#e2e7e3;--soft:#f1f4f2;
+  --bg:#f5f7f5;--card:#ffffff;--side:#fafbfa;
+  --green:#0b4d2c;--btn:#0f7a3d;--tint:#e6f4eb;--gold:#f2c200;--gold-ink:#3d3000;
+  --red:#b42318;--red-bg:#fdecea;--amber:#8a5d00;--amber-bg:#fff3d1;--blue:#1d4ed8;--blue-bg:#e9f0ff;
+  --sans:Geist,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"Geist Mono",ui-monospace,Consolas,monospace;
+  --shadow:0 1px 2px rgba(16,40,26,.06),0 8px 24px -12px rgba(16,40,26,.12);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e9efea;--text:#d4ddd7;--muted:#9eb0a5;--faint:#71837a;--line:#27332c;--soft:#1c2620;
+  --bg:#0e1411;--card:#161f1a;--side:#131b16;--tint:#143022;--red-bg:#3a1714;--amber-bg:#3a2e0f;--blue-bg:#16233f;--amber:#f0c25a;--red:#f28b82;--blue:#8fb0ff;--btn:#2fa565;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ink:#e9efea;--text:#d4ddd7;--muted:#9eb0a5;--faint:#71837a;--line:#27332c;--soft:#1c2620;
+  --bg:#0e1411;--card:#161f1a;--side:#131b16;--tint:#143022;--red-bg:#3a1714;--amber-bg:#3a2e0f;--blue-bg:#16233f;--amber:#f0c25a;--red:#f28b82;--blue:#8fb0ff;--btn:#2fa565;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.55 var(--sans);color:var(--text);background:var(--bg)}
+.wrap{max-width:1280px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:26px;line-height:1.2;color:var(--ink);margin:6px 0;text-wrap:balance}
+h2{font-size:19px;color:var(--ink);margin:44px 0 6px;display:flex;align-items:center;gap:10px;text-wrap:balance}
+h2 .n{font:600 12px var(--mono);background:var(--gold);color:var(--gold-ink);border-radius:6px;padding:2px 7px}
+h3{font-size:15px;color:var(--ink);margin:0 0 10px}
+p{margin:0 0 8px}.lead{color:var(--muted);max-width:780px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.small{font-size:12.5px}.muted{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--tint);color:var(--btn);white-space:nowrap}
+.tag.old{background:var(--soft);color:var(--muted)}.tag.new{background:var(--blue-bg);color:var(--blue)}.tag.warn{background:var(--amber-bg);color:var(--amber)}.tag.bad{background:var(--red-bg);color:var(--red)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}.toc a{border:1px solid var(--line);border-radius:99px;padding:4px 12px;text-decoration:none;color:var(--text);background:var(--card)}
+.toc a:hover{border-color:var(--btn)}
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:16px}
+.answer>div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.answer b{color:var(--ink)}
+.board{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:1000px){.board{grid-template-columns:1fr}}
+.why{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px}
+.why ul{margin:6px 0 0;padding-left:18px;columns:2 320px;column-gap:28px}.why li{margin:4px 0}
+/* desktop frame, Euphoria-v2 style: slim band + grouped sidebar */
+.desk{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--side);box-shadow:var(--shadow);min-width:0}
+.band{display:flex;align-items:center;gap:12px;height:48px;padding:0 14px;background:linear-gradient(100deg,#073a21,#0b4d2c 55%,#0e5c34);color:#fff;border-bottom:3px solid var(--gold)}
+.band b{font-size:14.5px}.band .sp{flex:1}.band .who{font-size:12.5px;opacity:.9}
+.band .ava{width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--gold-ink);display:grid;place-items:center;font-weight:700;font-size:11.5px}
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:540px}
+
+.side{background:var(--card);border-right:1px solid var(--line);padding:8px 10px 16px;font-size:13.5px}
+.grp{font-size:11.5px;font-weight:600;color:var(--faint);padding:14px 10px 4px;letter-spacing:.03em;text-transform:uppercase}
+.nav{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;color:var(--text)}
+.nav.on{background:var(--tint);color:var(--btn);font-weight:600}
+.nav .c{margin-left:auto;font-size:11px;font-weight:600;background:var(--red-bg);color:var(--red);border-radius:99px;padding:0 7px}
+.nav .off{margin-left:auto;font-size:10.5px;color:var(--faint)}
+.nav.dim{color:var(--faint)}
+.page{padding:18px 20px 26px;min-width:0}
+.ph{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ph h1{font-size:20px;margin:0}.ph .sp{flex:1}
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media (max-width:900px){.cards2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+/* Euphoria setting rows: words left, control right */
+.sw-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+.sw-row:last-child{border-bottom:none}
+.sw-row>span{min-width:0}.sw-row b{color:var(--ink);font-weight:600}
+.sw-row small{display:block;color:var(--muted);font-size:12.5px}
+.sw{position:relative;width:38px;height:22px;border-radius:99px;background:var(--line);flex:none;border:none;cursor:pointer}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--card);transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw.on{background:var(--btn)}.sw.on::after{left:19px}
+.sw:focus-visible,.btn:focus-visible,.opt:focus-visible{outline:2px solid var(--btn);outline-offset:2px}
+.opts{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.opt{display:flex;gap:8px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:13.5px}
+.opt.on{border-color:var(--btn);background:var(--tint)}
+.opt i{width:16px;height:16px;border-radius:50%;border:2px solid var(--faint);flex:none;margin-top:2px}
+.opt.on i{border:5px solid var(--btn)}
+.opt small{display:block;color:var(--muted)}
+.sel{border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:13px;background:var(--card);color:var(--ink);white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:var(--card);font:600 13.5px var(--sans);color:var(--ink);cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--btn);border-color:var(--btn);color:#fff}
+.btn.ghost{border-color:transparent;background:none;color:var(--btn)}
+.btn.danger{color:var(--red)}
+.btn.big{height:46px;font-size:15px;width:100%}
+.savebar{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:14px}
+.note{border-radius:10px;padding:9px 12px;font-size:13px;margin:8px 0}
+.note.info{background:var(--blue-bg);color:var(--blue)}.note.warn{background:var(--amber-bg);color:var(--amber)}.note.ok{background:var(--tint);color:var(--btn)}
+/* queue */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:0;overflow-x:auto}
+.tabs span{padding:8px 11px;color:var(--muted);border-bottom:2px solid transparent;font-weight:500;white-space:nowrap}
+.tabs span.on{color:var(--ink);border-color:var(--btn)}
+.tabs i{font-style:normal;font-size:11px;background:var(--soft);color:var(--muted);border-radius:99px;padding:0 6px;margin-left:4px}
+.tabs span.on i{background:var(--tint);color:var(--btn)}
+.split{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);gap:14px}@media (max-width:900px){.split{grid-template-columns:1fr}}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
+.qr{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line)}
+.qr:last-child{border-bottom:none}
+.qr.on{background:var(--tint);box-shadow:inset 3px 0 0 var(--btn)}
+.av{width:38px;height:38px;border-radius:9px;background:var(--soft);display:grid;place-items:center;font-weight:700;color:var(--muted);font-size:12px}
+.nm{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt{text-align:right;font-size:12px;color:var(--muted);white-space:nowrap}
+.receipt{background:#fffdf4;border:1px dashed #d6cca2;border-radius:10px;padding:14px;font:12px var(--mono);color:#5a5236;min-height:190px;display:flex;flex-direction:column;justify-content:space-between}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13px;margin:10px 0}.facts dt{color:var(--muted)}.facts dd{margin:0;color:var(--ink);min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}@media (max-width:700px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi small{display:block;color:var(--muted);font-size:12px}.kpi b{font:650 22px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th.act,td.act{text-align:right;width:1%;white-space:nowrap}
+.btn.sm{height:32px;padding:0 12px;font-size:13px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+td b{color:var(--ink)}
+.chk{display:flex;flex-wrap:wrap;gap:6px}
+.chk span{border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:12.5px}
+.chk span.on{border-color:var(--btn);background:var(--tint);color:var(--btn);font-weight:600}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;max-width:460px}
+label.l{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:10px 0 4px}
+.field{border:1px solid var(--line);border-radius:9px;padding:8px 10px;color:var(--ink);background:var(--card)}
+/* phone frame */
+.phones{display:flex;flex-wrap:wrap;gap:18px}
+.phone{width:300px;max-width:100%;border:8px solid #1b231e;border-radius:34px;background:var(--bg);overflow:hidden;box-shadow:var(--shadow)}
+.pbar{background:linear-gradient(120deg,#073a21,#0b4d2c);color:#fff;padding:12px 14px;font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center}
+.pbody{padding:14px;display:flex;flex-direction:column;gap:10px;min-height:470px;font-size:13.5px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.dots{display:flex;gap:4px}.dots i{flex:1;height:4px;border-radius:9px;background:var(--line)}.dots i.on{background:var(--btn)}
+.upl{border:1.5px dashed var(--btn);border-radius:12px;padding:16px;text-align:center;color:var(--btn);font-weight:600}
+.cap{font-size:12.5px;color:var(--muted);margin-top:8px;max-width:300px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+.flow span{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.flow em{font-style:normal;color:var(--faint)}
+/* settings: Euphoria / Claude style, sections left, one card right */
+.set{display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:start}
+.stabs{display:flex;flex-direction:column;gap:2px}
+.stab{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-radius:9px;padding:8px 10px;font:500 14px var(--sans);color:var(--text);cursor:pointer}
+.stab svg{color:var(--faint);flex:none}.stab:hover{background:var(--soft)}
+.stab.on{background:var(--tint);color:var(--btn);font-weight:600}.stab.on svg{color:var(--btn)}
+.stab .tag{margin-left:auto}
+.stab:focus-visible{outline:2px solid var(--btn);outline-offset:1px}
+.ssearch{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:0 10px;height:38px;background:var(--card);margin-bottom:8px;color:var(--faint)}
+.ssearch input{border:none;outline:none;background:none;font:14px var(--sans);color:var(--ink);width:100%;min-width:0}
+.spane h3{font-size:16px}
+@media (max-width:760px){.set{grid-template-columns:1fr}.stabs{flex-direction:row;flex-wrap:wrap;gap:4px}.stab{width:auto;white-space:nowrap}.ssearch{width:100%}}
+/* approver: search + 2x2 photo */
+.qsearch{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0 0}
+.qsearch .box{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;height:42px;border:1.5px solid var(--btn);border-radius:10px;padding:0 12px;background:var(--card);color:var(--faint)}
+.qsearch .box input{border:none;outline:none;background:none;font:15px var(--sans);color:var(--ink);width:100%;min-width:0}
+.pic{display:block;border-radius:9px;background:var(--soft);overflow:hidden;flex:none}
+.pic svg{display:block;width:100%;height:100%}
+.qr .pic{width:38px;height:38px}
+.viewsw{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;justify-content:flex-end;padding:8px 0;pointer-events:none}
+.viewsw div{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px;box-shadow:var(--shadow);pointer-events:auto}
+.viewsw button{border:none;background:none;border-radius:7px;padding:6px 14px;font:600 13px var(--sans);color:var(--muted);cursor:pointer}
+.viewsw button.on{background:var(--btn);color:#fff}
+body.asphone .desk{max-width:390px;margin:0 auto}
+body.asphone .board{grid-template-columns:1fr}
+
+body.asphone .set,body.asphone .split,body.asphone .cards2{grid-template-columns:1fr}
+body.asphone .stabs{flex-direction:row;flex-wrap:wrap;gap:4px}body.asphone .stab{width:auto;white-space:nowrap}
+body.asphone .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.asphone .band .who{display:none}
+body.asphone .page{padding:14px 12px}
+/* approver detail: header, photo + receipt, checks, details, actions */
+.det{display:flex;flex-direction:column;gap:14px}
+.det-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.det-h h3{margin:0 0 2px;font-size:16px}
+.compare{display:grid;grid-template-columns:140px minmax(0,1fr);gap:12px;margin:0}
+.compare figure{margin:0;min-width:0;display:flex;flex-direction:column;gap:6px}
+.compare figcaption{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.compare .pic{display:block;width:140px;height:140px;border:1px solid var(--line)}
+.compare .receipt{min-height:140px;height:140px;padding:12px}
+.zoom{text-align:right;opacity:.7;font-size:11px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid var(--line);padding-top:12px}
+.dgrid h4{margin:0 0 4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.dgrid .facts{margin:0;grid-template-columns:84px 1fr}
+.actions{display:grid;grid-template-columns:1fr auto;gap:8px}
+.actions .btn.danger{width:auto;padding:0 18px}
+.qr .pic{display:block}
+@media (max-width:560px){.compare{grid-template-columns:110px minmax(0,1fr)}.compare .pic{width:110px;height:110px}.compare .receipt{height:110px;min-height:110px}.dgrid{grid-template-columns:1fr}}
+body.asphone .compare{grid-template-columns:110px minmax(0,1fr)}body.asphone .compare .pic{width:110px;height:110px}body.asphone .compare .receipt{height:110px;min-height:110px}body.asphone .dgrid{grid-template-columns:1fr}
+.btn.big{height:auto;min-height:46px;padding:10px 16px;white-space:normal;line-height:1.25;text-align:center}
+.desk{container-type:inline-size}
+.nav svg{color:var(--faint);flex:none}.nav.on svg{color:var(--btn)}
+.nav .nl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav .off{margin-left:auto;font-size:10.5px;font-weight:600;color:var(--faint);border:1px solid var(--line);border-radius:6px;padding:0 6px}
+.nav.dim .nl{color:var(--faint)}
+.side{width:auto}
+@container (max-width:900px){.shell{grid-template-columns:56px minmax(0,1fr) !important}.side{display:block !important;padding:8px 6px}.side .nl,.side .off,.side .c{display:none}.side .grp{height:1px;padding:0;margin:8px 4px;background:var(--line);overflow:hidden;color:transparent}.nav{justify-content:center;padding:9px 0}}
+@container (max-width:420px){.shell{grid-template-columns:1fr !important}.side{display:none !important}}
+.res{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line);padding-top:12px}
+.res h4{margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.tiles{display:grid;grid-template-columns:1.6fr repeat(4,minmax(0,1fr));gap:8px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.tile small{display:block;font-size:12px;color:var(--muted)}
+.tile b{display:block;font:650 20px var(--sans);color:var(--ink);font-variant-numeric:tabular-nums}
+.tile.main{background:var(--tint);border-color:transparent}.tile.main b{font-size:26px;color:var(--btn)}
+.tile span{display:block;font-size:12px;color:var(--muted)}
+.plist{border:1px solid var(--line);border-radius:10px}
+.prow{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13.5px}
+.prow:last-child{border-bottom:none}
+.pk{color:var(--muted)}.pn{color:var(--ink);font-weight:500;min-width:0}
+@container (max-width:640px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tile.main{grid-column:1/-1}.prow{grid-template-columns:1fr auto}.pk{grid-column:1/-1;font-size:12px}}
+.idsteps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:13.5px}
+.idsteps b{color:var(--ink)}
+.idin{display:flex;align-items:center;gap:8px;margin:6px 0 2px;flex-wrap:wrap}
+.idin input{height:38px;border:1px solid var(--line);border-radius:9px;padding:0 10px;font:15px var(--mono);background:var(--card);color:var(--ink);width:170px;max-width:100%}
+.idchk{display:flex;align-items:center;gap:8px;margin-top:6px;font-weight:600;color:var(--ink);cursor:pointer}
+.idchk input{width:18px;height:18px;accent-color:var(--btn)}
+.res.locked{filter:blur(6px);opacity:.5;pointer-events:none;user-select:none}
+.lockmsg{margin:0;text-align:center;font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:8px}
+#res-act.locked{opacity:.45;pointer-events:none}
+.det{container-type:inline-size}
+.facts dd{overflow-wrap:anywhere}
+.dgrid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+@container (max-width:520px){.compare{grid-template-columns:110px minmax(0,1fr)}.compare .pic{width:110px;height:110px}.compare .receipt{height:110px;min-height:110px;font-size:11px}.actions{grid-template-columns:1fr}.actions .btn.danger{width:100%}}
+@container (max-width:900px){.split{grid-template-columns:1fr}}
+/* theme switch */
+.viewsw div+div{margin-left:8px}
+@media (prefers-reduced-motion:reduce){.sw::after{transition:none}}
+</style>
+
+<div class="wrap">
+  <p class="small muted">SKSU TPT v4 · mockup for review · Nov 1, 2026 · nothing here is built yet</p>
+  <h1>Settings, receipt approvers and support assignment</h1>
+  <p class="lead">Start like the old TPT, then switch extras on from one organized Settings page (the Euphoria way). Many staff can approve receipts and answer tickets, not only one admin account. Click the switches, tabs and search to try them; this page saves nothing. Use <b>Desktop / Phone</b> and <b>Light / Dark / Auto</b> (top right) to see every screen at phone size and in both themes.</p>
+
+  <div class="answer">
+    <div><b>Do we have a page to approve applicants?</b><br>Yes: <b>Receipts to check</b>. Today only Admins can open it. This mockup adds a <b>Receipt checker</b> role so many staff can approve.</div>
+    <div><b>Who approved in the old TPT?</b><br>One shared admin account. In v4 every staff member signs in with their own Google account, so each approval shows who did it.</div>
+    <div><b>Concerns and tickets?</b><br>A <b>Support desk</b> role. New tickets are given out to support staff automatically, or an admin assigns them.</div>
+  </div>
+
+  <div class="viewsw"><div role="group" aria-label="View the admin screens as"><button id="v-desk" class="on">Desktop</button><button id="v-phone">Phone</button></div><div role="group" aria-label="Theme"><button data-th="light">Light</button><button data-th="dark">Dark</button><button data-th="" class="on">Auto</button></div></div>
+  <nav class="toc" aria-label="Screens">
+    <a href="#s1">1 · Settings</a><a href="#s2">2 · Receipts to check</a><a href="#s3">3 · Staff and roles</a><a href="#s4">4 · Support desk</a><a href="#s5">5 · Student phone</a><a href="#s6">6 · Result lookup (office)</a>
+  </nav>
+
+  <!-- 1 SETTINGS -->
+  <h2 id="s1"><span class="n">1</span>Admin → System → Settings</h2>
+  <p class="lead">Sections on the left with a search box (like Euphoria and Claude settings), one card on the right, one row per setting: what it does on the left, the switch on the right. <span class="tag old">Old TPT</span> marks the default. Only Super admins open this page; every change is logged with the name.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Admin</span><span class="sp"></span><span class="who">Brian O. · Super admin</span><span class="ava">BO</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Overview</div>
+          <div class="nav" title="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="nl">Dashboard</span></div>
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">42</span></div>
+          <div class="nav" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">7</span></div>
+          <div class="grp">Applicants</div>
+          <div class="nav" title="Applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nl">Applications</span></div>
+          <div class="nav dim" id="nav-walkin" title="Walk-in applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m9 22 2-7 3 3v4M7 12l3-4 4 1 3 3"/></svg><span class="nl">Walk-in applications</span><span class="off">Off</span></div>
+          <div class="nav dim" id="nav-trans" title="Transferees"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg><span class="nl">Transferees</span><span class="off">Off</span></div>
+          <div class="grp">Exam</div>
+          <div class="nav" title="Schedules"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nl">Schedules</span></div>
+          <div class="nav" title="Exam slots"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nl">Exam slots</span></div>
+          <div class="nav" title="Rooms"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg><span class="nl">Rooms</span></div>
+          <div class="nav" title="Check-in"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="nl">Check-in</span></div>
+          <div class="grp">Results</div>
+          <div class="nav" title="Scores"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Scores</span></div>
+          <div class="nav" title="Results and release"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.5 7 22l5-3 5 3-1.2-8.5"/></svg><span class="nl">Results and release</span></div>
+          <div class="grp">Payments</div>
+          <div class="nav dim" id="nav-counter" title="Cashier counters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nl">Cashier counters</span><span class="off">Off</span></div>
+          <div class="grp">People</div>
+          <div class="nav" title="Staff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg><span class="nl">Staff</span></div>
+          <div class="grp">System</div>
+          <div class="nav on" title="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="nl">Settings</span></div>
+          <div class="nav" title="Activity log"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg><span class="nl">Activity log</span></div>
+          </aside>
+        <main class="page">
+          <div class="ph"><h1>Settings</h1><span class="sp"></span><span class="small muted">Changes apply right away, for everyone</span></div>
+          <div class="set">
+          <nav class="stabs" role="tablist" aria-label="Settings sections">
+            <label class="ssearch"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="set-q" type="search" placeholder="Search settings" aria-label="Search settings"></label>
+            <button class="stab on" data-t="t-apply" role="tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>Applying</button>
+            <button class="stab" data-t="t-pay" role="tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Paying</button>
+            <button class="stab" data-t="t-exam" role="tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Exam slot and results</button>
+            <button class="stab" data-t="t-staff" role="tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg>Staff work <span class="tag new">new</span></button>
+            <button class="stab" data-t="t-mail" role="tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>Emails and alerts</button>
+            <button class="stab" data-t="t-site" role="tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>Website</button>
+            <button class="stab" data-t="t-pause" role="tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 15V9M14 15V9"/></svg>Pause</button>
+          </nav>
+          <div class="spanes">
+            <div class="card spane" id="t-apply"><h3>Applying</h3>
+              <div class="sw-row"><span><b>Old-curriculum high school graduates</b> <span class="tag old">Old TPT</span><small>Graduates from before senior high pick "High school graduate (old curriculum)". No strand asked.</small></span><button class="sw on" data-k="oldcur" aria-label="Old-curriculum graduates" aria-pressed="true"></button></div>
+              <div class="sw-row"><span><b>Transferee applications</b> <span class="tag old">Old TPT: off</span><small>Transferee schedules, chair or dean approval, grades upload.</small></span><button class="sw" data-k="trans" aria-label="Transferees" aria-pressed="false"></button></div>
+              <div class="sw-row"><span><b>Students may change program choices</b> <span class="tag old">Old TPT: off</span><small>Off: choices lock on Submit. A change goes through Support, and staff do it.</small></span><button class="sw" data-k="prog" aria-label="Program changes" aria-pressed="false"></button></div>
+            </div>
+            <div class="card spane" id="t-pay" hidden><h3>Paying</h3>
+              <div class="sw-row" style="display:block"><span><b>How students pay</b><small>Shown in the Payment step, on Home, on the landing page and in emails.</small></span>
+                <div class="opts" role="radiogroup" aria-label="How students pay">
+                  <div class="opt on" tabindex="0" data-pay="upload"><i></i><span>Upload the receipt when applying <span class="tag old">Old TPT</span><small>Required to submit. Receipt checkers approve it.</small></span></div>
+                  <div class="opt" tabindex="0" data-pay="cashier"><i></i><span>Pay at an SKSU cashier counter<small>Needs Cashier counters on.</small></span></div>
+                  <div class="opt" tabindex="0" data-pay="both"><i></i><span>Both: the student picks<small>Needs Cashier counters on.</small></span></div>
+                </div>
+              </div>
+              <div class="sw-row"><span><b>Cashier counters</b> <span class="tag old">Old TPT: off</span><small>Counter screen, shifts, OR booklets, cashier accounts.</small></span><button class="sw" data-k="counter" aria-label="Cashier counters" aria-pressed="false"></button></div>
+              <div class="sw-row"><span><b>Walk-in applications</b> <span class="tag old">Old TPT: off</span><small>Staff fill in the form for applicants without a phone.</small></span><button class="sw" data-k="walkin" aria-label="Walk-ins" aria-pressed="false"></button></div>
+              <div class="note warn" id="pay-warn" hidden>Paying at a counter needs Cashier counters switched on too.</div>
+            </div>
+            <div class="card spane" id="t-exam" hidden><h3>Exam slot and results</h3>
+              <div class="sw-row"><span><b>Students may change their exam slot</b> <span class="tag old">Old TPT: off</span><small>Off: the permit says "Ask the office through Support". Staff can always move a student.</small></span><button class="sw" data-k="slot" aria-label="Slot changes" aria-pressed="false"></button></div>
+              <div class="sw-row"><span><b>Survey before the result</b> <span class="tag old">Old TPT</span><small>The short survey comes first, then the scores and the PDF.</small></span><button class="sw on" data-k="survey" aria-label="Survey first" aria-pressed="true"></button></div>
+            </div>
+            <div class="card spane" id="t-staff" hidden><h3>Staff work <span class="tag new">new</span></h3>
+              <div class="sw-row"><span><b>Receipts go to</b><small>Who sees a new receipt in their "Mine" list.</small></span><span class="sel">By campus of 1st choice ▾</span></div>
+              <div class="sw-row"><span><b>Hold a receipt while one person checks it</b><small>Others see "held by Ana". Released after 10 minutes or on Approve.</small></span><button class="sw on" aria-label="Hold receipts" aria-pressed="true"></button></div>
+              <div class="sw-row"><span><b>Support tickets go to</b><small>New tickets are given out in turn to support staff of the topic.</small></span><span class="sel">In turn, by topic ▾</span></div>
+              <div class="sw-row"><span><b>Remind staff when a receipt waits over</b><small>A bell for the checker, then the admins.</small></span><span class="sel">1 working day ▾</span></div>
+            </div>
+            <div class="card spane" id="t-mail" hidden><h3>Emails and alerts</h3>
+              <div class="sw-row"><span><b>Send emails to students</b><small>Off: everything still shows in the app and the bell. Used while testing.</small></span><button class="sw" aria-label="Emails" aria-pressed="false"></button></div>
+              <div class="sw-row"><span><b>Phone pop-up alerts</b><small>For students who turned them on in Account.</small></span><button class="sw on" aria-label="Phone alerts" aria-pressed="true"></button></div>
+              <div class="sw-row"><span><b>Sender name</b><small>Shown in the student's inbox.</small></span><span class="sel">SKSU TPT ▾</span></div>
+            </div>
+            <div class="card spane" id="t-site" hidden><h3>Website</h3>
+              <div class="sw-row"><span><b>Testing notice bar</b><small>"This site is being tested" at the top of every page.</small></span><button class="sw on" aria-label="Testing notice" aria-pressed="true"></button></div>
+              <div class="sw-row"><span><b>Show "Install the app" button</b><small>In the header on phones.</small></span><button class="sw on" aria-label="Install button" aria-pressed="true"></button></div>
+              <div class="sw-row"><span><b>Office hours on Home</b><small>Under "Where to pay".</small></span><span class="sel">Mon–Fri, 8 AM–5 PM ▾</span></div>
+            </div>
+            <div class="card spane" id="t-pause" hidden><h3>Pause</h3>
+              <div class="sw-row"><span><b>Student app</b><small>Off: students see the maintenance page.</small></span><button class="sw on" aria-label="Student app" aria-pressed="true"></button></div>
+              <div class="sw-row"><span><b>New applications</b><small>Off: no new applications; drafts stay.</small></span><button class="sw on" aria-label="New applications" aria-pressed="true"></button></div>
+              <div class="sw-row"><span><b>Payments</b><small>Off: receipts cannot be sent or approved.</small></span><button class="sw on" aria-label="Payments" aria-pressed="true"></button></div>
+              <p class="small muted">Moved here from System → Pause, so every switch is in one place.</p>
+            </div>
+          </div>
+          </div>
+          <div class="savebar"><span class="small muted" id="unsaved" hidden>Not saved yet</span><button class="btn pri">Save settings</button></div>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this changes</b>
+      <ul>
+        <li>The defaults are the old TPT, so the live site starts the way staff and students know it.</li>
+        <li>Switching a feature off also hides its menu item (try Cashier counters or Walk-in: the sidebar follows).</li>
+        <li>Texts follow the settings. With "Upload the receipt", no page says "pay at the cashier".</li>
+        <li><b>Staff work</b> is new: it decides who gets each receipt and ticket.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2 RECEIPTS -->
+  <h2 id="s2"><span class="n">2</span>Receipts to check (the approver page)</h2>
+  <p class="lead">For Admins and the new <b>Receipt checker</b> role. Each checker works their own list. Opening a receipt holds it for 10 minutes, so two people never approve the same one.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Receipts</span><span class="sp"></span><span class="who">Ana R. · Receipt checker · ACCESS</span><span class="ava">AR</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Overview</div>
+          <div class="nav on" title="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="nl">Dashboard</span></div>
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">42</span></div>
+          <div class="nav" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">7</span></div>
+          <div class="grp">Applicants</div>
+          <div class="nav" title="Applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nl">Applications</span></div>
+          <div class="nav dim" id="nav-walkin" title="Walk-in applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m9 22 2-7 3 3v4M7 12l3-4 4 1 3 3"/></svg><span class="nl">Walk-in applications</span><span class="off">Off</span></div>
+          <div class="nav dim" id="nav-trans" title="Transferees"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg><span class="nl">Transferees</span><span class="off">Off</span></div>
+          <div class="grp">Exam</div>
+          <div class="nav" title="Schedules"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nl">Schedules</span></div>
+          <div class="nav" title="Exam slots"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nl">Exam slots</span></div>
+          <div class="nav" title="Rooms"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg><span class="nl">Rooms</span></div>
+          <div class="nav" title="Check-in"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="nl">Check-in</span></div>
+          <div class="grp">Results</div>
+          <div class="nav" title="Scores"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Scores</span></div>
+          <div class="nav" title="Results and release"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.5 7 22l5-3 5 3-1.2-8.5"/></svg><span class="nl">Results and release</span></div>
+          <div class="grp">Payments</div>
+          <div class="nav dim" id="nav-counter" title="Cashier counters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nl">Cashier counters</span><span class="off">Off</span></div>
+          <div class="grp">People</div>
+          <div class="nav" title="Staff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg><span class="nl">Staff</span></div>
+          <div class="grp">System</div>
+          <div class="nav" title="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="nl">Settings</span></div>
+          <div class="nav" title="Activity log"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg><span class="nl">Activity log</span></div>
+          </aside>
+        <main class="page">
+          <div class="kpis">
+            <div class="kpi"><small>Mine, waiting</small><b>12</b></div>
+            <div class="kpi"><small>Everyone, waiting</small><b>342</b></div>
+            <div class="kpi"><small>I approved today</small><b>58</b></div>
+            <div class="kpi"><small>Oldest waiting</small><b>19 h</b></div>
+          </div>
+          <div class="qsearch"><label class="box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="q-search" type="search" placeholder="Search name, application code, reference or OR no." aria-label="Search receipts"></label><span class="sel">Campus: ACCESS ▾</span><span class="sel">Paid by: all ▾</span><span class="sel">Oldest first ▾</span></div>
+          <div class="tabs" style="margin-top:10px"><span class="on">Mine <i>12</i></span><span>All campuses <i>342</i></span><span>Sent back <i>9</i></span><span>Approved today <i>211</i></span></div>
+          <div class="split" style="margin-top:12px">
+            <div class="q">
+              <div class="qr on"><span class="pic"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#ffffff"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#c99a74"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#c99a74"/><path d="M32 40c0-15 8-22 18-22s19 6 18 22c-3-8-9-11-18-11s-15 3-18 11z" fill="#2b211c"/></svg></span><div style="min-width:0"><div class="nm">DELA CRUZ, MARIA S.</div><div class="sub">APP-27-47189 · GCash · ref 1009 284 551 203</div></div><div class="rt">sent 9:12 AM<br>BSIT · ACCESS</div></div>
+              <div class="qr"><span class="pic"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#e9eef5"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#c99a74"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#c99a74"/><path d="M32 40c0-15 8-22 18-22s19 6 18 22c-3-8-9-11-18-11s-15 3-18 11z" fill="#2b211c"/></svg></span><div style="min-width:0"><div class="nm">PANGILINAN, JOHN P.</div><div class="sub">APP-27-47201 · SKSU OR 0100233</div></div><div class="rt">sent 9:30 AM<br>BSEd · ACCESS</div></div>
+              <div class="qr"><span class="pic"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#f4f4f4"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#c99a74"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#c99a74"/><path d="M32 40c0-15 8-22 18-22s19 6 18 22c-3-8-9-11-18-11s-15 3-18 11z" fill="#2b211c"/></svg></span><div style="min-width:0"><div class="nm">LUMABAO, KAREN</div><div class="sub">APP-27-47222 · bank · ref 88213</div></div><div class="rt"><span class="tag warn">same photo as APP-27-47090</span></div></div>
+              <div class="qr"><span class="pic"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#ffffff"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#c99a74"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#c99a74"/><path d="M32 40c0-15 8-22 18-22s19 6 18 22c-3-8-9-11-18-11s-15 3-18 11z" fill="#2b211c"/></svg></span><div style="min-width:0"><div class="nm">AMPATUAN, RAHIM</div><div class="sub">APP-27-47240 · GCash · ref 1009 300 128 777</div></div><div class="rt">sent 10:02 AM<br>BSA · ACCESS</div></div>
+              <div class="qr"><span class="pic"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#eef3ee"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#c99a74"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#c99a74"/><path d="M32 40c0-15 8-22 18-22s19 6 18 22c-3-8-9-11-18-11s-15 3-18 11z" fill="#2b211c"/></svg></span><div style="min-width:0"><div class="nm">TAN, GRACE</div><div class="sub">APP-27-47251 · SKSU OR 0100241</div></div><div class="rt"><span class="tag">held by you · 8 min</span></div></div>
+            </div>
+            <div class="card det">
+              <div class="det-h">
+                <div style="min-width:0"><h3>DELA CRUZ, MARIA S.</h3><p class="small muted mono" style="margin:0">APP-27-47189 · sent Nov 1, 9:12 AM</p></div>
+                <span class="tag">held by you · 9 min left</span>
+              </div>
+              <div class="compare">
+                <figure><figcaption>2×2 photo</figcaption><span class="pic"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo of Maria Dela Cruz"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#ffffff"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#c99a74"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#c99a74"/><path d="M32 40c0-15 8-22 18-22s19 6 18 22c-3-8-9-11-18-11s-15 3-18 11z" fill="#2b211c"/></svg></span></figure>
+                <figure><figcaption>Receipt · GCash</figcaption><div class="receipt"><div>Sent ₱275.00 to SKSU TPT<br>Ref No. 1009 284 551 203<br>Oct 31, 2026 4:12 PM</div><div class="zoom">tap to zoom</div></div></figure>
+              </div>
+              <div class="checks"><span class="tag">✓ Reference not used before</span><span class="tag">✓ Photo not seen before</span><span class="tag">✓ No same person found</span></div>
+              <div class="dgrid">
+                <section><h4>Payment</h4><dl class="facts">
+                  <dt>Reference</dt><dd class="mono">1009284551203</dd>
+                  <dt>Day paid</dt><dd>Oct 31, 2026</dd>
+                  <dt>Fee</dt><dd>₱275.00</dd>
+                </dl></section>
+                <section><h4>Applicant</h4><dl class="facts">
+                  <dt>Born</dt><dd>May 12, 2009 · female</dd>
+                  <dt>Town</dt><dd>Isulan, Sultan Kudarat</dd>
+                  <dt>School</dt><dd>Isulan NHS · STEM · GA 91.4</dd>
+                  <dt>1st choice</dt><dd>BS Information Technology · ACCESS</dd>
+                  <dt>2nd choice</dt><dd>BS Computer Science · ACCESS</dd>
+                </dl></section>
+              </div>
+              <div class="actions"><button class="btn pri big">Approve · give examinee no.</button><button class="btn danger big">Send back…</button></div>
+              <p class="small muted" style="margin:0">Approve opens the next receipt in your list. Send back lets you tick what to fix: receipt, 2×2 photo or details.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this changes</b>
+      <ul>
+        <li>Today: one list, Admins only. New: many checkers, each with "Mine".</li>
+        <li><b>Search</b> by name, application code, reference or OR number, with campus and payment filters.</li>
+        <li>The <b>2×2 photo</b> shows beside the receipt and in every row, so the checker can send back a wrong photo at the same time.</li>
+        <li>"Mine" comes from Settings → Receipts go to (by campus, or everyone shares one list).</li>
+        <li>The hold stops two checkers approving the same receipt.</li>
+        <li>Warnings already built stay: same photo, used reference, near-duplicate person.</li>
+        <li>Every approval and send-back records who did it.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3 STAFF -->
+  <h2 id="s3"><span class="n">3</span>Staff and roles</h2>
+  <p class="lead">Add as many staff as needed. Each person can hold more than one job. Roles that belong to a switched-off feature are hidden.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Staff</span><span class="sp"></span><span class="ava">BO</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Overview</div>
+          <div class="nav on" title="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="nl">Dashboard</span></div>
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">42</span></div>
+          <div class="nav" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">7</span></div>
+          <div class="grp">Applicants</div>
+          <div class="nav" title="Applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nl">Applications</span></div>
+          <div class="nav dim" id="nav-walkin" title="Walk-in applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m9 22 2-7 3 3v4M7 12l3-4 4 1 3 3"/></svg><span class="nl">Walk-in applications</span><span class="off">Off</span></div>
+          <div class="nav dim" id="nav-trans" title="Transferees"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg><span class="nl">Transferees</span><span class="off">Off</span></div>
+          <div class="grp">Exam</div>
+          <div class="nav" title="Schedules"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nl">Schedules</span></div>
+          <div class="nav" title="Exam slots"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nl">Exam slots</span></div>
+          <div class="nav" title="Rooms"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg><span class="nl">Rooms</span></div>
+          <div class="nav" title="Check-in"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="nl">Check-in</span></div>
+          <div class="grp">Results</div>
+          <div class="nav" title="Scores"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Scores</span></div>
+          <div class="nav" title="Results and release"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.5 7 22l5-3 5 3-1.2-8.5"/></svg><span class="nl">Results and release</span></div>
+          <div class="grp">Payments</div>
+          <div class="nav dim" id="nav-counter" title="Cashier counters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nl">Cashier counters</span><span class="off">Off</span></div>
+          <div class="grp">People</div>
+          <div class="nav" title="Staff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg><span class="nl">Staff</span></div>
+          <div class="grp">System</div>
+          <div class="nav" title="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="nl">Settings</span></div>
+          <div class="nav" title="Activity log"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg><span class="nl">Activity log</span></div>
+          </aside>
+        <main class="page">
+          <div class="ph"><h1>Staff</h1><span class="small muted">18 people</span><span class="sp"></span><button class="btn pri">Add staff</button></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Name</th><th>Jobs</th><th>Campus</th><th>Today</th><th>Last active</th></tr></thead>
+            <tbody>
+              <tr><td><b>Brian Orbino</b><br><span class="small muted">orbinobrian0506@gmail.com</span></td><td><span class="tag">Admin</span> <span class="tag new">Super admin</span></td><td>All</td><td>–</td><td>now</td></tr>
+              <tr><td><b>Ana Reyes</b><br><span class="small muted">ana.reyes@sksu.edu.ph</span></td><td><span class="tag">Receipt checker</span></td><td>ACCESS</td><td>58 approved</td><td>2 min ago</td></tr>
+              <tr><td><b>Jun Mangudadatu</b><br><span class="small muted">jun.m@sksu.edu.ph</span></td><td><span class="tag">Receipt checker</span> <span class="tag">Support desk</span></td><td>Isulan</td><td>31 approved · 6 replies</td><td>15 min ago</td></tr>
+              <tr><td><b>Liza Santos</b><br><span class="small muted">liza.santos@sksu.edu.ph</span></td><td><span class="tag">Support desk</span></td><td>All</td><td>14 replies</td><td>1 h ago</td></tr>
+              <tr><td><b>Dr. Ramon Cruz</b><br><span class="small muted">dean.cas@sksu.edu.ph</span></td><td><span class="tag">College dean</span></td><td>ACCESS · CAS</td><td>–</td><td>yesterday</td></tr>
+              <tr><td><b>Mark Villanueva</b><br><span class="small muted">mark.v@sksu.edu.ph</span></td><td><span class="tag">Proctor</span></td><td>Tacurong</td><td>–</td><td><span class="muted">Invite pending</span></td></tr>
+            </tbody>
+          </table></div>
+          <div class="modal" style="margin-top:16px">
+            <h3>Add staff</h3>
+            <label class="l">Google email</label><div class="field">ana.reyes@sksu.edu.ph</div>
+            <label class="l">Jobs (pick one or more)</label>
+            <div class="chk"><span>Admin</span><span class="on">Receipt checker</span><span>Support desk</span><span>Proctor</span><span>Program chair</span><span>College dean</span><span style="opacity:.45" title="Cashier counters are off in Settings">Cashier (off)</span></div>
+            <label class="l">Campus</label><div class="field">ACCESS ▾</div>
+            <p class="small muted" style="margin-top:8px">Receipt checker: approves or sends back receipts, and looks up and prints results for students who come to the office. Cannot void payments, change scores or open Settings.</p>
+            <div class="savebar"><button class="btn">Cancel</button><button class="btn pri">Send invite</button></div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this changes</b>
+      <ul>
+        <li>Two new roles: <b>Receipt checker</b> and <b>Support desk</b>. Today both jobs need a full Admin.</li>
+        <li>A small job for a small role: checkers cannot touch scores, results or settings.</li>
+        <li>"Today" shows the work each person did, to share the load fairly.</li>
+        <li>Deans and chairs keep their transferee approval page when Transferees is on.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4 SUPPORT -->
+  <h2 id="s4"><span class="n">4</span>Support desk with assignment</h2>
+  <p class="lead">Tickets are given out in turn to support staff (by topic, set in Settings). Anyone on the desk can take or pass a ticket.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Support</span><span class="sp"></span><span class="who">Liza S. · Support desk</span><span class="ava">LS</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Overview</div>
+          <div class="nav on" title="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span class="nl">Dashboard</span></div>
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">42</span></div>
+          <div class="nav" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">7</span></div>
+          <div class="grp">Applicants</div>
+          <div class="nav" title="Applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span class="nl">Applications</span></div>
+          <div class="nav dim" id="nav-walkin" title="Walk-in applications"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m9 22 2-7 3 3v4M7 12l3-4 4 1 3 3"/></svg><span class="nl">Walk-in applications</span><span class="off">Off</span></div>
+          <div class="nav dim" id="nav-trans" title="Transferees"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg><span class="nl">Transferees</span><span class="off">Off</span></div>
+          <div class="grp">Exam</div>
+          <div class="nav" title="Schedules"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="nl">Schedules</span></div>
+          <div class="nav" title="Exam slots"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="nl">Exam slots</span></div>
+          <div class="nav" title="Rooms"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21h16M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><path d="M14 12h.01"/></svg><span class="nl">Rooms</span></div>
+          <div class="nav" title="Check-in"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="nl">Check-in</span></div>
+          <div class="grp">Results</div>
+          <div class="nav" title="Scores"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span class="nl">Scores</span></div>
+          <div class="nav" title="Results and release"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.5 7 22l5-3 5 3-1.2-8.5"/></svg><span class="nl">Results and release</span></div>
+          <div class="grp">Payments</div>
+          <div class="nav dim" id="nav-counter" title="Cashier counters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg><span class="nl">Cashier counters</span><span class="off">Off</span></div>
+          <div class="grp">People</div>
+          <div class="nav" title="Staff"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></svg><span class="nl">Staff</span></div>
+          <div class="grp">System</div>
+          <div class="nav" title="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="nl">Settings</span></div>
+          <div class="nav" title="Activity log"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4M3 4v5h5"/></svg><span class="nl">Activity log</span></div>
+          </aside>
+        <main class="page">
+          <div class="tabs"><span>Mine <i>5</i></span><span>Not assigned <i>2</i></span><span class="on">All open <i>23</i></span><span>Solved</span></div>
+          <div class="tbl-wrap" style="margin-top:8px"><table>
+            <thead><tr><th>Ticket</th><th>Topic</th><th>Waiting</th><th>Assigned to</th><th class="act"><span class="sr">Action</span></th></tr></thead>
+            <tbody>
+              <tr><td><b>Wrong birth date on my application</b><br><span class="small muted">APP-27-47012 · SANTOS, JOY</span></td><td>Change my details</td><td><span class="tag warn">2 days</span></td><td>Liza S.</td><td class="act"><button class="btn sm">Reply</button></td></tr>
+              <tr><td><b>Can I move my exam to Dec 7?</b><br><span class="small muted">APP-27-47140 · KUSAIN, ALI</span></td><td>Exam slot</td><td>5 h</td><td>Liza S.</td><td class="act"><button class="btn sm">Reply</button></td></tr>
+              <tr><td><b>Receipt sent back, I don't know why</b><br><span class="small muted">APP-27-47222 · LUMABAO, KAREN</span></td><td>Payment</td><td>1 h</td><td>Jun M. <span class="small muted">(receipts)</span></td><td class="act"><button class="btn sm">Take it</button></td></tr>
+              <tr><td><b>Please change my 1st choice to BSN</b><br><span class="small muted">APP-27-47301 · DIMAS, PAULO</span></td><td>Programs</td><td>20 min</td><td><span class="muted">not assigned</span></td><td class="act"><button class="btn sm">Take it</button></td></tr>
+            </tbody>
+          </table></div>
+          <p class="small muted" style="margin-top:10px">Payment questions go to receipt checkers who also hold Support desk. A program change is done by staff from the ticket, with the reason kept.</p>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this changes</b>
+      <ul>
+        <li>"Mine", "Not assigned" and "All open" tabs (shown: All open). Today all tickets sit in one list.</li>
+        <li>One button per row, same place and size: <b>Reply</b> on yours, <b>Take it</b> on someone else's or unassigned.</li>
+        <li>Given out in turn, so no ticket waits for one admin.</li>
+        <li>Program and slot changes come here, since students cannot change them (Settings).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 5 STUDENT -->
+  <h2 id="s5"><span class="n">5</span>What the student sees (old TPT settings)</h2>
+  <p class="lead">Short and true to the settings: upload the receipt to submit, no cashier option, survey before the result.</p>
+  <div class="flow" style="margin-bottom:14px"><span>Pay the fee</span><em>→</em><span>Apply + upload receipt</span><em>→</em><span>Receipt checker approves</span><em>→</em><span>Pick exam slot, get permit</span><em>→</em><span>Take the test</span><em>→</em><span>Survey, then result</span></div>
+  <div class="phones">
+    <div><div class="phone"><div class="pbar">Apply · Payment</div><div class="pbody">
+      <div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+      <div class="pcard">The exam fee is <b>₱275.00</b>. Last day to pay: Fri, Dec 5. Pay first, then upload a clear photo of your receipt here. The office checks it, then you get your examinee number.</div>
+      <div class="upl">Take a photo of the receipt<br><span class="small" style="font-weight:400">or choose from Gallery</span></div>
+      <label class="l" style="margin:0">Reference or OR number</label><div class="field mono">1009 284 551 203</div>
+      <label class="l" style="margin:0">Day you paid</label><div class="field">Oct 31, 2026</div>
+      <button class="btn pri big">Save and review</button>
+    </div></div><p class="cap">No "I will pay at an SKSU cashier" choice when the counters are off.</p></div>
+
+    <div><div class="phone"><div class="pbar">Apply · School</div><div class="pbody">
+      <div class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <b style="color:var(--ink)">You are a</b>
+      <div class="opts" style="margin:0">
+        <div class="opt"><i></i><span>Senior high school graduate or graduating</span></div>
+        <div class="opt on"><i></i><span>High school graduate (old curriculum, no senior high)</span></div>
+        <div class="opt"><i></i><span>ALS passer</span></div>
+      </div>
+      <label class="l" style="margin:0">School</label><div class="field">Isulan National High School</div>
+      <label class="l" style="margin:0">Year graduated</label><div class="field">2010</div>
+      <label class="l" style="margin:0">General average</label><div class="field">85</div>
+      <p class="small muted">No strand asked for old-curriculum graduates.</p>
+    </div></div><p class="cap">The new choice for graduates before senior high.</p></div>
+
+    <div><div class="phone"><div class="pbar">Home</div><div class="pbody">
+      <div class="pcard"><b style="color:var(--ink)">Your result is out</b><p class="small muted" style="margin:6px 0 10px">Answer a short survey (about 2 minutes) to see your scores and the programs you qualify for.</p><button class="btn pri big">Start the survey</button></div>
+      <div class="pcard small"><b style="color:var(--ink)">Exam slot</b><br>Sun, Dec 6 · ACCESS · Room ENG 201 · Seat 14<br><span class="muted">Need a different day? Ask the office through Support.</span></div>
+    </div></div><p class="cap">Scores stay hidden until the survey is done. No "Change my exam slot" button.</p></div>
+  </div>
+
+  <!-- 6 RESULT LOOKUP -->
+  <h2 id="s6"><span class="n">6</span>Result lookup at the office</h2>
+  <p class="lead">For students who come in person to ask for their result. The same staff who check receipts can do this, so no new people are needed. They search, check the face and birth date, then show or print the result slip.</p>
+  <div class="board">
+    <div class="desk">
+      <div class="band"><b>SKSU TPT</b><span class="small" style="opacity:.8">Results</span><span class="sp"></span><span class="who">Ana R. · Receipt checker · ACCESS</span><span class="ava">AR</span></div>
+      <div class="shell">
+        <aside class="side" aria-label="Main menu">
+          <div class="grp">Daily work</div>
+          <div class="nav" title="Receipts to check"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14v20l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span class="nl">Receipts to check</span><span class="c">12</span></div>
+          <div class="nav on" title="Result lookup"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="nl">Result lookup</span></div>
+          <div class="nav" title="Support tickets"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">Support tickets</span><span class="c">3</span></div>
+          </aside>
+        <main class="page">
+          <div class="ph"><h1>Result lookup</h1><span class="sp"></span><span class="small muted">Dec 6–7 exam · results out Dec 20</span></div>
+          <div class="qsearch" style="margin-top:0"><label class="box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="r-search" type="search" value="dimas" aria-label="Search results"></label><span class="sel">Campus: All campuses ▾</span><span class="sel">Exam: Dec 6–7 ▾</span><button class="btn">Scan permit QR</button></div>
+          <p class="small muted" style="margin:6px 0 0">Searching all 8 campuses. Ana works at ACCESS but can find any student.</p>
+          <div class="q" style="margin-top:10px">
+            <div class="qr on" style="grid-template-columns:38px minmax(0,1fr) auto"><span class="pic" style="width:38px;height:38px"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo of Paulo Dimas"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#eef3ee"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#b98763"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#b98763"/><path d="M32 38c0-13 8-20 18-20s19 6 18 20c-4-6-10-8-18-8s-14 2-18 8z" fill="#1f1915"/></svg></span><div style="min-width:0"><div class="nm">DIMAS, PAULO R.</div><div class="sub">Examinee 500214 · ACCESS · born Mar 3, 2009</div></div><div class="rt"><span class="tag">Result out</span></div></div>
+            <div class="qr" style="grid-template-columns:38px minmax(0,1fr) auto"><span class="av">DM</span><div style="min-width:0"><div class="nm">DIMASALANG, MARK</div><div class="sub">Examinee 500388 · Kalamansig · born Jan 9, 2009</div></div><div class="rt"><span class="tag old" title="Paid and had an exam slot, but was not checked in on exam day">Did not take the exam</span><br><span class="small">no result</span></div></div>
+          </div>
+          <div class="card det" style="margin-top:12px">
+            <div class="det-h"><div style="min-width:0"><h3>DIMAS, PAULO R.</h3><p class="small muted mono" style="margin:0">Examinee 500214 · ACCESS · Dec 6, morning</p></div><span class="tag warn" title="The student has not answered the survey in the app yet">Survey not answered yet</span></div>
+            <div class="compare">
+              <figure><figcaption>2×2 photo</figcaption><span class="pic"><svg viewBox="0 0 100 100" role="img" aria-label="2x2 photo of Paulo Dimas"><rect width="100" height="100" fill="#dbe6f0"/><path d="M14 100c2-20 17-30 36-30s34 10 36 30z" fill="#eef3ee"/><rect x="43" y="56" width="14" height="16" rx="5" fill="#b98763"/><ellipse cx="50" cy="42" rx="17" ry="20" fill="#b98763"/><path d="M32 38c0-13 8-20 18-20s19 6 18 20c-4-6-10-8-18-8s-14 2-18 8z" fill="#1f1915"/></svg></span></figure>
+              <figure><figcaption>Is this the student? Check before showing the result</figcaption>
+                <ol class="idsteps">
+                  <li><b>Ask for their birth date</b> and type it. Don't read it to them.
+                    <div class="idin"><input id="id-bd" type="text" inputmode="numeric" placeholder="MM / DD / YYYY" aria-label="Birth date the student says"><span id="id-bd-ok" class="tag" hidden>✓ Matches</span><span id="id-bd-bad" class="tag bad" hidden>Does not match</span></div>
+                    <span class="small muted">Try 03/03/2009</span></li>
+                  <li><b>Look at their ID and face.</b> Same person as the 2×2 photo?
+                    <label class="idchk"><input id="id-face" type="checkbox"> Yes, same person</label></li>
+                </ol>
+              </figure>
+            </div>
+            <div class="res locked" id="res-box">
+              <section><h4>Scores</h4>
+                <div class="tiles">
+                  <div class="tile main"><small>Overall</small><b>612</b><span>Stanine 7 · Above average</span></div>
+                  <div class="tile"><small>ESM</small><b>598</b></div>
+                  <div class="tile"><small>English</small><b>604</b></div>
+                  <div class="tile"><small>Math</small><b>590</b></div>
+                  <div class="tile"><small>Science</small><b>601</b></div>
+                </div>
+              </section>
+              <section><h4>Programs</h4>
+                <div class="plist">
+                  <div class="prow"><span class="pk">1st choice</span><span class="pn">BS Nursing · ACCESS</span><span class="tag bad">Below cut-off</span></div>
+                  <div class="prow"><span class="pk">2nd choice</span><span class="pn">BS Biology · ACCESS</span><span class="tag">Qualified</span></div>
+                  <div class="prow"><span class="pk">Other programs</span><span class="pn">14 programs qualify</span><button class="btn sm">See list</button></div>
+                </div>
+              </section>
+            </div>
+            <p class="lockmsg" id="res-lock">The result shows after both checks.</p>
+            <div class="actions locked" id="res-act"><button class="btn pri big">Print result slip</button><button class="btn big" style="width:auto;padding:0 18px">Show on screen</button></div>
+            <p class="small muted" style="margin:0">Logged: "Result given at the office by Ana R., Dec 21, 10:14 AM". The student can still choose a program in the app, or staff choose it here with them.</p>
+          </div>
+        </main>
+      </div>
+    </div>
+    <div class="why"><b>What this adds</b>
+      <ul>
+        <li><b>Where admins see results today:</b> Admin → Scores and results (release, the list, and each student's result page with Share). That stays for admins.</li>
+        <li><b>New:</b> a simple <b>Result lookup</b> for receipt checkers, so many staff can help at the office on release day.</li>
+        <li>Search by name, examinee no. or code, or scan the permit QR.</li>
+        <li><b>All campuses:</b> the lookup is never limited to the staff member's campus. A student who took the test in Kalamansig can ask at ACCESS. The campus filter starts at "All campuses".</li>
+        <li><b>Is this the student?</b> Staff ask the birth date and type it (the system says if it matches, without showing it), then compare the ID and face with the 2×2 photo. The result stays hidden until both are done, so it is not given to a classmate or someone else asking.</li>
+        <li>"Did not take the exam" (absent): paid and had a slot, but was not checked in on exam day, so there is no score. Opening it shows the slot they missed and what they can do next (the next schedule, if the office allows a retake).</li>
+        <li>Read-only: staff cannot change scores or results.</li>
+        <li>Survey first still holds online. At the office the slip can be printed anyway, and the student is asked to answer the survey in the app.</li>
+        <li>Every print and view is logged with the staff name.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2><span class="n">?</span>To decide</h2>
+  <div class="answer" style="margin-top:6px">
+    <div><b>Receipts go to:</b> by campus of the 1st choice (each campus checks its own), or one shared list for everyone?</div>
+    <div><b>Who may answer tickets:</b> Support desk staff only, or receipt checkers too for payment questions?</div>
+    <div><b>Result at the office without the survey:</b> print anyway (shown here), or ask them to answer a short paper/app survey first?</div>
+    <div><b>Program change after submit:</b> staff do it from the ticket (shown here), or never allowed?</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var state={counter:false,walkin:false,trans:false,pay:'upload'};
+  var unsaved=document.getElementById('unsaved');
+  function dim(id,on){var el=document.getElementById(id);if(!el)return;el.classList.toggle('dim',!on);var o=el.querySelector('.off');if(o)o.hidden=on;}
+  function refresh(){
+    dim('nav-counter',state.counter);dim('nav-walkin',state.walkin);dim('nav-trans',state.trans);
+    document.getElementById('pay-warn').hidden=!(state.pay!=='upload'&&!state.counter);
+    unsaved.hidden=false;
+  }
+  document.querySelectorAll('.sw').forEach(function(b){
+    b.addEventListener('click',function(){var on=!b.classList.contains('on');b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);if(b.dataset.k&&b.dataset.k in state)state[b.dataset.k]=on;refresh();});
+  });
+  var tabs=document.querySelectorAll('.stab');
+  function showTab(id){tabs.forEach(function(t){var on=t.dataset.t===id;t.classList.toggle('on',on);t.setAttribute('aria-selected',on);});document.querySelectorAll('.spane').forEach(function(p){p.hidden=p.id!==id;});}
+  tabs.forEach(function(t){t.addEventListener('click',function(){document.getElementById('set-q').value='';showTab(t.dataset.t);});});
+  document.getElementById('set-q').addEventListener('input',function(e){
+    var q=e.target.value.trim().toLowerCase();
+    if(!q){showTab(document.querySelector('.stab.on').dataset.t);document.querySelectorAll('.spane .sw-row').forEach(function(r){r.hidden=false;});return;}
+    document.querySelectorAll('.spane').forEach(function(p){var any=false;p.querySelectorAll('.sw-row').forEach(function(r){var hit=r.textContent.toLowerCase().indexOf(q)>-1;r.hidden=!hit;any=any||hit;});p.hidden=!any;});
+  });
+  function view(phone){document.body.classList.toggle('asphone',phone);document.getElementById('v-phone').classList.toggle('on',phone);document.getElementById('v-desk').classList.toggle('on',!phone);try{localStorage.setItem('tpt-mock-view',phone?'phone':'desk');}catch(e){}}
+  document.getElementById('v-phone').addEventListener('click',function(){view(true);});
+  document.getElementById('v-desk').addEventListener('click',function(){view(false);});
+  try{if(localStorage.getItem('tpt-mock-view')==='phone')view(true);}catch(e){}
+  (function(){
+    var bd=document.getElementById('id-bd'),face=document.getElementById('id-face');
+    if(!bd)return;
+    function check(){
+      var v=bd.value.replace(/\D/g,''),ok=v==='03032009'||v==='332009';
+      document.getElementById('id-bd-ok').hidden=!ok;document.getElementById('id-bd-bad').hidden=ok||v.length<6;
+      var open=ok&&face.checked;
+      document.getElementById('res-box').classList.toggle('locked',!open);
+      document.getElementById('res-act').classList.toggle('locked',!open);
+      document.getElementById('res-lock').hidden=open;
+    }
+    bd.addEventListener('input',check);face.addEventListener('change',check);
+  })();
+  document.querySelectorAll('[data-th]').forEach(function(b){b.addEventListener('click',function(){
+    var t=b.dataset.th;if(t)document.documentElement.setAttribute('data-theme',t);else document.documentElement.removeAttribute('data-theme');
+    document.querySelectorAll('[data-th]').forEach(function(x){x.classList.toggle('on',x===b);});
+    try{localStorage.setItem('tpt-mock-theme',t);}catch(e){}
+  });});
+  try{var th=localStorage.getItem('tpt-mock-theme');if(th){var tb=document.querySelector('[data-th="'+th+'"]');if(tb)tb.click();}}catch(e){}
+  document.querySelectorAll('.opt[data-pay]').forEach(function(o){
+    function pick(){document.querySelectorAll('.opt[data-pay]').forEach(function(x){x.classList.toggle('on',x===o);});state.pay=o.dataset.pay;refresh();}
+    o.addEventListener('click',pick);o.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}});
+  });
+})();
+</script>
