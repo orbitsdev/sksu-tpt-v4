@@ -109,7 +109,7 @@ body.only-lap .pv,body.only-phone .lv{display:none}
 <h1>Payment desk v2 · plan and mockup</h1>
 <p class="lead">A calmer counter for rush days: one search, one applicant at a time, and three clear steps (Check → Pay → Done), with the camera and receipt checks built in. Fictional names only.</p>
 <div class="note info" style="max-width:820px"><b>"Counter" is only a name for a desk.</b> Whoever takes the fee there (dean's office staff, admission staff, Cashier's Office or any SKSU employee) just needs the <b>Takes payments</b> job on their staff account. Each desk has its own shift and cash count.</div>
-<div class="toc"><a href="#plan">Plan</a><a href="#s1">1 · Find &amp; check</a><a href="#s2">2 · Pay</a><a href="#s3">3 · Done &amp; book slot</a><a href="#cam">Camera</a><a href="#rcpt">Receipts to check</a><a href="#edge">Warnings</a><a href="#open-shift">Shift left open</a><a href="#refund">Refunds</a><a href="#signs">Receipt warning signs</a></div>
+<div class="toc"><a href="#plan">Plan</a><a href="#find">Finding the student</a><a href="#s1">1 · Find &amp; check</a><a href="#s2">2 · Pay</a><a href="#s3">3 · Done &amp; book slot</a><a href="#cam">Camera</a><a href="#rcpt">Receipts to check</a><a href="#edge">Warnings</a><a href="#open-shift">Shift left open</a><a href="#refund">Refunds</a><a href="#signs">Receipt warning signs</a></div>
 
 <h2 id="plan">Plan</h2>
 <div class="plan">
@@ -133,13 +133,36 @@ body.only-lap .pv,body.only-phone .lv{display:none}
     <ul><li>The app looks for signs of an edited or reused receipt and shows them on the receipt.</li><li>They are hints, not proof: staff still look, then approve or send back.</li></ul></div>
 </div>
 
+<h2 id="find">Finding the student fast</h2>
+<p class="lead">No scrolling through a list. The student shows a QR code on their phone; the staff member scans it and lands on step 1 with that student open.</p>
+<div class="grid2">
+<div class="panel pad" style="max-width:360px;margin:0 auto;width:100%">
+  <div class="sub">Student's phone · Home</div>
+  <div class="name" style="font-size:17px;margin-top:2px">Pay at an SKSU desk</div>
+  <div class="sub">Show this to the staff member. They scan it and take the fee.</div>
+  <svg viewBox="0 0 21 21" width="170" height="170" style="display:block;margin:14px auto;background:#fff;padding:8px;border-radius:12px" shape-rendering="crispEdges" aria-label="QR code"><path fill="#111" d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0z"/><path fill="#fff" d="M1 1h5v5H1zM15 1h5v5h-5zM1 15h5v5H1z"/><path fill="#111" d="M2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2zM8 1h1v2H8zM10 0h2v1h-2zM9 4h2v2H9zM12 3h1v3h-1zM8 8h2v1H8zM11 8h3v2h-3zM15 8h2v1h-2zM18 9h3v1h-3zM0 9h2v2H0zM3 8h3v1H3zM4 10h2v2H4zM8 10h1v3H8zM10 11h2v1h-2zM13 11h1v2h-1zM16 11h2v3h-2zM19 12h2v2h-2zM9 14h3v1H9zM8 16h2v2H8zM11 16h1v3h-1zM13 15h2v2h-2zM16 15h1v1h-1zM18 16h3v1h-3zM14 18h2v3h-2zM17 19h2v2h-2zM9 19h1v2H9zM12 20h1v1h-1z"/></svg>
+  <div class="mono" style="text-align:center;font-size:20px;font-weight:700">APP-27-54452</div>
+  <div class="sub" style="text-align:center">₱275.00 · pay by Dec 5</div>
+</div>
+<div class="card">
+  <h3>Three ways to find them</h3>
+  <ul>
+    <li><b>Scan the QR</b> with the laptop webcam, a phone camera or a USB QR scanner (it types the code by itself). About 1 second.</li>
+    <li><b>Type the last digits of the code</b>, like <span class="mono">54452</span>. When only one student matches, they open at once.</li>
+    <li><b>Type the name</b>, surname first or not: <i>villanueva jose</i>. Then pick from a short list with the photos.</li>
+  </ul>
+  <p class="sub">No phone? The code is also on the email and the printed application. The list below stays for walk-ins and checking who is waiting.</p>
+  <p class="sub">After "Next applicant" the search box is ready again, so the next scan works right away.</p>
+</div>
+</div>
+
 <h2 id="s1">1 · Find &amp; check</h2>
 <div class="screen">
   <div class="bar"><b>Payments</b><div class="nav"><span class="on">Counter</span><span>Receipts</span><span>Paid</span></div><div class="sp"></div>
     <span class="pill">Counter 1 · ACCESS</span><span class="pill">Shift since 8:02 AM</span><span class="pill">Today 12 · ₱3,300</span><span class="pill gold">Last OR <span class="mono">100012</span></span></div>
   <div class="body">
     <div class="panel">
-      <div class="search"><div class="input">🔍 <span class="ph">Name, code, examinee or OR no.</span><span style="flex:1"></span><span class="kbd">/</span></div>
+      <div class="search"><div style="display:flex;gap:8px"><div class="input" style="flex:1;min-width:0">🔍 <span class="ph">Scan, or type name or code</span><span style="flex:1"></span><span class="kbd">/</span></div><span class="btn" style="height:46px">📷 Scan</span></div>
         <div class="sub" style="margin-top:6px">↑ ↓ move · Enter open · Esc back · <a href="#">New walk-in</a></div></div>
       <div class="tabs"><span class="on">Waiting to pay<i>5</i></span><span>Receipts to check<i>2</i></span><span>Paid today<i>12</i></span></div>
       <div class="row"><div class="av">MS</div><div><div class="name">SANTOS, MARIA DELA CRUZ</div><div class="sub mono">APP-27-58578 · applied Oct 31, 9:14 AM</div></div><div class="right">BEEd · ACCESS<br><span class="due">pay by Dec 5</span></div></div>
@@ -188,9 +211,10 @@ body.only-lap .pv,body.only-phone .lv{display:none}
       <div class="note ok">Paid · OR <span class="mono">100013</span> · ₱275.00 cash · change ₱225.00</div>
       <div class="sub">Examinee no.</div><div class="exno">500014</div>
       <div style="display:flex;gap:8px;margin:10px 0 4px"><span class="btn">🖨 Print slip</span><span class="btn">Show on screen</span></div>
-      <label class="l">Book the exam slot now (optional)</label>
-      <div class="slots"><div class="slot on"><b>ACCESS</b><div class="sub">Sun, Dec 6 · 61 seats left</div></div><div class="slot"><b>ACCESS</b><div class="sub">Mon, Dec 7 · 80 seats left</div></div><div class="slot"><b>Isulan</b><div class="sub">Sun, Dec 6 · 75 seats left</div></div><div class="slot"><b>Tacurong</b><div class="sub">Mon, Dec 7 · 80 seats left</div></div></div>
-      <div style="display:flex;gap:8px;margin-top:12px"><span class="btn" style="flex:1">Book Dec 6 · ACCESS</span><span class="btn primary" style="flex:1;height:40px;font-size:14px">Next applicant <span class="kbd" style="color:#fff;border-color:rgba(255,255,255,.4)">Esc</span></span></div>
+      <label class="l">Exam slot (optional)</label>
+      <div class="slot on" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="flex:1;min-width:180px"><b>ACCESS · Sun, Dec 6</b><div class="sub">Their 1st-choice campus, earliest day with seats · 61 left</div></div><span class="btn" style="background:var(--btn);border-color:var(--btn);color:#fff">Book this</span></div>
+      <div class="sub" style="margin-top:6px"><a href="#">Pick another campus or day</a> · or let them pick in the app</div>
+      <div style="margin-top:12px"><span class="btn primary" style="height:44px;font-size:15px">Next applicant <span class="kbd" style="color:#fff;border-color:rgba(255,255,255,.4)">Esc</span></span></div>
       <div class="sub" style="margin-top:8px">They can also pick the slot in the app later; their phone shows "Paid" within 30 seconds.</div>
     </div></div></div></div>
 
