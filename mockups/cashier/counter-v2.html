@@ -314,7 +314,7 @@ document.querySelectorAll(".wrap > .screen, .wrap > .grid2").forEach(function(el
   var pv=document.createElement("div");pv.className="pv";pv.innerHTML='<div class="vlabel">On a phone</div>';
   var ph=document.createElement("div");ph.className="phoneview";var c=el.cloneNode(true);c.querySelectorAll("[id]").forEach(function(n){n.removeAttribute("id")});ph.appendChild(c);pv.appendChild(ph);lv.after(pv);
 });
-function fit(){var z=String(Math.min(1,w.clientWidth/1240));laps.forEach(function(l){l.style.zoom=z})}
+function fit(){var z=String(Math.min(1,(w.clientWidth-32)/1240));laps.forEach(function(l){l.style.zoom=z})}
 var v=document.querySelectorAll(".theme button[data-v]");
 function mode(m){document.body.classList.toggle("only-lap",m==="lap");document.body.classList.toggle("only-phone",m==="phone");v.forEach(function(x){x.classList.toggle("on",x.dataset.v===m)});fit()}
 v.forEach(function(x){x.onclick=function(){mode(x.dataset.v)}});addEventListener("resize",fit);mode("both");
