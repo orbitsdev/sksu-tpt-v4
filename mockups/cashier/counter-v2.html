@@ -31,7 +31,7 @@ p.lead{color:var(--muted);max-width:820px;margin:0 0 12px}
 .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:3px 10px;font-size:12px}
 .pill.gold{background:var(--gold);color:var(--goldink);border-color:transparent;font-weight:600}
 .body{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:14px;padding:14px}
-@media (max-width:900px){.body{grid-template-columns:1fr}}
+@container (max-width:900px){.body{grid-template-columns:1fr}}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px}
 .search{padding:12px;border-bottom:1px solid var(--line)}
 .input{display:flex;align-items:center;gap:8px;height:46px;border:1.5px solid var(--btn);border-radius:12px;padding:0 12px;font-size:16px;background:var(--card)}
@@ -74,7 +74,7 @@ label.l{display:block;font-size:12px;font-weight:600;color:var(--muted);text-tra
 .cam{aspect-ratio:3/4;max-width:260px;border-radius:14px;background:#1c231f;display:grid;place-items:center;color:#cfd8d2;position:relative;margin:0 auto}
 .cam:after{content:"";position:absolute;inset:18% 22%;border:2px dashed rgba(255,255,255,.5);border-radius:50% 50% 46% 46%}
 .receipt{background:#fffdf5;border:1px dashed #d8cfa8;border-radius:10px;padding:14px;font:12px "Geist Mono",monospace;color:#5a5236;height:220px;display:flex;flex-direction:column;justify-content:space-between}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@container (max-width:900px){.grid2{grid-template-columns:1fr}}
 .toc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}.toc a{border:1px solid var(--line);border-radius:99px;padding:4px 12px;text-decoration:none;background:var(--card)}
 .caption{font-size:13px;color:var(--muted);margin:8px 2px 0}
 .theme{position:fixed;top:12px;right:12px;z-index:5;display:flex;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -92,10 +92,19 @@ table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th{text-align
 .ghost{color:var(--btn);font-weight:600;text-decoration:none;white-space:nowrap}
 :root[data-theme=dark] .receipt{background:#2a2718;border-color:#5a5236;color:#e6dcb4}
 :root[data-theme=dark] .av{background:#26322b;color:#cfd8d2}
+.theme{gap:2px}.theme i{width:1px;background:var(--line);margin:4px 2px}
+/* Every screen twice: laptop size (1240px, shrunk to fit) and phone size (390px). */
+.wrap{container-type:inline-size}
+.grid2>*,.plan>*{min-width:0}
+.theme{position:sticky;top:8px;right:auto;margin:8px 8px 0 auto;width:max-content;flex-wrap:wrap}
+.lapview{width:1240px;container-type:inline-size}
+.vlabel{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+.phoneview{width:390px;max-width:100%;margin:0 auto;container-type:inline-size;border:8px solid #2a2f2c;border-radius:30px;padding:10px 6px;background:var(--bg)}
+body.only-lap .pv,body.only-phone .lv{display:none}
 </style>
 </head>
 <body>
-<div class="theme" role="group" aria-label="Theme"><button data-t="light">Light</button><button data-t="dark">Dark</button></div>
+<div class="theme" role="group" aria-label="View and theme"><button data-v="both">Both</button><button data-v="lap">Laptop</button><button data-v="phone">Phone</button><i></i><button data-t="light">Light</button><button data-t="dark">Dark</button></div>
 <div class="wrap">
 <h1>Payment desk v2 · plan and mockup</h1>
 <p class="lead">A calmer counter for rush days: one search, one applicant at a time, and three clear steps (Check → Pay → Done), with the camera and receipt checks built in. Fictional names only.</p>
@@ -296,7 +305,20 @@ table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th{text-align
 <p class="caption">Mockup only. Names and numbers are made up.</p>
 </div>
 <script>
-(function(){var r=document.documentElement,b=document.querySelectorAll(".theme button");function set(t){r.dataset.theme=t;b.forEach(function(x){x.classList.toggle("on",x.dataset.t===t)})}set(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");b.forEach(function(x){x.onclick=function(){set(x.dataset.t)}})})();
+(function(){var r=document.documentElement,b=document.querySelectorAll(".theme button[data-t]");function set(t){r.dataset.theme=t;b.forEach(function(x){x.classList.toggle("on",x.dataset.t===t)})}set(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");b.forEach(function(x){x.onclick=function(){set(x.dataset.t)}})})();
+(function(){
+var w=document.querySelector(".wrap"),laps=[];
+document.querySelectorAll(".wrap > .screen, .wrap > .grid2").forEach(function(el){
+  var lv=document.createElement("div");lv.className="lv";lv.innerHTML='<div class="vlabel">On a laptop</div>';
+  var lap=document.createElement("div");lap.className="lapview";el.parentNode.insertBefore(lv,el);lap.appendChild(el);lv.appendChild(lap);laps.push(lap);
+  var pv=document.createElement("div");pv.className="pv";pv.innerHTML='<div class="vlabel">On a phone</div>';
+  var ph=document.createElement("div");ph.className="phoneview";var c=el.cloneNode(true);c.querySelectorAll("[id]").forEach(function(n){n.removeAttribute("id")});ph.appendChild(c);pv.appendChild(ph);lv.after(pv);
+});
+function fit(){var z=String(Math.min(1,w.clientWidth/1240));laps.forEach(function(l){l.style.zoom=z})}
+var v=document.querySelectorAll(".theme button[data-v]");
+function mode(m){document.body.classList.toggle("only-lap",m==="lap");document.body.classList.toggle("only-phone",m==="phone");v.forEach(function(x){x.classList.toggle("on",x.dataset.v===m)});fit()}
+v.forEach(function(x){x.onclick=function(){mode(x.dataset.v)}});addEventListener("resize",fit);mode("both");
+})();
 </script>
 </body>
 </html>
