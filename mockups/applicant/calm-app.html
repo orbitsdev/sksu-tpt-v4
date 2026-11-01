@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calm Student App</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap">
+<style>
+/* Layout: sections of the student journey; every screen as a phone (and, in Laptop view, the same screen on a laptop).
+   Calm style: pale green canvas, big clear heading, one white rounded card, thin lines, one big green button. */
+:root{
+  --page:#eef2ef; --ink:#14201a; --soft:rgba(20,32,26,.68); --dim:rgba(20,32,26,.46); --hair:rgba(20,32,26,.1);
+  --surface:#ffffff; --brand:#007a30; --brand-ink:#007a30; --tint:#e6f4ea; --amber:#b77800; --dot:#d99a00; --red:#b42318;
+  --mint1:#dff3e6; --mint2:#f2faf5; --shadow:rgba(0,80,35,.09); --frame:#0f1712;
+  --font:"Lexend",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#070c09; --ink:#e6efe9; --soft:rgba(230,239,233,.72); --dim:rgba(230,239,233,.5); --hair:rgba(230,239,233,.12);
+  --surface:#121b15; --brand:#0a8a3a; --brand-ink:#5fd4a0; --tint:#10291a; --amber:#f0c35a; --dot:#e9b23a; --red:#ff8a7a;
+  --mint1:#0f2418; --mint2:#0d1711; --shadow:rgba(0,0,0,.35); --frame:#2a3a30; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#070c09; --ink:#e6efe9; --soft:rgba(230,239,233,.72); --dim:rgba(230,239,233,.5); --hair:rgba(230,239,233,.12);
+  --surface:#121b15; --brand:#0a8a3a; --brand-ink:#5fd4a0; --tint:#10291a; --amber:#f0c35a; --dot:#e9b23a; --red:#ff8a7a;
+  --mint1:#0f2418; --mint2:#0d1711; --shadow:rgba(0,0,0,.35); --frame:#2a3a30; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font:15px/1.5 var(--font);margin:0}
+.wrap{max-width:1400px;margin:0 auto;padding-block:24px 70px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:26px;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+.lead-page{color:var(--soft);margin:6px 0 0;max-width:70ch}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.switch{display:inline-flex;gap:4px;padding:4px;border-radius:99px;background:var(--surface);border:1px solid var(--hair)}
+.switch button{font:600 13px var(--font);border:0;background:transparent;color:var(--soft);border-radius:99px;padding:7px 15px;cursor:pointer}
+.switch button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.switch button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.sec{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;margin:52px 0 22px}
+.sec::after{content:"";flex:1;height:1px;background:var(--hair)}
+.row{display:flex;flex-wrap:wrap;gap:36px 26px;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;max-width:100%}
+.cap{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+
+/* Phone */
+.phone{width:320px;max-width:100%;height:700px;border-radius:40px;overflow:hidden;position:relative;background:linear-gradient(180deg,var(--mint1) 0%,var(--mint2) 40%,var(--surface) 100%);box-shadow:0 24px 60px var(--shadow),0 0 0 8px var(--frame),0 0 0 9px #2a3a30}
+.bar{display:flex;justify-content:space-between;padding:12px 24px 0;font-size:11.5px;font-weight:600}
+.scroll{position:absolute;inset:34px 0 0;overflow:hidden;padding-bottom:100px}
+.pad{padding:0 24px}
+.brandrow{display:flex;align-items:center;gap:10px;padding:10px 24px 4px}
+.logo{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle,#f6c90e 40%,#0b6b2f 42%);flex:none}
+.brandrow b{flex:1;font-size:14px}
+.ic{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.back{display:flex;align-items:center;gap:12px;padding:10px 24px 4px;font-size:13px;color:var(--soft)}
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brand-ink);font-weight:600}
+.eyebrow.amber{color:var(--amber)}
+.big{font-size:30px;line-height:1.08;font-weight:700;letter-spacing:-.02em;margin:10px 0 12px}
+.lead{color:var(--soft);font-size:14px;line-height:1.6;margin:0 0 22px}
+.steps{display:flex;gap:6px;margin:22px 0 26px}
+.steps i{height:4px;width:22px;border-radius:4px;background:color-mix(in srgb,var(--brand) 16%,transparent)}
+.steps i.on{background:var(--brand)}
+.steps i.now{width:40px;background:var(--brand)}
+.badge{width:56px;height:56px;border-radius:20px;background:var(--surface);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px var(--shadow);margin:0 0 18px}
+.badge svg{width:28px;height:28px;stroke:var(--brand-ink);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.badge.amber svg{stroke:var(--dot)}
+.sheet{background:var(--surface);border-radius:26px;padding:4px 20px;box-shadow:0 10px 30px var(--shadow),0 1px 2px rgba(0,0,0,.04)}
+.ln{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 0;border-bottom:1px solid var(--hair);font-size:14.5px}
+.ln:last-child{border-bottom:0}
+.ln span{color:var(--dim);font-size:13.5px}
+.ln b{font-weight:600;text-align:right}
+.ln b.money{font-size:20px;font-weight:800}
+.ln .chev{color:var(--dim);font-weight:400}
+.field{padding:12px 0 13px;border-bottom:1px solid var(--hair)}
+.field:last-child{border-bottom:0}
+.field span{display:block;font-size:12px;color:var(--dim)}
+.field b{display:block;font-weight:500;font-size:15.5px;margin-top:2px}
+.field.bad{border-bottom-color:var(--red)}
+.field em{display:block;font-style:normal;font-size:12px;color:var(--red);margin-top:4px}
+.quote{background:var(--surface);border-radius:18px;padding:12px 14px 12px 17px;box-shadow:0 6px 18px var(--shadow);position:relative;font-size:15.5px;line-height:1.45;font-weight:500;margin:0 0 8px}
+.quote::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--dot)}
+.who{font-size:12.5px;color:var(--dim);margin:0 0 22px 4px}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:20px;padding:16px;font:700 16px var(--font);color:#fff;background:var(--brand);box-shadow:0 12px 26px rgba(0,122,48,.28)}
+.cta.white{background:var(--surface);color:var(--ink);box-shadow:0 8px 22px var(--shadow)}
+.cta.line{background:transparent;color:var(--ink);border:1.5px solid var(--hair);box-shadow:none}
+.cta.half{flex:1}
+.dock{position:absolute;left:24px;right:24px;bottom:96px;display:flex;gap:10px}
+.dock.low{bottom:28px}
+.link{font-size:13.5px;color:var(--brand-ink);font-weight:600}
+.quiet{display:block;text-align:center;font-size:13px;color:var(--dim);margin-top:16px}
+.ok{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--brand-ink)}
+.ok::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 4px rgba(0,122,48,.15)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.chips span{font-size:13px;padding:7px 13px;border-radius:99px;background:var(--surface);box-shadow:0 4px 12px var(--shadow)}
+.chips span.on{background:var(--brand);color:#fff;box-shadow:none}
+.tabbar{position:absolute;left:14px;right:14px;bottom:14px;height:62px;border-radius:24px;background:color-mix(in srgb,var(--surface) 90%,transparent);backdrop-filter:blur(14px);border:1px solid var(--hair);display:flex;align-items:center;justify-content:space-around;box-shadow:0 8px 24px var(--shadow)}
+.tabbar span{font-size:10.5px;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:3px}
+.tabbar .on{color:var(--ink);font-weight:600}
+.tabbar .on::after{content:"";width:5px;height:5px;border-radius:9px;background:var(--brand)}
+.photo{width:150px;height:150px;border-radius:30px;margin:4px auto 18px;background:linear-gradient(160deg,#cfe3d6,#a9c9b4);box-shadow:0 10px 26px var(--shadow);display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.photo i{width:70px;height:96px;border-radius:40px 40px 0 0;background:#7da38a;display:block}
+.photo.receipt{width:170px;height:190px;border-radius:18px;background:var(--surface);align-items:stretch;flex-direction:column;justify-content:flex-start;padding:14px;gap:7px}
+.photo.receipt i{width:auto;height:7px;border-radius:4px;background:var(--hair)}
+.photo.receipt i.s{width:60%}
+.saved{text-align:center;font-size:13px;color:var(--brand-ink);font-weight:600;margin:-6px 0 14px}
+.pair{display:flex;gap:10px}
+.pair .cta{flex:1;padding:13px;font-size:14.5px}
+.num{font-size:44px;font-weight:800;letter-spacing:.02em;line-height:1;margin:6px 0 4px}
+.day{background:var(--surface);border-radius:22px;padding:14px 16px;box-shadow:0 6px 18px var(--shadow);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.day b{display:block;font-size:15px}
+.day small{font-size:12.5px;color:var(--dim)}
+.day .left{font-size:12px;font-weight:600;color:var(--brand-ink);white-space:nowrap}
+.day.full{opacity:.5}
+.day.full .left{color:var(--dim)}
+.day.pick{outline:2px solid var(--brand)}
+.ring{width:150px;height:150px;border-radius:50%;margin:6px auto 18px;background:conic-gradient(var(--brand) 0 78%,color-mix(in srgb,var(--brand) 14%,transparent) 0);display:flex;align-items:center;justify-content:center}
+.ring>div{width:132px;height:132px;border-radius:50%;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring b{font-size:38px;font-weight:800;line-height:1}
+.ring span{font-size:12px;color:var(--dim)}
+.scale{display:flex;justify-content:space-between;gap:6px;margin:10px 0 4px}
+.scale i{flex:1;height:40px;border-radius:14px;background:var(--surface);box-shadow:0 4px 12px var(--shadow);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:600;font-size:14px}
+.scale i.on{background:var(--brand);color:#fff}
+.note{padding:14px 0;border-bottom:1px solid var(--hair)}
+.note:last-child{border-bottom:0}
+.note small{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.note.new small{color:var(--brand-ink)}
+.note b{display:block;font-size:14.5px;margin:3px 0 2px}
+.note p{margin:0;font-size:13px;color:var(--soft);line-height:1.5}
+.qr{width:120px;height:120px;border-radius:14px;background:repeating-linear-gradient(90deg,var(--ink) 0 6px,transparent 6px 11px),repeating-linear-gradient(0deg,var(--ink) 0 5px,transparent 5px 12px);opacity:.85;margin:0 auto}
+.hero{position:absolute;inset:0;background:radial-gradient(circle at 80% 10%,rgba(246,201,14,.35),transparent 50%),radial-gradient(circle at 10% 90%,rgba(0,122,48,.35),transparent 55%),linear-gradient(180deg,var(--mint1),var(--mint2))}
+.center{text-align:center}
+.sheetbottom{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:30px 30px 0 0;padding:14px 24px 28px;box-shadow:0 -10px 30px var(--shadow)}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--hair);margin:0 auto 14px}
+.dim{position:absolute;inset:0;background:rgba(5,15,9,.45)}
+.ta{border:1.5px solid var(--hair);border-radius:16px;padding:12px;font-size:14px;color:var(--dim);margin:6px 0 16px;min-height:64px}
+
+/* Laptop copy of each screen (made by the script) */
+.lap{display:none;width:760px;max-width:100%}
+.lapbox{border:10px solid var(--frame);border-bottom-width:16px;border-radius:14px;overflow:hidden;background:var(--surface)}
+.lapbase{height:12px;background:#2a3a30;border-radius:0 0 18px 18px;width:106%;margin-left:-3%}
+.lapnav{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--hair);background:var(--surface)}
+.lapnav b{flex:1;font-size:14px}
+.lapnav nav{display:flex;gap:18px;font-size:13px;color:var(--dim)}
+.lapnav nav .on{color:var(--ink);font-weight:600}
+.lapscreen{position:relative;height:540px;overflow:hidden;background:linear-gradient(180deg,var(--mint1) 0%,var(--mint2) 50%,var(--surface) 100%)}
+.lapscreen .phone{width:420px;margin:0 auto;height:540px;border-radius:0;box-shadow:none;background:transparent}
+.lapscreen .bar,.lapscreen .tabbar,.lapscreen .brandrow{display:none}
+.lapscreen .scroll{inset:16px 0 0}
+.lapscreen .dock{bottom:24px}
+.lapscreen .hero{display:none}
+.view-both .lap,.view-laptop .lap{display:block}
+.view-laptop .phone-only{display:none}
+.view-both .col{flex-direction:column}
+@media (prefers-reduced-motion: no-preference){.cta{transition:transform .15s}.cta:active{transform:scale(.98)}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1z"/></symbol>
+  <symbol id="i-permit" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.8-1.5 2-2 3-2s2.2.5 3 2M14 10h4M14 13h3"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5.6 5.6l3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 20a2 2 0 004 0"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></symbol>
+  <symbol id="i-glass" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4l-5.5 2.9 1-6.2L3 9.7l6.2-.9z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></symbol>
+</defs></svg>
+
+<div class="wrap view-phone" id="root">
+  <header>
+    <h1>SKSU TPT student app · calm design (whole app)</h1>
+    <p class="lead-page">Every screen a student sees, from signing in to choosing a program. Same steps and words as today; only the look changes: pale green background, a big clear heading, one white rounded card, thin lines, one big green button, and a floating menu at the bottom.</p>
+    <div class="controls">
+      <div class="switch" role="group" aria-label="Screen size">
+        <button type="button" data-view="phone" aria-pressed="true">Phone</button>
+        <button type="button" data-view="laptop" aria-pressed="false">Laptop</button>
+        <button type="button" data-view="both" aria-pressed="false">Both</button>
+      </div>
+      <div class="switch" role="group" aria-label="Theme">
+        <button type="button" data-theme-btn="light" aria-pressed="true">Light</button>
+        <button type="button" data-theme-btn="dark" aria-pressed="false">Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== START ===================== -->
+  <h2 class="sec">1 · Start</h2>
+  <div class="row">
+
+    <div class="col"><div class="cap">Welcome</div><div class="phone"><div class="hero"></div>
+      <div class="bar"><span>9:41</span><span>4G ▮</span></div>
+      <div class="scroll"><div class="pad" style="padding-top:150px">
+        <span class="logo" style="width:64px;height:64px;display:block;margin-bottom:22px"></span>
+        <div class="eyebrow">Sultan Kudarat State University</div>
+        <div class="big" style="font-size:34px">Tertiary<br>Placement Test</div>
+        <p class="lead">Apply, pay, pick your exam day and see your result, all from your phone.</p>
+      </div></div>
+      <div class="dock low" style="flex-direction:column;gap:12px"><div class="cta">Continue with Google</div><span class="quiet" style="margin:0">Applications open until Dec 1</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Home · no application yet</div><div class="phone">
+      <div class="bar"><span>9:41</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad" style="padding-top:22px">
+          <div class="eyebrow">Good morning, Brian</div>
+          <div class="big">Ready to<br>apply?</div>
+          <p class="lead">About 10 minutes. What you type is saved as you go.</p>
+          <div class="sheet">
+            <div class="ln"><span>Exam</span><b>Dec 6–7</b></div>
+            <div class="ln"><span>Apply until</span><b>Mon, Dec 1</b></div>
+            <div class="ln"><span>Have ready</span><b>2×2 photo · receipt</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="dock"><div class="cta">Start my application</div></div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Home · applications paused</div><div class="phone">
+      <div class="bar"><span>9:41</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad" style="padding-top:30px">
+          <div class="badge amber"><svg><use href="#i-pause"/></svg></div>
+          <div class="big">Please wait<br>for the results</div>
+          <p class="lead">New applications are paused while the office releases the results of the Dec 6–7 exam.</p>
+          <p class="who" style="margin-left:0">Admission Office · Dec 8</p>
+        </div>
+      </div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+  </div>
+
+  <!-- ===================== APPLY ===================== -->
+  <h2 class="sec">2 · Apply (6 short steps)</h2>
+  <div class="row">
+
+    <div class="col"><div class="cap">1 · About you</div><div class="phone">
+      <div class="bar"><span>9:42</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Step 1 of 6 · Saved</div>
+        <div class="pad">
+          <div class="steps"><i class="now"></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="big">About you</div>
+          <div class="sheet">
+            <div class="field"><span>Last name</span><b>ORBINO</b></div>
+            <div class="field"><span>First name</span><b>BRIAN</b></div>
+            <div class="field"><span>Birth date</span><b>Jan 2, 2008</b></div>
+            <div class="field bad"><span>Mobile number</span><b>+63 917 12</b><em>Type all 10 digits after +63.</em></div>
+            <div class="field"><span>Home address</span><b>Tacurong City, Sultan Kudarat</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Next: Your school</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">2 · Your school</div><div class="phone">
+      <div class="bar"><span>9:44</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Step 2 of 6 · Saved</div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="now"></i><i></i><i></i><i></i><i></i></div>
+          <div class="big">Your school</div>
+          <div class="chips"><span class="on">Grade 12 / graduate</span><span>ALS</span></div>
+          <div class="sheet">
+            <div class="field"><span>School</span><b>Isulan National High School</b></div>
+            <div class="field"><span>Strand</span><b>STEM</b></div>
+            <div class="field"><span>General average</span><b>89.50</b></div>
+            <div class="field"><span>Honors</span><b>With Honors</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Next: Programs</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">3 · Programs you want</div><div class="phone">
+      <div class="bar"><span>9:46</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Step 3 of 6 · Saved</div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="now"></i><i></i><i></i><i></i></div>
+          <div class="big">Programs<br>you want</div>
+          <p class="lead">Pick two. Your result shows which ones you qualify for.</p>
+          <div class="sheet">
+            <div class="ln"><span>1st choice</span><b>BS Info Systems<br><small style="font-weight:400;color:var(--dim)">ACCESS · cut-off 75</small></b></div>
+            <div class="ln"><span>2nd choice</span><b>BSEd English<br><small style="font-weight:400;color:var(--dim)">Isulan · cut-off 80</small></b></div>
+          </div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Next: 2×2 photo</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">4 · 2×2 photo</div><div class="phone">
+      <div class="bar"><span>9:48</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Step 4 of 6 · Saved</div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i></i><i></i></div>
+          <div class="big">2×2 photo</div>
+          <p class="lead">Face clearly visible, plain background.</p>
+          <div class="photo"><i></i></div>
+          <p class="saved">✓ Photo saved</p>
+          <div class="pair"><span class="cta white"><svg class="ic"><use href="#i-cam"/></svg>Camera</span><span class="cta white"><svg class="ic"><use href="#i-img"/></svg>Gallery</span></div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Next: Payment</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">5 · Payment (receipt)</div><div class="phone">
+      <div class="bar"><span>9:51</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Step 5 of 6 · Saved</div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i></i></div>
+          <div class="big">Payment</div>
+          <div class="sheet" style="margin-bottom:16px">
+            <div class="ln"><span>Exam fee</span><b class="money">₱275.00</b></div>
+            <div class="field"><span>Reference or OR number</span><b>0048123</b></div>
+            <div class="field"><span>Paid on</span><b>Nov 1, 2026</b></div>
+          </div>
+          <div class="pair"><span class="cta white"><svg class="ic"><use href="#i-cam"/></svg>Camera</span><span class="cta white"><svg class="ic"><use href="#i-img"/></svg>Gallery</span></div>
+          <p class="quiet" style="margin-top:10px">✓ receipt.jpg ready · tap Next to send it</p>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Next: Review</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">6 · Review and submit</div><div class="phone">
+      <div class="bar"><span>9:53</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Step 6 of 6</div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i></div>
+          <div class="big">Check, then<br>submit</div>
+          <div class="sheet">
+            <div class="ln"><span>Name</span><b>ORBINO, BRIAN</b></div>
+            <div class="ln"><span>School</span><b>Isulan NHS · 89.50</b></div>
+            <div class="ln"><span>Programs</span><b>BSIS · BSEd English</b></div>
+            <div class="ln"><span>Receipt</span><b>0048123 · Nov 1</b></div>
+          </div>
+          <p class="quiet">Tap a line to change it</p>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Submit my application</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Submit · confirm</div><div class="phone">
+      <div class="bar"><span>9:53</span><span>4G ▮</span></div>
+      <div class="scroll"><div class="pad" style="padding-top:60px"><div class="big">Check, then<br>submit</div></div></div>
+      <div class="dim"></div>
+      <div class="sheetbottom"><div class="grab"></div>
+        <div class="big" style="font-size:24px;margin-top:0">Submit the application?</div>
+        <p class="lead">After this, only the office can change your details. Applications close Dec 1, 11:59 PM.</p>
+        <div class="pair" style="gap:12px"><span class="cta line">Not yet</span><span class="cta">Submit</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ===================== PAY ===================== -->
+  <h2 class="sec">3 · Pay</h2>
+  <div class="row">
+
+    <div class="col"><div class="cap">Receipt being checked</div><div class="phone">
+      <div class="bar"><span>10:02</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="now"></i><i></i><i></i><i></i></div>
+          <div class="badge"><svg><use href="#i-glass"/></svg></div>
+          <div class="big">We're checking<br>your receipt</div>
+          <p class="lead">Nothing to do now. We'll tell you when it's approved, usually within 1 working day.</p>
+          <div class="sheet"><div class="ln"><span>Reference</span><b>0048123</b></div><div class="ln"><span>Sent</span><b>Nov 1, 9:53 AM</b></div></div>
+          <p style="margin-top:16px"><span class="link">Sent the wrong photo?</span></p>
+        </div>
+      </div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Receipt returned</div><div class="phone">
+      <div class="bar"><span>17:26</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="now"></i><i></i><i></i><i></i></div>
+          <div class="badge amber"><svg><use href="#i-pencil"/></svg></div>
+          <div class="eyebrow amber">Step 2 · Pay</div>
+          <div class="big">Please fix<br>your receipt</div>
+          <p class="quote">“Blurry or cut off. Please send a clearer photo.”</p>
+          <p class="who">Admission Office · Nov 1, 5:20 PM</p>
+          <div class="sheet"><div class="ln"><span>Only this needs fixing</span><b>Receipt</b></div><div class="ln"><span>Last day to pay</span><b>Sat, Dec 5</b></div></div>
+        </div>
+      </div>
+      <div class="dock"><div class="cta">Send a new receipt</div></div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Send a new receipt</div><div class="phone">
+      <div class="bar"><span>17:28</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Home</div>
+        <div class="pad" style="padding-top:14px">
+          <div class="big">A new receipt</div>
+          <div class="photo receipt"><i></i><i class="s"></i><i></i><i></i><i class="s"></i><i></i></div>
+          <p class="saved" style="color:var(--soft);font-weight:500">Sending 64%</p>
+          <div class="pair"><span class="cta white"><svg class="ic"><use href="#i-cam"/></svg>Camera</span><span class="cta white"><svg class="ic"><use href="#i-img"/></svg>Gallery</span></div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta" style="opacity:.6">Sending…</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Paid · examinee number</div><div class="phone">
+      <div class="bar"><span>8:10</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="now"></i><i></i><i></i></div>
+          <div class="badge"><svg><use href="#i-check"/></svg></div>
+          <div class="eyebrow">Paid · your examinee number</div>
+          <div class="num">500001</div>
+          <p class="lead">Next, pick the day you take the exam. Seats go fast.</p>
+          <div class="sheet"><div class="ln"><span>Pick a day by</span><b>Sat, Dec 5</b></div></div>
+        </div>
+      </div>
+      <div class="dock"><div class="cta">Pick my exam day</div></div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+  </div>
+
+  <!-- ===================== EXAM ===================== -->
+  <h2 class="sec">4 · Exam day</h2>
+  <div class="row">
+
+    <div class="col"><div class="cap">Pick an exam day</div><div class="phone">
+      <div class="bar"><span>8:12</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Home</div>
+        <div class="pad" style="padding-top:12px">
+          <div class="big">Pick your<br>exam day</div>
+          <div class="chips"><span class="on">ACCESS</span><span>Isulan</span><span>Tacurong</span><span>Kalamansig</span></div>
+          <div class="day pick"><div><b>Sun, Dec 6</b><small>Report 7:30 AM · starts 8:00</small></div><span class="left">12 seats</span></div>
+          <div class="day"><div><b>Mon, Dec 7</b><small>Report 7:30 AM · starts 8:00</small></div><span class="left">45 seats</span></div>
+          <div class="day full"><div><b>Sat, Dec 5</b><small>Report 7:30 AM</small></div><span class="left">Full</span></div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Book Sun, Dec 6</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Home · booked</div><div class="phone">
+      <div class="bar"><span>8:13</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i></i></div>
+          <div class="eyebrow">Your exam · in 5 days</div>
+          <div class="big">Sun, Dec 6<br>at ACCESS</div>
+          <div class="sheet">
+            <div class="ln"><span>Report by</span><b>7:30 AM</b></div>
+            <div class="ln"><span>Room · seat</span><b>CAS 101 · seat 14</b></div>
+            <div class="ln"><span>Bring</span><b>Pencil No. 2 · permit · ID</b></div>
+          </div>
+          <p style="margin-top:16px"><span class="link">Change my exam day</span></p>
+        </div>
+      </div>
+      <div class="dock"><div class="cta">Open my permit</div></div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Permit</div><div class="phone">
+      <div class="bar"><span>7:05</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>Exam permit</b></div>
+        <div class="pad" style="padding-top:12px">
+          <div class="sheet center" style="padding:20px">
+            <div class="eyebrow">Examinee number</div>
+            <div class="num" style="font-size:38px">500001</div>
+            <p style="margin:0 0 12px;font-weight:600">ORBINO, BRIAN</p>
+            <div class="qr"></div>
+            <div class="ln" style="margin-top:12px"><span>Sun, Dec 6</span><b>ACCESS · CAS 101</b></div>
+            <div class="ln"><span>Report by</span><b>7:30 AM · seat 14</b></div>
+          </div>
+          <p class="quiet">Works offline. Show it at the gate.</p>
+        </div>
+      </div>
+      <div class="dock"><div class="cta white">Save as PDF</div></div>
+      <div class="tabbar"><span><svg class="ic"><use href="#i-home"/></svg>Home</span><span class="on"><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Exam moved (typhoon)</div><div class="phone">
+      <div class="bar"><span>6:30</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i></i></div>
+          <div class="badge amber"><svg><use href="#i-cal"/></svg></div>
+          <div class="big">Your exam<br>was moved</div>
+          <p class="quote">“Typhoon signal no. 2 in Sultan Kudarat.”</p>
+          <p class="who">Admission Office · Dec 5</p>
+          <div class="sheet"><div class="ln"><span>New day</span><b>Sun, Dec 13</b></div><div class="ln"><span>Room · seat</span><b>Same · CAS 101, 14</b></div></div>
+        </div>
+      </div>
+      <div class="dock"><div class="cta">Got it</div></div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+  </div>
+
+  <!-- ===================== RESULT ===================== -->
+  <h2 class="sec">5 · Result</h2>
+  <div class="row">
+
+    <div class="col"><div class="cap">Waiting for results</div><div class="phone">
+      <div class="bar"><span>12:00</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>SKSU TPT</b><svg class="ic"><use href="#i-bell"/></svg></div>
+        <div class="pad">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i></div>
+          <div class="badge"><svg><use href="#i-glass"/></svg></div>
+          <div class="big">Results<br>are coming</div>
+          <p class="lead">You took the exam on Dec 6. We'll tell you the moment your result is out.</p>
+          <div class="sheet"><div class="ln"><span>Results planned</span><b>Fri, Dec 18</b></div></div>
+        </div>
+      </div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Short survey first</div><div class="phone">
+      <div class="bar"><span>9:00</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Question 3 of 8</div>
+        <div class="pad" style="padding-top:12px">
+          <div class="steps"><i class="on"></i><i class="on"></i><i class="now"></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="eyebrow">Your result is ready</div>
+          <div class="big" style="font-size:26px">The exam rules were clear to me.</div>
+          <div class="scale"><i>1</i><i>2</i><i>3</i><i class="on">4</i><i>5</i></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--dim)"><span>Disagree</span><span>Agree</span></div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta">Next</div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Result</div><div class="phone">
+      <div class="bar"><span>9:02</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>Your result</b></div>
+        <div class="pad" style="padding-top:10px">
+          <div class="ring"><div><b>78</b><span>overall · stanine 7</span></div></div>
+          <div class="big center" style="font-size:24px">You qualify for<br>2 of your 2 choices</div>
+          <div class="sheet">
+            <div class="ln"><span>1st · BSIS, ACCESS</span><b style="color:var(--brand-ink)">Open to you</b></div>
+            <div class="ln"><span>2nd · BSEd English</span><b style="color:var(--brand-ink)">Open to you</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="dock"><div class="cta">Choose my program</div></div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Program chosen</div><div class="phone"><div class="hero"></div>
+      <div class="bar"><span>9:05</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="pad" style="padding-top:90px">
+          <div class="badge"><svg><use href="#i-star"/></svg></div>
+          <div class="eyebrow">You're in</div>
+          <div class="big">BS Information<br>Systems</div>
+          <p class="lead">ACCESS Campus. The Registrar's Office will contact you about enrolment.</p>
+          <div class="sheet"><div class="ln"><span>Result slip</span><b class="chev">PDF ›</b></div><div class="ln"><span>Share</span><b class="chev">›</b></div></div>
+        </div>
+      </div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+  </div>
+
+  <!-- ===================== HELP & ACCOUNT ===================== -->
+  <h2 class="sec">6 · Support, notices, account</h2>
+  <div class="row">
+
+    <div class="col"><div class="cap">Support</div><div class="phone">
+      <div class="bar"><span>11:20</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>Support</b></div>
+        <div class="pad" style="padding-top:18px">
+          <div class="big">Ask the<br>office</div>
+          <p class="lead">Usually answered within 1 working day.</p>
+          <div class="sheet">
+            <div class="ln"><span>Change my details</span><b class="chev">›</b></div>
+            <div class="ln"><span>Payment or receipt</span><b class="chev">›</b></div>
+            <div class="ln"><span>Exam day</span><b class="chev">›</b></div>
+            <div class="ln"><span>Something else</span><b class="chev">›</b></div>
+          </div>
+          <div class="eyebrow" style="margin:22px 0 6px;color:var(--dim)">My requests</div>
+          <div class="ln" style="border:0"><span>#1001 · Wrong birth date</span><b style="color:var(--brand-ink);font-size:13px">Answered</b></div>
+        </div>
+      </div>
+      <div class="tabbar"><span><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span class="on"><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">A request</div><div class="phone">
+      <div class="bar"><span>11:24</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Support · #1001</div>
+        <div class="pad" style="padding-top:12px">
+          <div class="big" style="font-size:26px">Wrong birth date</div>
+          <div class="sheet" style="margin-bottom:12px;padding:14px 18px"><small style="color:var(--dim)">You · Nov 1, 9:10 AM</small><p style="margin:4px 0 0">My birth date should be Jan 2, 2008.</p></div>
+          <div class="sheet" style="padding:14px 18px;background:var(--tint);box-shadow:none"><small style="color:var(--brand-ink);font-weight:600">Admission Office · 10:02 AM</small><p style="margin:4px 0 0">Fixed. Your permit shows the new date.</p></div>
+        </div>
+      </div>
+      <div class="dock low"><div class="cta white" style="justify-content:space-between;color:var(--dim);font-weight:500">Write a reply… <span style="color:var(--brand-ink);font-weight:700">Send</span></div></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Notifications</div><div class="phone">
+      <div class="bar"><span>8:11</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="back"><svg class="ic"><use href="#i-back"/></svg>Home</div>
+        <div class="pad" style="padding-top:12px">
+          <div class="big">Notices</div>
+          <div class="sheet">
+            <div class="note new"><small>Today · 8:10 AM</small><b>Paid · your examinee number is 500001</b><p>Pick your exam day next.</p></div>
+            <div class="note"><small>Yesterday</small><b>Receipt returned</b><p>Blurry or cut off. Please send a clearer photo.</p></div>
+            <div class="note"><small>Nov 1</small><b>Application submitted</b><p>APP-27-92901</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="tabbar"><span class="on"><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Account</div><div class="phone">
+      <div class="bar"><span>8:20</span><span>4G ▮</span></div>
+      <div class="scroll">
+        <div class="brandrow"><span class="logo"></span><b>Account</b></div>
+        <div class="pad" style="padding-top:18px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px"><div class="photo" style="width:64px;height:64px;border-radius:22px;margin:0"><i style="width:30px;height:42px"></i></div><div><b style="font-size:18px">BRIAN ORBINO</b><br><small style="color:var(--dim)">orbitsdev00@gmail.com</small></div></div>
+          <div class="sheet">
+            <div class="ln"><span>Application</span><b>APP-27-92901</b></div>
+            <div class="ln"><span>Request a change</span><b class="chev">›</b></div>
+            <div class="ln"><span>Phone alerts</span><b style="color:var(--brand-ink)">On</b></div>
+            <div class="ln"><span>Theme</span><b>Light · Dark · Auto</b></div>
+            <div class="ln"><span>My data</span><b class="chev">›</b></div>
+          </div>
+          <span class="quiet">Sign out</span>
+        </div>
+      </div>
+      <div class="tabbar"><span><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-permit"/></svg>Permit</span><span><svg class="ic"><use href="#i-help"/></svg>Support</span><span class="on"><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div></div>
+
+    <div class="col"><div class="cap">Cancel · confirm</div><div class="phone">
+      <div class="bar"><span>9:00</span><span>4G ▮</span></div>
+      <div class="scroll"><div class="pad" style="padding-top:60px"><div class="big">We're checking<br>your receipt</div></div></div>
+      <div class="dim"></div>
+      <div class="sheetbottom"><div class="grab"></div>
+        <div class="big" style="font-size:24px;margin-top:0">Cancel this application?</div>
+        <p class="lead" style="margin-bottom:6px">APP-27-26288 stops here. You can apply again while applications are open.</p>
+        <div class="ta">Why are you cancelling?</div>
+        <div class="pair" style="gap:12px"><span class="cta line">Keep it</span><span class="cta" style="background:var(--red);box-shadow:none">Cancel it</span></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+const root = document.getElementById('root');
+// A laptop copy of every phone screen: the same content, centred under a top menu.
+document.querySelectorAll('.col').forEach((col) => {
+  const phone = col.querySelector('.phone');
+  phone.classList.add('phone-only');
+  const active = phone.querySelector('.tabbar .on');
+  const tabs = ['Home', 'Permit', 'Support', 'Account'].map((t) => `<span class="${active && active.textContent.trim() === t ? 'on' : ''}">${t}</span>`).join('');
+  const lap = document.createElement('div');
+  lap.className = 'lap';
+  lap.innerHTML = `<div class="lapbox"><div class="lapnav"><span class="logo"></span><b>SKSU TPT</b><nav>${tabs}</nav></div><div class="lapscreen"></div></div><div class="lapbase"></div>`;
+  const copy = phone.cloneNode(true);
+  copy.classList.remove('phone-only');
+  lap.querySelector('.lapscreen').appendChild(copy);
+  col.appendChild(lap);
+});
+document.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  root.className = 'wrap view-' + b.dataset.view;
+}));
+document.querySelectorAll('[data-theme-btn]').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-theme-btn]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  document.documentElement.setAttribute('data-theme', b.dataset.themeBtn);
+}));
+// Start in the viewer's theme.
+if (matchMedia('(prefers-color-scheme: dark)').matches && !document.documentElement.dataset.theme) {
+  document.querySelector('[data-theme-btn="dark"]').click();
+}
+</script>
+</body>
+</html>
