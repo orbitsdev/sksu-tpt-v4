@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPT Dashboard Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: read top to bottom as "what needs me, how are we doing, where is everyone, what is behind that".
+   Laptop frame is the real 1240px page zoomed to fit; each frame lays out by its own width (container queries). */
+:root{
+  --page:#f6f7f6;--surface:#ffffff;--ink:#18181b;--text:#3f3f46;--muted:#71717a;--line:#e5e9e6;
+  --brand:#006b34;--bar:#7fc29c;--bar-soft:#dcefe3;--track:#eef2ef;--top:#0b4d2c;--gold:#f2c230;
+  --warn:#92400e;--warn-bg:#fef3c7;--bad:#991b1b;--bad-bg:#fee2e2;--ok:#166534;--ok-bg:#dcfce7;
+  --sans:"Geist","Segoe UI",system-ui,sans-serif;--mono:"Geist Mono",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#0d0f0e;--surface:#161918;--ink:#f4f4f5;--text:#d4d4d8;--muted:#a1a1aa;--line:#2a2f2c;
+  --brand:#5ccf8f;--bar:#3f9b69;--bar-soft:#1e3a2a;--track:#232826;--top:#07321c;--gold:#d9ad2b;
+  --warn:#fcd34d;--warn-bg:#3b2a0a;--bad:#fca5a5;--bad-bg:#3f1414;--ok:#86efac;--ok-bg:#12331f;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#0d0f0e;--surface:#161918;--ink:#f4f4f5;--text:#d4d4d8;--muted:#a1a1aa;--line:#2a2f2c;
+  --brand:#5ccf8f;--bar:#3f9b69;--bar-soft:#1e3a2a;--track:#232826;--top:#07321c;--gold:#d9ad2b;
+  --warn:#fcd34d;--warn-bg:#3b2a0a;--bad:#fca5a5;--bad-bg:#3f1414;--ok:#86efac;--ok-bg:#12331f;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--text);font:14px/1.45 var(--sans);padding:16px}
+button{font:inherit;color:inherit}
+h1,h2,p{margin:0}
+.intro{max-width:760px;margin:0 auto 14px}
+.intro h1{font-size:22px;font-weight:600;color:var(--ink);text-wrap:balance}
+.intro p{margin-top:4px;color:var(--muted)}
+.bar-ctl{position:sticky;top:0;z-index:5;background:var(--page);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:2px}
+.seg button{border:0;background:none;padding:6px 11px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);min-height:32px}
+.seg button[aria-pressed="true"]{background:var(--brand);color:#fff;font-weight:500}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{color:#06210f}
+.seg button:focus-visible,a:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.frames{display:flex;flex-direction:column;gap:22px;align-items:center;margin-top:8px}
+.frame-t{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.frame{width:100%;max-width:1240px}
+.frame.ph{max-width:390px}
+.shell{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--page)}
+.top{background:var(--top);border-bottom:3px solid var(--gold);color:#fff;display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:14px}
+.top b{font-weight:600}.top span{opacity:.75;font-size:13px}
+.top .r{margin-left:auto;display:flex;gap:10px;align-items:center}
+.dash{container-type:inline-size;padding:20px}
+.ttl{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+.ttl h2{font-size:26px;font-weight:600;color:var(--ink);line-height:1.2}
+.ttl p{font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{margin:0;font-size:15px;font-weight:600;color:var(--ink)}
+.hd{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:12px}
+.hd a,.lnk{color:var(--brand);font-size:13px;text-decoration:none;white-space:nowrap}
+.stack{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.stack>*,.two>*,.tiles>*{min-width:0}
+/* Season line */
+.season{display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.stop{position:relative;padding-top:18px;font-size:13px;color:var(--muted);min-width:0;padding-right:8px}
+.stop::before{content:"";position:absolute;top:5px;left:0;right:0;height:2px;background:var(--line)}
+.stop::after{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.stop:last-child::before{display:none}
+.stop.done::before,.stop.done::after{background:var(--brand);border-color:var(--brand)}
+.stop.now::after{background:var(--surface);border:3px solid var(--brand)}
+.stop b{display:block;font-weight:500;color:var(--text)}
+.stop.now b{color:var(--ink);font-weight:600}
+/* Needs you */
+.todo{display:grid;gap:0}
+.todo a{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);color:var(--text);text-decoration:none;min-height:44px}
+.todo a:first-child{border-top:0;padding-top:0}
+.todo a:last-child{padding-bottom:0}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.dot.warn{background:#d97706}.dot.bad{background:#dc2626}.dot.ok{background:#16a34a}.dot.muted{background:var(--muted)}
+.todo em{font-style:normal;margin-left:auto;color:var(--brand);font-size:13px;white-space:nowrap}
+/* Tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tile .l{font-size:13px;color:var(--muted)}
+.tile .v{font-size:28px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.25;margin-top:2px}
+.tile .n{font-size:13px;color:var(--muted)}
+.tile .n b{font-weight:500;color:var(--ok)}
+.tile .m{height:6px;border-radius:3px;background:var(--track);margin-top:9px;overflow:hidden}
+.tile .m i{display:block;height:100%;background:var(--bar);border-radius:3px}
+/* Two columns */
+.two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px}
+.two.even{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+/* Bars (journey, campuses) */
+.rows{display:grid;gap:11px}
+.row .t{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.row .t span:first-child{color:var(--text);min-width:0}
+.row .t b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.row .track{height:9px;background:var(--track);border-radius:0 4px 4px 0;margin-top:4px}
+.row .track i{display:block;height:100%;background:var(--bar);border-radius:0 4px 4px 0;min-width:2px}
+.row.future .t span:first-child,.row.future .t b{color:var(--muted);font-weight:400}
+.row.here .track i{background:var(--brand)}
+.row .gap{font-size:12px;color:var(--muted);margin-top:3px}
+.row .gap a{color:var(--brand);text-decoration:none}
+/* Area chart */
+.big{font-size:22px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.area{position:relative;height:150px;margin-top:8px;border-bottom:1px solid var(--line)}
+.area svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.area .g{position:absolute;left:0;right:0;border-top:1px dashed var(--line)}
+.area .g span{position:absolute;right:0;top:-16px;font-size:12px;color:var(--muted);background:var(--surface);padding-left:4px}
+.area .end{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--brand);border:2px solid var(--surface);transform:translate(-50%,-50%)}
+.axis{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:5px}
+/* Seats table */
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-weight:500;color:var(--muted);text-align:left;padding:0 8px 7px 0}
+td{padding:8px 8px 8px 0;border-top:1px solid var(--line);vertical-align:middle}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;padding-right:0}
+.meter{height:7px;background:var(--track);border-radius:4px;overflow:hidden;min-width:60px}
+.meter i{display:block;height:100%;background:var(--bar);border-radius:4px}
+.meter i.hot{background:#e0a33e}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:500;white-space:nowrap}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.ok{background:var(--ok-bg);color:var(--ok)}
+/* Stanine columns */
+.cols{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;align-items:end;height:130px;border-bottom:1px solid var(--line)}
+.cols i{display:block;background:var(--bar);border-radius:4px 4px 0 0}
+.collab{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;text-align:center;font-size:12px;color:var(--muted);margin-top:4px}
+.legendnote{font-size:12px;color:var(--muted);margin-top:8px}
+/* Office work */
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kv div b{display:block;font-size:20px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv div span{font-size:13px;color:var(--muted)}
+.sub{font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
+.sep{border-top:1px solid var(--line);margin:14px 0}
+.server{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:13px;color:var(--muted);padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.server a{margin-left:auto}
+/* Phone width */
+@container (max-width:720px){
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .tile.card{padding:12px}.tile .v{font-size:21px}
+  .two,.two.even{grid-template-columns:minmax(0,1fr)}
+  .season{grid-template-columns:repeat(5,100px);overflow-x:auto;padding-bottom:4px}
+  .stop{font-size:12px}
+  .ttl h2{font-size:24px}
+}
+.dash.dense{padding:14px}
+/* Why section */
+.why{max-width:760px;margin:26px auto 8px}
+.why h2{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px}
+.why .tw{overflow-x:auto}
+.why td,.why th{padding:8px 10px 8px 0}
+.why td:first-child{font-weight:500;color:var(--ink);white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.row .track i,.tile .m i{transition:width .3s}}
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Dashboard: one look at the whole admission season</h1>
+  <p>Mockup with sample numbers. The page order stays the same all year. Only the middle changes with the season, so switch below to compare.</p>
+</div>
+<div class="bar-ctl">
+  <div class="seg" id="seasonSeg" role="group" aria-label="Season">
+    <button type="button" data-v="open">Applications open</button>
+    <button type="button" data-v="exam">Exam day</button>
+    <button type="button" data-v="results">Results out</button>
+  </div>
+  <div class="seg" id="viewSeg" role="group" aria-label="Screen size">
+    <button type="button" data-v="both">Both</button>
+    <button type="button" data-v="lap">Laptop</button>
+    <button type="button" data-v="ph">Phone</button>
+  </div>
+  <div class="seg" id="themeSeg" role="group" aria-label="Theme">
+    <button type="button" data-v="light">Light</button>
+    <button type="button" data-v="dark">Dark</button>
+  </div>
+</div>
+<div class="frames">
+  <div class="frame" id="lapFrame"><div class="frame-t">On a laptop</div><div class="shell"><div id="lapZoom" style="width:1240px"><div class="top"><b>SKSU TPT</b><span>Admin</span><div class="r"><span>Search name, code, examinee or OR no.</span><span>Guide</span></div></div><div class="dash" id="lapDash"></div></div></div></div>
+  <div class="frame ph" id="phFrame"><div class="frame-t">On a phone</div><div class="shell"><div class="top"><b>SKSU TPT</b><div class="r"><span>Menu</span></div></div><div class="dash dense" id="phDash"></div></div></div>
+</div>
+
+<section class="why">
+  <h2>What each part answers, and why this chart</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Part</th><th>The question</th><th>Shown as</th></tr></thead>
+    <tbody>
+      <tr><td>Season line</td><td>Where are we in the year, how long is left?</td><td>Timeline. A chart would add nothing here.</td></tr>
+      <tr><td>Needs you today</td><td>What must I do now?</td><td>Short list that opens the right page. It sits first because the office acts on it.</td></tr>
+      <tr><td>4 numbers</td><td>How are we doing?</td><td>Number tiles, with a thin meter where there is a total.</td></tr>
+      <tr><td>Where applicants are</td><td>Where is everyone, and where do they get stuck?</td><td>Stepped bars on one scale, with the gap to the next step. This is the overview, and it stays all year.</td></tr>
+      <tr><td>Applications per day</td><td>Is it speeding up? Do we need more staff?</td><td>Area line, because it is a change over time.</td></tr>
+      <tr><td>Seats by exam day</td><td>Which day or campus fills up first?</td><td>Table with meters, so exact counts stay readable.</td></tr>
+      <tr><td>By campus</td><td>Which campus has the most?</td><td>Sorted bars. No pie chart: long lists of slices are hard to compare, mostly on a phone.</td></tr>
+      <tr><td>Stanine spread</td><td>How did this batch score?</td><td>Columns 1 to 9, because the order of the scale matters.</td></tr>
+      <tr><td>Office work</td><td>Are receipts and support keeping up?</td><td>Plain counts, plus the oldest item waiting.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<script>
+var fmt=function(n){return Number(n).toLocaleString('en-PH')};
+var DATA={
+ open:{
+  sub:'SY 2027–2028 · Schedule 1 · Applications open',
+  stops:[['done','Applications open','Sep 1'],['now','Applications close','Nov 1 · 8 days left'],['','Exam','Dec 6–7'],['','Results','Jan 20'],['','Interview','On the official page']],
+  todo:[['warn','38 receipts to check','oldest waited 5 hours','Check'],['warn','6 support requests waiting','oldest since yesterday','Answer'],['warn','627 paid, no exam slot yet','they still need to pick one','See list'],['bad','ACCESS, Dec 6 is nearly full','12 seats left','Add room']],
+  tiles:[['Applied','4,980','<b>+212</b> today'],['Paid','3,976','80% of who applied · <b>+184</b> today',80],['Exam seats left','801','of 4,150 seats',19],['Collected','₱1,093,400','<b>+₱50,600</b> today']],
+  steps:[['Signed up',6410,''],['Applied',4980,'1,430 signed up but did not apply','See who'],['Paid',3976,'1,004 not paid yet','Remind'],['Exam slot booked',3349,'627 paid, no slot yet','Remind'],['Took the exam',0,'future'],['Qualified',0,'future'],['Chose a program',0,'future']],
+  hereStep:3,
+  left:'perday',right:'seats',third:'campus'
+ },
+ exam:{
+  sub:'SY 2027–2028 · Schedule 1 · Exam day 1 of 2',
+  stops:[['done','Applications closed','Nov 1'],['done','Seats given','4,150'],['now','Exam','Today, Dec 6'],['','Results','Jan 20'],['','Interview','On the official page']],
+  todo:[['warn','288 examinees not here yet','gates close at 8:00 AM','See rooms'],['warn','2 rooms have not started check-in','Isulan, Room 12 and 14','Call proctor'],['warn','14 support requests waiting','oldest 20 minutes','Answer']],
+  tiles:[['Here now','1,742','of 2,030 expected today',86],['Not here yet','288','14% of today'],['Rooms checking in','56','of 58 rooms',97],['Tomorrow','2,120','expected on Dec 7']],
+  steps:[['Signed up',7120,''],['Applied',5640,''],['Paid',4310,''],['Exam slot booked',4150,'160 paid but did not book',''],['Took the exam',1742,'today so far'],['Qualified',0,'future'],['Chose a program',0,'future']],
+  hereStep:4,
+  left:'checkin',right:'seatsToday',third:null
+ },
+ results:{
+  sub:'SY 2027–2028 · Schedule 1 · Results released',
+  stops:[['done','Applications closed','Nov 1'],['done','Exam','Dec 6–7'],['done','Results','Jan 20'],['now','Choosing a program','1,940 so far'],['','Interview','On the official page']],
+  todo:[['warn','930 qualified, no program chosen','they still need to choose','Announce'],['warn','9 support requests waiting','oldest since this morning','Answer'],['muted','3 result corrections to review','','Review']],
+  tiles:[['Took the exam','3,980','170 absent · 96%',96],['Qualified','2,870','72% of who took it',72],['Chose a program','1,940','68% of who qualified',68],['Survey answered','2,412','61% of who took it',61]],
+  steps:[['Signed up',7120,''],['Applied',5640,''],['Paid',4310,''],['Exam slot booked',4150,''],['Took the exam',3980,'170 absent','See list'],['Qualified',2870,'1,110 below every cut-off',''],['Chose a program',1940,'930 qualified, not chosen yet','Announce']],
+  hereStep:6,
+  left:'stanine',right:'programs',third:'campusResult'
+ }
+};
+var PERDAY=[96,110,88,132,148,121,70,155,171,163,190,204,146,92,214,238,251,229,266,187,212];
+function area(){
+  var w=600,h=150,max=300,pts=PERDAY.map(function(v,i){return [i/(PERDAY.length-1)*w,h-v/max*h]});
+  var line=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)}).join(' ');
+  var last=pts[pts.length-1];
+  return '<div class="hd"><h3>Applications per day</h3><a href="#open">Reports</a></div>'+
+  '<div><span class="big">212</span> <span style="font-size:13px;color:var(--muted)">so far today · busiest 266 on Oct 22</span></div>'+
+  '<div class="area"><div class="g" style="top:0"><span>300</span></div><div class="g" style="top:50%"><span>150</span></div>'+
+  '<svg viewBox="0 0 600 150" preserveAspectRatio="none" role="img" aria-label="Applications per day over the last 21 days, rising to about 212 today"><path d="'+line+' L600 150 L0 150 Z" fill="var(--bar-soft)"/><path d="'+line+'" fill="none" stroke="var(--brand)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>'+
+  '<div class="end" style="left:calc(100% - 5px);top:'+(last[1]/h*100).toFixed(1)+'%"></div></div>'+
+  '<div class="axis"><span>Oct 2</span><span>Oct 12</span><span>Today</span></div>';
+}
+function seatsTable(){
+  var rows=[['Sun, Dec 6','ACCESS, Tacurong',1188,1200],['Mon, Dec 7','ACCESS, Tacurong',842,1000],['Sun, Dec 6','Isulan',731,800],['Sun, Dec 6','Tacurong',412,600],['Sun, Dec 6','Kalamansig',116,300],['Sun, Dec 6','Palimbang',60,250]];
+  return '<div class="hd"><h3>Seats by exam day</h3><a href="#open">Exam schedules</a></div><table><thead><tr><th>Day and campus</th><th style="width:30%">Taken</th><th class="num">Left</th></tr></thead><tbody>'+rows.map(function(r){var pct=r[2]/r[3]*100,hot=pct>=90;return '<tr><td><span style="color:var(--ink)">'+r[1]+'</span><br><span style="color:var(--muted)">'+r[0]+'</span></td><td><div class="meter"><i class="'+(hot?'hot':'')+'" style="width:'+pct.toFixed(0)+'%"></i></div></td><td class="num">'+fmt(r[3]-r[2])+(r[3]-r[2]<20?' <span class="pill warn">Nearly full</span>':'')+'</td></tr>'}).join('')+'</tbody></table>';
+}
+function bars(title,link,rows,suffix){
+  var max=Math.max.apply(null,rows.map(function(r){return r[1]}));
+  return '<div class="hd"><h3>'+title+'</h3>'+(link?'<a href="#open">'+link+'</a>':'')+'</div><div class="rows">'+rows.map(function(r){return '<div class="row"><div class="t"><span>'+r[0]+'</span><b>'+fmt(r[1])+(r[2]?' <span style="font-weight:400;color:var(--muted)">'+r[2]+'</span>':'')+'</b></div><div class="track"><i style="width:'+(r[1]/max*100).toFixed(1)+'%"></i></div></div>'}).join('')+'</div>';
+}
+function journey(d){
+  var max=d.steps[0][1];
+  return '<div class="hd"><h3>Where applicants are</h3><a href="#open">All applications</a></div><div class="rows">'+d.steps.map(function(s,i){
+    var future=s[2]==='future';
+    return '<div class="row'+(future?' future':'')+(i===d.hereStep?' here':'')+'"><div class="t"><span>'+s[0]+'</span><b>'+(future?'Not yet':fmt(s[1]))+'</b></div><div class="track"><i style="width:'+(future?0:(s[1]/max*100)).toFixed(1)+'%;'+(future?'min-width:0':'')+'"></i></div>'+(s[2]&&!future?'<div class="gap">'+s[2]+(s[3]?' · <a href="#open">'+s[3]+'</a>':'')+'</div>':'')+'</div>'}).join('')+'</div>';
+}
+function stanine(){
+  var v=[120,260,480,690,830,690,480,270,160],m=830;
+  return '<div class="hd"><h3>How this batch scored</h3><a href="#open">Reports</a></div><div class="cols" role="img" aria-label="Examinees per stanine, 1 to 9, most at stanine 5">'+v.map(function(x,i){return '<i title="Stanine '+(i+1)+': '+fmt(x)+'" style="height:'+(x/m*100).toFixed(0)+'%"></i>'}).join('')+'</div><div class="collab">'+v.map(function(x,i){return '<span>'+(i+1)+'</span>'}).join('')+'</div><p class="legendnote">Stanine from 1 (lowest) to 9 (highest). Most examinees are at 5, with 830.</p>';
+}
+function office(season){
+  var a=season==='open'?['38','146','12']:season==='exam'?['0','4','0']:['0','0','0'];
+  var b=season==='open'?['6','21','1 day']:season==='exam'?['14','33','20 min']:['9','27','4 hours'];
+  return '<div class="hd"><h3>Office work today</h3><a href="#open">Staff report</a></div><div class="sub">Receipts</div><div class="kv"><div><b>'+a[0]+'</b><span>waiting</span></div><div><b>'+a[1]+'</b><span>approved</span></div><div><b>'+a[2]+'</b><span>sent back</span></div></div><div class="sep"></div><div class="sub">Support requests</div><div class="kv"><div><b>'+b[0]+'</b><span>waiting</span></div><div><b>'+b[1]+'</b><span>answered</span></div><div><b>'+b[2]+'</b><span>oldest</span></div></div>';
+}
+var PANEL={
+ perday:area, seats:seatsTable,
+ checkin:function(){return bars('Check-in by campus','Rooms',[['ACCESS, Tacurong',860,'of 1,000'],['Tacurong',392,'of 440'],['Isulan',362,'of 420'],['Kalamansig',78,'of 110'],['Palimbang',50,'of 60']])},
+ seatsToday:function(){return '<div class="hd"><h3>Rooms needing a look</h3><a href="#open">All rooms</a></div><table><thead><tr><th>Room</th><th>Status</th><th class="num">Here</th></tr></thead><tbody><tr><td>Isulan, Room 12</td><td><span class="pill warn">Not started</span></td><td class="num">0 of 30</td></tr><tr><td>Isulan, Room 14</td><td><span class="pill warn">Not started</span></td><td class="num">0 of 30</td></tr><tr><td>Kalamansig, Room 3</td><td><span class="pill warn">Slow</span></td><td class="num">9 of 30</td></tr><tr><td>ACCESS, Room 41</td><td><span class="pill ok">Almost in</span></td><td class="num">28 of 30</td></tr></tbody></table>'},
+ stanine:stanine,
+ programs:function(){return bars('Top programs chosen','All programs',[['BS Nursing · Isulan',312],['BS Information Technology · ACCESS',268],['BEEd · ACCESS',214],['BS Criminology · Tacurong',197],['BS Agriculture · Lutayan',121]])},
+ campus:function(){return bars('Applied, by 1st-choice campus','By program',[['ACCESS, Tacurong',2420],['Isulan',1050],['Tacurong',925],['Kalamansig',320],['Palimbang',150],['Lutayan',115]])},
+ campusResult:function(){return bars('Qualified, by 1st-choice campus','By program',[['ACCESS, Tacurong',1390],['Isulan',610],['Tacurong',540],['Kalamansig',180],['Palimbang',85],['Lutayan',65]])}
+};
+function render(s){
+  var d=DATA[s];
+  var third=d.third?PANEL[d.third]():null;
+  return '<div class="ttl"><h2>Dashboard</h2><p>'+d.sub+'</p></div><div class="stack">'+
+  '<div class="card"><div class="season">'+d.stops.map(function(x){return '<div class="stop '+x[0]+'"><b>'+x[1]+'</b>'+x[2]+'</div>'}).join('')+'</div></div>'+
+  '<div class="card"><div class="hd"><h3>Needs you today</h3><span style="font-size:13px;color:var(--muted)">'+d.todo.length+' things</span></div><div class="todo">'+d.todo.map(function(t){return '<a href="#open"><span class="dot '+t[0]+'"></span><span><span style="color:var(--ink);font-weight:500">'+t[1]+'</span>'+(t[2]?'<br><span style="font-size:13px;color:var(--muted)">'+t[2]+'</span>':'')+'</span><em>'+t[3]+'</em></a>'}).join('')+'</div></div>'+
+  '<div class="tiles">'+d.tiles.map(function(t){return '<div class="card tile"><div class="l">'+t[0]+'</div><div class="v">'+t[1]+'</div><div class="n">'+t[2]+'</div>'+(t[3]!=null?'<div class="m"><i style="width:'+t[3]+'%"></i></div>':'')+'</div>'}).join('')+'</div>'+
+  '<div class="two"><div class="card">'+journey(d)+'</div><div class="stack"><div class="card">'+PANEL[d.left]()+'</div>'+(third?'<div class="card">'+third+'</div>':'')+'</div></div>'+
+  '<div class="two even"><div class="card">'+PANEL[d.right]()+'</div><div class="card">'+office(s)+'</div></div>'+
+  '<div class="server"><span class="dot ok"></span><span>Server running well</span><span>Emails 62 of 100 today</span><span>Background work: nothing waiting</span><a class="lnk" href="#open">Server status</a></div>'+
+  '</div>';
+}
+var state={season:'open',view:'both',theme:null};
+function pressed(id,v){document.querySelectorAll('#'+id+' button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===v))})}
+function fit(){
+  var f=document.getElementById('lapFrame'),z=document.getElementById('lapZoom');
+  if(f.style.display==='none')return;
+  var w=f.querySelector('.shell').clientWidth;z.style.zoom=Math.min(1,w/1240);
+}
+function paint(){
+  document.getElementById('lapDash').innerHTML=render(state.season);
+  document.getElementById('phDash').innerHTML=render(state.season);
+  document.getElementById('lapFrame').style.display=state.view==='ph'?'none':'';
+  document.getElementById('phFrame').style.display=state.view==='lap'?'none':'';
+  pressed('seasonSeg',state.season);pressed('viewSeg',state.view);
+  var t=state.theme||(document.documentElement.getAttribute('data-theme'))||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  pressed('themeSeg',t);fit();
+}
+function bind(id,key){document.getElementById(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;state[key]=b.dataset.v;if(key==='theme')document.documentElement.setAttribute('data-theme',b.dataset.v);paint()})}
+bind('seasonSeg','season');bind('viewSeg','view');bind('themeSeg','theme');
+document.addEventListener('click',function(e){var a=e.target.closest('a[href="#open"]');if(a)e.preventDefault()});
+addEventListener('resize',fit);
+paint();
+</script>
+</body>
+</html>
