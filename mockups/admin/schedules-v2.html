@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPT Schedules Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Idea: each schedule reads as one season line plus one sentence that says what comes next.
+   Laptop frame is the real 1240px page zoomed to fit; each frame lays out by its own width (container queries). */
+:root{
+  --page:#f6f7f6;--surface:#ffffff;--ink:#18181b;--text:#3f3f46;--muted:#71717a;--line:#e5e9e6;
+  --brand:#006b34;--on-brand:#ffffff;--track:#eef2ef;--top:#0b4d2c;--gold:#f2c230;
+  --warn:#92400e;--warn-bg:#fef3c7;--bad:#991b1b;--ok:#166534;--ok-bg:#dcfce7;
+  --sans:"Geist","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#0d0f0e;--surface:#161918;--ink:#f4f4f5;--text:#d4d4d8;--muted:#a1a1aa;--line:#2a2f2c;
+  --brand:#5ccf8f;--on-brand:#06210f;--track:#232826;--top:#07321c;--gold:#d9ad2b;
+  --warn:#fcd34d;--warn-bg:#3b2a0a;--bad:#fca5a5;--ok:#86efac;--ok-bg:#12331f;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#0d0f0e;--surface:#161918;--ink:#f4f4f5;--text:#d4d4d8;--muted:#a1a1aa;--line:#2a2f2c;
+  --brand:#5ccf8f;--on-brand:#06210f;--track:#232826;--top:#07321c;--gold:#d9ad2b;
+  --warn:#fcd34d;--warn-bg:#3b2a0a;--bad:#fca5a5;--ok:#86efac;--ok-bg:#12331f;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--text);font:14px/1.5 var(--sans);padding:16px}
+button,select,input{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+a{color:var(--brand);text-decoration:none}
+.intro{max-width:760px;margin:0 auto 14px}
+.intro h1{font-size:26px;font-weight:600;color:var(--ink);line-height:1.2;text-wrap:balance}
+.intro p{margin-top:6px;color:var(--muted)}
+.bar-ctl{position:sticky;top:0;z-index:5;background:var(--page);padding:8px 0;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:center}
+.seg{display:inline-flex;flex-wrap:wrap;justify-content:center;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:2px}
+.seg button{border:0;background:none;padding:6px 11px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);min-height:32px}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand);font-weight:500}
+.seg button:focus-visible,a:focus-visible,summary:focus-visible,.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.state-note{max-width:760px;margin:6px auto 0;text-align:center;font-size:13px;color:var(--muted)}
+.frames{display:flex;flex-direction:column;gap:22px;align-items:center;margin-top:12px}
+.frame-t{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.frame{width:100%;max-width:1240px}
+.frame.ph{max-width:390px}
+.shell{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--page)}
+.top{background:var(--top);border-bottom:3px solid var(--gold);color:#fff;display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:14px}
+.top b{font-weight:600}.top span{opacity:.75;font-size:13px}
+.top .r{margin-left:auto;display:flex;gap:12px;align-items:center}
+.dash{container-type:inline-size;padding:24px}
+.dash.dense{padding:16px}
+/* Page head */
+.ttl{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.ttl h2{font-size:26px;font-weight:600;color:var(--ink);line-height:1.2}
+.ttl p{font-size:13px;color:var(--muted);margin-top:2px}
+.ttl .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select.yr{height:38px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:0 8px;font-size:14px;max-width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:14px;font-weight:500;cursor:pointer;text-align:center}
+.btn.step{border-color:var(--muted);color:var(--ink)}
+.btn.main{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.danger{color:var(--bad)}
+/* Schedule card */
+.stack{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.grp{font-size:13px;font-weight:500;color:var(--muted);margin:8px 0 -6px}
+.grp:first-child{margin-top:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.chd{display:flex;gap:8px 12px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.chd h3{font-size:16px;font-weight:600;color:var(--ink);line-height:1.3}
+.chd p{font-size:13px;color:var(--muted)}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:500;white-space:nowrap;background:var(--track);color:var(--text)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+/* Season line: same look as the dashboard */
+.season{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0}
+.stop{position:relative;padding:18px 10px 0 0;font-size:13px;color:var(--muted);min-width:0}
+.stop::before{content:"";position:absolute;top:5px;left:0;right:0;height:2px;background:var(--line)}
+.stop::after{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.stop:last-child::before{display:none}
+.stop.done::before,.stop.done::after{background:var(--brand);border-color:var(--brand)}
+.stop.now::after{background:var(--surface);border:3px solid var(--brand)}
+.stop b{display:block;font-weight:500;color:var(--text)}
+.stop.now b{color:var(--ink);font-weight:600}
+.times{font-size:13px;color:var(--muted);margin-top:12px}
+/* Counts */
+.nums{display:flex;flex-wrap:wrap;gap:12px 36px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.nums>*{display:block;min-width:0;color:inherit}
+.nums b{display:block;font-size:16px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.nums span{font-size:13px;color:var(--muted)}
+.nums a span{color:var(--brand)}
+.nums .warn b{color:var(--warn)}
+/* Next step */
+.next{display:flex;gap:12px 20px;align-items:center;justify-content:space-between;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.next p{min-width:0;flex:1;font-size:15px;color:var(--text)}
+.next p b{font-weight:600;color:var(--ink)}
+.next .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;flex:none;max-width:60%}
+.menu{margin-top:12px;border-top:1px solid var(--line)}
+.menu[hidden]{display:none}
+.menu a{display:block;padding:10px 0;border-bottom:1px solid var(--line);color:var(--ink);font-size:14px}
+.menu a:last-child{border-bottom:0;padding-bottom:0}
+.menu a.danger{color:var(--bad)}
+.menu small{display:block;font-size:13px;color:var(--muted)}
+/* One line rows for finished schedules */
+details.row1{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0}
+details.row1>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;padding:14px 20px;min-height:44px}
+details.row1>summary::-webkit-details-marker{display:none}
+details.row1>summary b{font-size:15px;font-weight:600;color:var(--ink)}
+details.row1>summary span.d{font-size:13px;color:var(--muted)}
+details.row1>summary .show{margin-left:auto;font-size:13px;color:var(--brand)}
+details.row1 .card{border:0;border-top:1px solid var(--line);border-radius:0 0 12px 12px}
+.banner{font-size:14px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 20px}
+.banner b{font-weight:600;color:var(--ink)}
+/* Empty */
+.empty{text-align:left;max-width:520px;margin:12px auto;padding:28px}
+.empty h3{font-size:16px;font-weight:600;color:var(--ink)}
+.empty ol{margin:12px 0 18px;padding-left:20px}
+.empty li{padding:3px 0}
+/* Dialogs shown flat under the page */
+.dlgs-t{font-size:13px;font-weight:500;color:var(--muted);margin:26px 0 10px}
+.dlgs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.dlg{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:0 8px 24px rgba(0,0,0,.05);min-width:0}
+.dlg .when{font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
+.dlg h4{margin:0 0 6px;font-size:16px;font-weight:600;color:var(--ink);line-height:1.3}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:12px 0;font-size:14px}
+.kv span{color:var(--muted)}
+.kv b{font-weight:500;color:var(--ink);min-width:0}
+.kv b small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.fld{margin:12px 0}
+.fld label{display:block;font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.fld input{width:100%;height:38px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:0 10px;font-size:14px}
+.fld small{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.dlg .acts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:16px}
+.after{margin-top:12px;font-size:13px;color:var(--muted);padding-top:10px;border-top:1px solid var(--line)}
+/* Phone width */
+@container (max-width:720px){
+  .ttl h2{font-size:26px}
+  .ttl .acts{width:100%}
+  .ttl .acts .btn{flex:1}
+  .ttl select.yr{flex:1 1 100%;min-width:0}
+  .card{padding:16px}
+  .chd{margin-bottom:14px}
+  .season{grid-template-columns:minmax(0,1fr)}
+  .stop{display:flex;justify-content:space-between;gap:10px;padding:0 0 10px 24px}
+  .stop::before{top:6px;bottom:-6px;left:5px;right:auto;width:2px;height:auto}
+  .stop::after{top:2px}
+  .stop:last-child{padding-bottom:0}
+  .stop b{flex:none;max-width:60%}
+  .stop span{text-align:right;min-width:0}
+  .nums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+  .next{display:block}
+  .next .acts{justify-content:stretch;max-width:none;margin-top:12px}
+  .next .acts .btn{flex:1 1 40%;min-height:44px}
+  .next .acts .btn.step{flex-basis:100%}
+  .menu a{min-height:44px}
+  details.row1>summary{padding:12px 16px}
+  details.row1>summary .show{margin-left:0;flex-basis:100%}
+  .banner{padding:12px 16px}
+  .empty{padding:20px}
+  .dlgs{grid-template-columns:minmax(0,1fr)}
+  .dlg{padding:16px}
+  .dlg .acts .btn{flex:1;min-height:44px}
+}
+/* The form */
+.back{font-size:14px;color:var(--text);display:inline-block;margin-bottom:8px}
+.fwrap{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;align-items:start;max-width:980px}
+.rail{list-style:none;margin:0;padding:0;display:grid;gap:14px;position:sticky;top:12px}
+.rail li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;font-size:14px;color:var(--ink);font-weight:500}
+.rail i{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);margin-top:2px;display:block}
+.rail li.on i{background:var(--brand);border-color:var(--brand)}
+.rail small{display:block;font-size:12px;font-weight:400;color:var(--muted)}
+.fsec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;gap:14px;min-width:0}
+.fsec h3{font-size:16px;font-weight:600;color:var(--ink)}
+.fsec h3 span{font-size:13px;font-weight:400;color:var(--muted)}
+.fsec>p{font-size:13px;color:var(--muted);margin-top:-10px}
+.f3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.f2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start;max-width:520px}
+.fi{display:block;min-width:0}
+.fi>span{display:block;font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.fi>span em{font-style:normal;font-weight:400;font-size:13px;color:var(--muted)}
+.fi input{width:100%;height:40px;border:1px solid var(--muted);border-radius:8px;background:var(--surface);padding:0 10px;font-size:14px;min-width:0}
+.fi input:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.fi small{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.fi.err input{border-color:var(--bad)}
+.fi.err small{color:var(--bad)}
+.chk{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;font-size:14px;color:var(--ink)}
+.chk input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--brand)}
+.chk small{display:block;font-size:13px;color:var(--muted)}
+.info{background:var(--track);border-radius:8px;padding:10px 14px;font-size:14px}
+.info b{font-weight:500;color:var(--ink)}
+.warnbox{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 14px;font-size:14px}
+.fpreview .season{margin-top:2px}
+.fbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:flex-end;border-top:1px solid var(--line);padding-top:14px}
+.fbar span{margin-right:auto;font-size:13px;color:var(--muted)}
+@container (max-width:720px){
+  .fwrap{grid-template-columns:minmax(0,1fr)}
+  .rail{display:none}
+  .f3,.f2{grid-template-columns:minmax(0,1fr)}
+  .fsec{padding:16px}
+  .fi input{height:44px}
+  .fbar .btn{flex:1;min-height:44px}
+  .fbar span{flex-basis:100%;margin:0}
+}
+/* Manage slots */
+.daybar{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.dayt{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--muted);min-width:0}
+.dayt b{display:block;font-size:15px;font-weight:600;color:var(--ink)}
+.nudge{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 20px;margin-bottom:16px;font-size:15px}
+.nudge b{font-weight:600;color:var(--ink)}
+.campus{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.chead{display:flex;flex-wrap:wrap;gap:2px 14px;align-items:baseline;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
+.chead h3{font-size:16px;font-weight:600;color:var(--ink)}
+.chead span{font-size:13px;color:var(--muted)}
+.chead span.short{color:var(--warn);font-weight:500}
+.slot{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1.1fr) auto;gap:8px 18px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+.slot:last-child{border-bottom:0}
+.slot .w b{display:block;font-size:14px;font-weight:500;color:var(--ink)}
+.slot small{display:block;font-size:13px;color:var(--muted)}
+.mtr{height:7px;background:var(--track);border-radius:4px;overflow:hidden;margin-top:5px}
+.mtr i{display:block;height:100%;background:#7fc29c;border-radius:4px}
+.mtr i.hot{background:#e0a33e}
+.slot .tk{font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+.slot .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+/* First-time setup */
+.sect{display:grid;gap:14px}
+.daypick{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.daypick .fi{width:170px}
+.tag2{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--muted);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--ink);min-height:40px}
+.camprow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.3fr) 88px 100px 150px;gap:10px 12px;align-items:end;padding:12px 0;border-top:1px solid var(--line)}
+.camprow.head{border-top:0;padding:0 0 2px;font-size:13px;color:var(--muted);align-items:center}
+.camprow .nm{font-size:14px;font-weight:500;color:var(--ink);padding-bottom:10px}
+.camprow .nm small{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.camprow input[type=text],.camprow input[type=number]{width:100%;height:40px;border:1px solid var(--muted);border-radius:8px;background:var(--surface);padding:0 10px;font-size:14px;min-width:0}
+.camprow .lbl{display:none;font-size:13px;color:var(--muted);margin-bottom:3px}
+.dayck{display:flex;gap:12px;font-size:14px;color:var(--ink);padding-bottom:10px}
+.dayck label{display:flex;gap:6px;align-items:center;white-space:nowrap}
+.dayck input{width:18px;height:18px;margin:0;accent-color:var(--brand)}
+.sum{background:var(--track);border-radius:8px;padding:12px 14px;font-size:15px;color:var(--text)}
+.sum b{font-weight:600;color:var(--ink)}
+@container (max-width:720px){
+  .nudge{padding:12px 16px}
+  .nudge .btn{flex:1;min-height:44px}
+  .chead{padding:12px 16px}
+  .slot{grid-template-columns:minmax(0,1fr);padding:14px 16px;gap:8px}
+  .slot .acts{justify-content:stretch}
+  .slot .acts .btn{flex:1;min-height:44px}
+  .camprow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .camprow.head{display:none}
+  .camprow .nm,.camprow .bld,.camprow .dayck{grid-column:1/-1}
+  .camprow .nm,.camprow .dayck{padding-bottom:0}
+  .camprow .lbl{display:block}
+  .camprow input[type=text],.camprow input[type=number]{height:44px}
+  .daypick .fi{width:100%}
+  .daypick .tag2{flex:1;justify-content:center}
+}
+/* Why section */
+.why{max-width:760px;margin:30px auto 8px}
+.why h2{font-size:26px;font-weight:600;color:var(--ink);line-height:1.2;margin-bottom:6px}
+.why>p{color:var(--muted);margin-bottom:14px}
+.why h3{font-size:16px;font-weight:600;color:var(--ink);margin:24px 0 2px}
+.item{padding:14px 0;border-top:1px solid var(--line)}
+.item h4{margin:0 0 6px;font-size:15px;font-weight:600;color:var(--ink);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.item .tag{font-size:12px;font-weight:500;padding:1px 8px;border-radius:99px;background:var(--ok-bg);color:var(--ok)}
+.item .tag.look{background:var(--track);color:var(--muted)}
+.item dl{display:grid;grid-template-columns:62px minmax(0,1fr);gap:3px 10px;margin:0}
+.item dt{color:var(--muted);font-size:13px;padding-top:1px}
+.item dd{margin:0}
+.plain{padding-left:20px;margin:8px 0 0}
+.plain li{padding:3px 0}
+</style>
+</head>
+<body>
+<div class="intro">
+  <h1>Exam schedules: one line for the dates, one sentence for what is next</h1>
+  <p>Mockup with sample data. Switch below to see Manage slots, the Add and Edit form, and a schedule at each stage. Under the page you will find the dialogs that matter at that stage, then the list of what changes and why.</p>
+</div>
+<div class="bar-ctl">
+  <div class="seg" id="stateSeg" role="group" aria-label="Stage">
+    <button type="button" data-v="slotsetup">Slots: first time</button>
+    <button type="button" data-v="slots">Slots: manage</button>
+    <button type="button" data-v="add">Add form</button>
+    <button type="button" data-v="edit">Edit form</button>
+    <button type="button" data-v="year">Whole year</button>
+    <button type="button" data-v="draft">New</button>
+    <button type="button" data-v="ready">Ready</button>
+    <button type="button" data-v="open">Open</button>
+    <button type="button" data-v="closed">Closed</button>
+    <button type="button" data-v="after">After exam</button>
+    <button type="button" data-v="done">Finished</button>
+    <button type="button" data-v="old">Old year</button>
+    <button type="button" data-v="empty">Empty</button>
+  </div>
+  <div class="seg" id="viewSeg" role="group" aria-label="Screen size">
+    <button type="button" data-v="both">Both</button>
+    <button type="button" data-v="lap">Laptop</button>
+    <button type="button" data-v="ph">Phone</button>
+  </div>
+  <div class="seg" id="themeSeg" role="group" aria-label="Theme">
+    <button type="button" data-v="light">Light</button>
+    <button type="button" data-v="dark">Dark</button>
+  </div>
+</div>
+<p class="state-note" id="stateNote"></p>
+<div class="frames">
+  <div class="frame" id="lapFrame"><div class="frame-t">On a laptop</div><div class="shell"><div id="lapZoom" style="width:1240px"><div class="top"><b>SKSU TPT</b><span>Admin</span><div class="r"><span>Search name, code, examinee or OR no.</span><span>Guide</span></div></div><div class="dash" id="lapDash"></div></div></div></div>
+  <div class="frame ph" id="phFrame"><div class="frame-t">On a phone</div><div class="shell"><div class="top"><b>SKSU TPT</b><div class="r"><span>Guide</span><span>Menu</span></div></div><div class="dash dense" id="phDash"></div></div></div>
+</div>
+
+<section class="why" id="why"></section>
+
+<script>
+var TIMES='Report by 7:30 AM, exam starts 8:00 AM. Times are a guide.';
+function s(cls,t,n){return [cls,t,n]}
+var SCH={
+ draft:{name:'Dec 6 – Jan 5 applications',intake:'1st semester, AY 2027–2028',status:'Not published',
+  stops:[s('','Applications open','Dec 6'),s('','Applications close','Jan 5'),s('','Last day to pay','Jan 10'),s('','Exam','Not set yet'),s('','Results','Not set'),s('','Interview','On the official page')],
+  next:'<b>Next: add exam slots.</b> A date per campus. Publish comes after that, because students who pay need a day to pick.',
+  btns:[['Add exam slots','step'],['Edit']],
+  more:[['History',''],['Remove schedule','It was never published and nobody applied.','danger']]},
+ ready:{name:'Jan 16–17 exam',intake:'1st semester, AY 2027–2028',status:'Not published',
+  stops:[s('','Applications open','Dec 6'),s('','Applications close','Jan 5'),s('','Last day to pay','Jan 10'),s('','Exam','Jan 16–17'),s('','Results','Not set · <a href="#open">Add date</a>'),s('','Interview','On the official page')],
+  times:TIMES,
+  next:'<b>Next: publish it.</b> Students can see it right away and apply from Dec 6. 6 exam slots at 2 campuses, 3,000 seats.',
+  btns:[['Publish','step'],['Manage slots'],['Edit']],
+  more:[['History',''],['Remove schedule','It was never published and nobody applied.','danger']]},
+ open:{name:'Dec 6–8 exam',intake:'1st semester, AY 2027–2028',status:'Applications open',tone:'ok',
+  stops:[s('done','Applications open','Oct 20'),s('now','Applications close','Nov 30 · 28 days left'),s('','Last day to pay','Dec 5'),s('','Exam','Dec 6–8'),s('','Results','Jan 20 · planned'),s('','Interview','On the official page')],
+  times:TIMES,
+  nums:[['4,980','Applied',1],['3,976','Paid',1],['3,349 of 4,150','Seats taken'],['627','Paid, no exam slot yet',1,'warn']],
+  next:'<b>Nothing to do here today.</b> Keep an eye on seats: ACCESS, Tacurong on Dec 6 is nearly full, 12 seats left.',
+  btns:[['Manage slots','step'],['Edit']],
+  more:[['Close applications now','Stops new applications. It stays visible. You can reopen.'],['Postpone exam days','Typhoon or class suspension. Everyone keeps their seat.'],['Unpublish','Hides it from students too. Only before the exam.','danger'],['History','']]},
+ closed:{name:'Nov 14–15 exam',intake:'1st semester, AY 2027–2028',status:'Applications closed',
+  stops:[s('done','Applications open','Sep 1'),s('done','Applications close','Oct 31'),s('now','Last day to pay','Nov 5 · 3 days left'),s('','Exam','Nov 14–15'),s('','Results','Not set · <a href="#open">Add date</a>'),s('','Interview','On the official page')],
+  times:TIMES,
+  nums:[['3,120','Applied',1],['2,860','Paid',1],['2,764 of 3,200','Seats taken'],['96','Paid, no exam slot yet',1,'warn']],
+  next:'<b>Next: the exam on Nov 14–15.</b> Students who applied can still pay until Nov 5. 96 paid students still need an exam slot.',
+  btns:[['See the 96','step'],['Reopen applications'],['Manage slots'],['Edit']],
+  more:[['Postpone exam days','Typhoon or class suspension. Everyone keeps their seat.'],['Unpublish','Hides it from students too. Only before the exam.','danger'],['History','']]},
+ after:{name:'Sep 26–27 exam',intake:'1st semester, AY 2027–2028',status:'Exam done',
+  stops:[s('done','Applications open','Jul 1'),s('done','Applications close','Aug 31'),s('done','Last day to pay','Sep 5'),s('done','Exam','Sep 26–27'),s('now','Results','Nov 20 · planned'),s('','Interview','On the official page')],
+  nums:[['4,150','Had a seat'],['0','Scores imported']],
+  next:'<b>Next: import the test scores.</b> Anyone with a seat but no score is marked Absent. Then you can release results.',
+  btns:[['Import test scores','step'],['Exam slots'],['Edit']],
+  more:[['History','']]},
+ done:{name:'Jun 20–21 exam',intake:'1st semester, AY 2027–2028',status:'Results released',
+  stops:[s('done','Applications close','Jun 1'),s('done','Last day to pay','Jun 6'),s('done','Exam','Jun 20–21'),s('done','Results','Aug 10 · released'),s('now','Choosing a program','1,940 so far'),s('','Interview','On the official page')],
+  nums:[['3,980','Took the exam'],['2,870','Qualified',1],['1,940','Chose a program',1],['930','Qualified, not chosen yet',1,'warn']],
+  next:'<b>Now it is up to the students:</b> they choose a program, then the interview is announced on SKSU\'s official page.',
+  btns:[['See results','step'],['Exam slots']],
+  more:[['History','']]},
+ oldA:{name:'Mar 8 exam',intake:'1st semester, AY 2026–2027',status:'Results released',
+  stops:[s('done','Applications close','Feb 15'),s('done','Last day to pay','Feb 20'),s('done','Exam','Mar 8'),s('done','Results','Apr 20 · released'),s('done','Choosing a program','6,100 chose'),s('done','Interview','On the official page')],
+  nums:[['10,214','Applied'],['9,540','Took the exam'],['6,822','Qualified']],
+  btns:[['Exam slots'],['History']]}
+};
+function stops(a){return '<div class="season">'+a.map(function(x){return '<div class="stop '+x[0]+'"><b>'+x[1]+'</b><span>'+x[2]+'</span></div>'}).join('')+'</div>'}
+function nums(a){if(!a)return '';return '<div class="nums">'+a.map(function(n){var cls=n[3]==='warn'?' class="warn"':'';var body='<b>'+n[0]+'</b><span>'+n[1]+'</span>';return n[2]?'<a href="#open"'+cls+'>'+body+'</a>':'<div'+cls+'>'+body+'</div>'}).join('')+'</div>'}
+function moreBlock(x,open){
+  if(!x.more)return '';
+  return '<div class="menu"'+(open?'':' hidden')+'>'+x.more.map(function(m){return '<a href="#open"'+(m[2]?' class="danger"':'')+'>'+m[0]+(m[1]?'<small>'+m[1]+'</small>':'')+'</a>'}).join('')+'</div>';
+}
+function cardBody(x,openMenu){
+  var btns=x.btns.map(function(b){return '<a href="#open" class="btn '+(b[1]||'')+'">'+b[0]+'</a>'}).join('');
+  var more=x.more?'<button type="button" class="btn morebtn" aria-expanded="'+(openMenu?'true':'false')+'">More</button>':'';
+  var nx=x.next?'<p>'+x.next+'</p>':'<p></p>';
+  return stops(x.stops)+(x.times?'<p class="times">'+x.times+'</p>':'')+nums(x.nums)+
+    '<div class="next">'+nx+'<div class="acts">'+btns+more+'</div></div>'+moreBlock(x,openMenu);
+}
+function card(x,openMenu){
+  return '<div class="card"><div class="chd"><div><h3>'+x.name+'</h3><p>'+x.intake+'</p></div><span class="pill '+(x.tone||'')+'">'+x.status+'</span></div>'+cardBody(x,openMenu)+'</div>';
+}
+function row1(x,line){
+  return '<details class="row1"><summary><b>'+x.name+'</b><span class="pill">'+x.status+'</span><span class="d">'+line+'</span><span class="show">Show dates and numbers</span></summary><div class="card">'+cardBody(x)+'</div></details>';
+}
+function head(opts){
+  opts=opts||{};
+  var yr=opts.yr||'SY 2027–2028';
+  return '<div class="ttl"><div><h2>Exam schedules</h2><p>'+yr+(opts.closedYear?' · closed':'')+'</p></div><div class="acts"><select class="yr" aria-label="School year"><option>'+yr+(opts.closedYear?'':' (current)')+'</option></select>'+(opts.noAdd?'':'<a href="#open" class="btn main">Add schedule</a>')+'</div></div>';
+}
+function dlg(when,title,body,kv,extra,cancel,go,goCls,after){
+  return '<div class="dlg"><div class="when">'+when+'</div><h4>'+title+'</h4><p>'+body+'</p>'+
+  (kv?'<div class="kv">'+kv.map(function(k){return '<span>'+k[0]+'</span><b>'+k[1]+'</b>'}).join('')+'</div>':'')+(extra||'')+
+  '<div class="acts"><a href="#open" class="btn">'+cancel+'</a><a href="#open" class="btn '+goCls+'">'+go+'</a></div>'+(after?'<p class="after">'+after+'</p>':'')+'</div>';
+}
+var DLG={
+ ready:function(){return [dlg('When you press Publish','Publish Jan 16–17 exam?','Students see it right away. Check the dates once more.',
+   [['Applications','Dec 6 – Jan 5'],['Last day to pay','Jan 10'],['Exam','Jan 16–17, 2 campuses, 3,000 seats'],['Results','Not set <small>Optional. You can add it later.</small>']],'','Cancel','Publish','main','Afterwards: "Published. Students can apply from Dec 6." If the close date has already passed, it asks you to fix the dates first.')]},
+ open:function(){return [
+   dlg('More, then Close applications now','Close applications for Dec 6–8 exam now?','Nobody new can apply from this minute. Students who already applied can still pay until Dec 5 and pick an exam slot.',
+     null,'','Cancel','Close applications','danger','Use this when seats run out. It stays on the student app, and you can reopen it.'),
+   dlg('More, then Unpublish','Unpublish Dec 6–8 exam?','Students no longer see it and nobody new can apply. It also drops out of the Dashboard, Check-in and the cashier list until you publish it again. The 4,980 applications stay as they are.',
+     null,'','Cancel','Unpublish','danger','To only stop new applications, use Close applications now instead.')
+ ]},
+ closed:function(){return [
+   dlg('When you press Reopen applications','Reopen applications for Nov 14–15 exam?','Students can apply again right away, until the day you pick (11:59 PM).',
+     null,'<div class="fld"><label for="ru">Take applications until</label><input id="ru" type="text" value="Nov 5, 2026" readonly><small>Latest: the last day to pay, Nov 5.</small></div>','Cancel','Reopen applications','main','If another schedule is taking applications, the button is not offered. In its place: "Dec 6–8 exam is taking applications now, so this one can\'t reopen."'),
+   dlg('More, then Postpone exam days: the last check','Move Nov 14–15 exam?','Classes are suspended because of a typhoon.',
+     [['Sat, Nov 14','moves to Sat, Nov 21'],['Sun, Nov 15','moves to Sun, Nov 22'],['Last day to pay','Nov 5, stays <small>Before the new exam days, so all good.</small>'],['Applications','Stay closed'],['Planned results','Dec 15 moves to Dec 22 <small>Same 7 days.</small>'],['Who is told','2,764 seated students, by email and in the app <small>They keep their campus, room and seat.</small>']],
+     '','Back','Move the exam days','main','')
+ ]}
+};
+var NOTE={
+ slotsetup:'After adding a schedule. All campuses and days on one page, in place of opening a form for every campus on every day.',
+ slots:'Once slots exist. Each campus shows whether its seats are enough for the students who picked it first. Dialogs are under the page.',
+ add:'The form you get from Add schedule. Sample dates are filled in so you can read it; the line at the bottom follows what you type.',
+ edit:'The same form for a schedule that is already running, with its exam times changed, and one date that needs fixing.',
+ year:'A year with a schedule at each stage: running ones first, finished ones folded away.',
+ draft:'Just added. There is no Publish button yet, and the sentence says why.',
+ ready:'Exam slots are in, so Publish appears.',
+ open:'Students are applying. The More menu is opened here so you can read it.',
+ closed:'Applications closed, before the last day to pay. Reopen is offered until that day, then goes away.',
+ after:'Today the row stops here and says "Applications closed". Now it points to the next job.',
+ done:'Results are out. The office sees who still needs to choose a program.',
+ old:'A closed school year: you can look, nothing can change, and the page says so.',
+ empty:'The first visit in a new school year.'
+};
+function campRow(n,sub,b,rooms,seats,d1,d2){
+  return '<div class="camprow"><div class="nm">'+n+'<small>'+sub+'</small></div><div class="bld"><span class="lbl">Building</span><input type="text" aria-label="Building, '+n+'" value="'+b+'"></div><div><span class="lbl">Rooms</span><input type="number" aria-label="Rooms, '+n+'" value="'+rooms+'"></div><div><span class="lbl">Seats a day</span><input type="number" aria-label="Seats a day, '+n+'" value="'+seats+'"></div><div class="dayck"><label><input type="checkbox"'+(d1?' checked':'')+'>Dec 6</label><label><input type="checkbox"'+(d2?' checked':'')+'>Dec 7</label></div></div>';
+}
+function slotSetup(){
+  return '<a class="back" href="#open">← Exam schedules</a><div class="ttl"><div><h2>Set up exam slots</h2><p>Dec 6–7 exam · applications close Nov 30, last day to pay Dec 5</p></div></div>'+
+  '<div class="stack" style="max-width:1000px">'+
+  '<section class="fsec"><h3>1. Exam days and times</h3><div class="daypick"><span class="tag2">Sun, Dec 6 ×</span><span class="tag2">Mon, Dec 7 ×</span><a href="#open" class="btn">Add a day</a></div><div class="f2">'+fi('Report by','time','07:30','Same for all campuses here.')+fi('Exam starts','time','08:00','A second batch comes later, as its own slot.')+'</div></section>'+
+  '<section class="fsec sect"><h3>2. Campuses, rooms and seats</h3><p style="margin-top:-10px;font-size:13px;color:var(--muted)">Filled in from each campus\'s rooms and last schedule. Change what you need, and untick a day a campus isn\'t using.</p>'+
+  '<div><div class="camprow head"><span>Campus</span><span>Building</span><span>Rooms</span><span>Seats a day</span><span>Days</span></div>'+
+  campRow('ACCESS, Tacurong','2,420 picked it first last time','Academic Building',24,1200,1,1)+
+  campRow('Isulan','1,050 picked it first last time','Main Building',16,800,1,1)+
+  campRow('Tacurong','925 picked it first last time','CTE Building',12,600,1,0)+
+  campRow('Kalamansig','320 picked it first last time','Main Building',6,300,1,0)+
+  campRow('Palimbang','150 picked it first last time','Main Building',5,250,1,0)+
+  campRow('Lutayan','115 picked it first last time','Main Building',4,200,1,0)+
+  '</div></section>'+
+  '<div class="sum"><b>This makes 8 exam slots with 5,350 seats.</b> Each room gets about 50 seats. Students are placed in rooms by the system.</div>'+
+  '<div class="fbar"><span>You can add seats or a second batch later.</span><a href="#open" class="btn">Cancel</a><a href="#open" class="btn main">Add 8 exam slots</a></div>'+
+  '</div>';
+}
+function slotRow(day,time,where,t,c,status,tone,btn){
+  var pct=(t/c*100).toFixed(0),hot=pct>=90;
+  return '<div class="slot"><div class="w"><b>'+day+'</b><small>'+time+'</small></div><div><small>'+where+'</small></div><div><span class="tk">'+t.toLocaleString('en-PH')+' of '+c.toLocaleString('en-PH')+'</span> <span class="pill '+(tone||'')+'">'+status+'</span><div class="mtr"><i class="'+(hot?'hot':'')+'" style="width:'+pct+'%"></i></div></div><div class="acts"><a href="#open" class="btn'+(btn?' step':'')+'">Add more seats</a><button type="button" class="btn">More</button></div></div>';
+}
+function campusCard(name,sub,short,rows){
+  return '<section class="campus"><div class="chead"><h3>'+name+'</h3><span'+(short?' class="short"':'')+'>'+sub+'</span></div>'+rows.join('')+'</section>';
+}
+function slotsPage(){
+  return '<a class="back" href="#open">← Exam schedules</a><div class="ttl"><div><h2>Dec 6–7 exam · Exam slots</h2><p>8 exam slots · 3,349 of 5,350 seats taken</p></div><div class="acts"><a href="#open" class="btn">Rooms</a><a href="#open" class="btn main">Add exam slot</a></div></div>'+
+  '<div class="daybar"><div class="dayt"><b>Sun, Dec 6</b>6 campuses · 2,507 of 3,350 seats</div><div class="dayt"><b>Mon, Dec 7</b>2 campuses · 842 of 2,000 seats</div></div>'+
+  '<div class="nudge"><span><b>627 paid students have no exam slot yet.</b> There are enough seats for them.</span><a href="#open" class="btn">See the 627</a></div>'+
+  '<div class="stack">'+
+  campusCard('ACCESS, Tacurong','2,420 picked it first · 2,400 seats. 20 short',1,[
+    slotRow('Sun, Dec 6','Report by 7:30 AM, starts 8:00 AM','Academic Building · 24 rooms',1188,1200,'Nearly full','warn',1),
+    slotRow('Mon, Dec 7','Report by 7:30 AM, starts 8:00 AM','Academic Building · 24 rooms',654,1200,'Open','ok')])+
+  campusCard('Isulan','1,050 picked it first · 1,600 seats',0,[
+    slotRow('Sun, Dec 6','Report by 7:30 AM, starts 8:00 AM','Main Building · 16 rooms',731,800,'Open','ok'),
+    slotRow('Mon, Dec 7','Report by 7:30 AM, starts 8:00 AM','Main Building · 16 rooms',188,800,'Open','ok')])+
+  campusCard('Tacurong','925 picked it first · 600 seats. 325 short',1,[
+    slotRow('Sun, Dec 6','Report by 7:30 AM, starts 8:00 AM','CTE Building · 12 rooms',412,600,'Open','ok')])+
+  '</div>'+
+  '<div class="dlgs-t">From a row, More opens: Change times, Seat plan, Stop new bookings, Delete (only with nobody seated). These open from the page:</div><div class="dlgs">'+
+  dlg('Add more seats','Add more seats · ACCESS, Dec 6','They open right away. Students already seated keep their seats.',null,'<div class="f2">'+fi('More rooms','number','4','')+fi('More seats','number','200','About 50 a room.')+'</div><div class="info">This day goes from <b>1,200 to 1,400</b> seats. The new rooms are <b>Rooms 25 to 28</b>.</div>','Cancel','Add more seats','main','')+
+  dlg('Add exam slot, for a second batch or one more day','Add exam slot','For one extra slot. A second batch is the same campus and day with a later start.',null,'<div class="f2">'+fi('Campus','text','ACCESS, Tacurong','')+fi('Exam day','date','2026-12-06','')+fi('Report by','time','12:30','')+fi('Exam starts','time','13:00','This makes Batch 2 on this day.')+fi('Rooms','number','24','')+fi('Seats','number','1200','')+'</div>','Cancel','Add exam slot','main','')+
+  dlg('More, then Change times','Change times · ACCESS, Dec 6','Their permits show the new time as soon as you save.',null,'<div class="f2">'+fi('Report by','time','07:00','')+fi('Exam starts','time','08:00','')+'</div><div class="warnbox"><b>1,188 seated students will be told</b> in the app and by email.</div>','Cancel','Change times','main','To move the exam to another day, use Postpone on the schedule.')+
+  dlg('More, then Stop new bookings','Stop new bookings · ACCESS, Dec 6?','Students can no longer pick this day. The 1,188 already seated keep their seats. You can allow bookings again later.',null,'','Cancel','Stop new bookings','danger','')+
+  '</div>';
+}
+function fi(label,type,val,hint,opt,err){
+  return '<label class="fi'+(err?' err':'')+'"><span>'+label+(opt?' <em>Optional</em>':'')+'</span><input type="'+type+'" value="'+val+'"><small>'+(err||hint||'')+'</small></label>';
+}
+function rail(items){return '<ol class="rail">'+items.map(function(i){return '<li class="'+(i[2]?'on':'')+'"><i></i><span>'+i[0]+'<small>'+i[1]+'</small></span></li>'}).join('')+'</ol>'}
+function form(edit){
+  var title=edit?'Edit Dec 6–8 exam':'Add exam schedule';
+  var stopsA=edit?[s('done','Applications open','Oct 20'),s('now','Applications close','Nov 30'),s('','Last day to pay','Dec 5'),s('','Exam','Dec 6–8'),s('','Results','Jan 20 · planned'),s('','Interview','On the official page')]
+   :[s('','Applications open','Dec 6'),s('','Applications close','Jan 5'),s('','Last day to pay','Jan 10'),s('','Exam','Pick next, in Exam slots'),s('','Results','Not set'),s('','Interview','On the official page')];
+  return '<a class="back" href="#open">← Exam schedules</a><div class="ttl"><div><h2>'+title+'</h2><p>SY 2027–2028</p></div></div>'+
+  '<div class="fwrap">'+rail([['Who it is for','Optional',1],['Applications','Dates and last day to pay',1],['Exam day','Report and start times',1],['Results','Optional',edit]])+
+  '<div class="stack">'+
+  '<section class="fsec"><h3>Who it is for</h3>'+fi('For','text','1st semester, AY 2027–2028','Students see this, and it prints on the permit.',1)+'</section>'+
+  '<section class="fsec"><h3>Applications</h3><p>Opens at 12:00 AM and closes at 11:59 PM, Philippine time.</p><div class="f3">'+
+    fi('Applications open','date',edit?'2026-10-20':'2026-12-06','First day students can apply.')+
+    fi('Applications close','date',edit?'2026-11-30':'2027-01-05','Last day to submit.')+
+    fi('Last day to pay','date',edit?'2026-12-05':'2027-01-10','Last day to pay or upload a receipt.')+
+  '</div><div class="info">'+(edit?'Exam days: <b>Dec 6–8</b>. <a href="#open">Change them in Exam slots</a>':'You pick the exam days in the next step, <b>Exam slots</b>, from <b>Jan 11</b> on.')+'</div></section>'+
+  '<section class="fsec"><h3>Exam day</h3><div class="f2">'+
+    fi('Report by','time',edit?'07:00':'07:30','Time students must arrive.')+
+    fi('Exam starts','time','08:00','Must be after the report time.')+
+  '</div>'+(edit?'<div class="warnbox">Report time changes from 7:30 to 7:00 AM. <b>3,349 students with a seat will be told</b>, and their permits will show the new time. Exam slots with their own time, like a second batch, stay as they are.</div>':'')+
+  '<label class="chk"><input type="checkbox"'+(edit?' checked':'')+'><span>Proctors check students in at the door<small>They scan each permit\'s QR, so you can see who came.</small></span></label></section>'+
+  '<section class="fsec"><h3>Results <span>Optional</span></h3>'+
+    '<div style="max-width:320px">'+fi('Planned release','datetime-local',edit?'2026-12-05T08:00':'','Students see this as the planned date. You still release results yourself.',1,edit?'Results come after the exam. Pick a day after Dec 8, the last exam day.':'')+'</div></section>'+
+  '<section class="fsec fpreview"><h3>How it will read</h3>'+stops(stopsA)+'</section>'+
+  '<div class="fbar"><span>'+(edit?'Students see the changes as soon as you save.':'Students can\'t see it until you publish it. Next, you add exam slots.')+'</span><a href="#open" class="btn">Cancel</a><a href="#open" class="btn main">'+(edit?'Save changes':'Add schedule')+'</a></div>'+
+  '</div></div>';
+}
+function render(st){
+  var h='';
+  if(st==='slotsetup')return slotSetup();
+  if(st==='slots')return slotsPage();
+  if(st==='add')return form(false);
+  if(st==='edit')return form(true);
+  if(st==='empty'){
+    return head({noAdd:true})+'<div class="card empty"><h3>No schedules yet</h3><p style="margin-top:4px">A schedule is one round of the TPT. Three steps:</p><ol><li>Add the dates when students apply and pay.</li><li>Add exam slots, a date per campus.</li><li>Publish it. Students can\'t see it before that.</li></ol><a href="#open" class="btn main">Add schedule</a></div>';
+  }
+  if(st==='old'){
+    return head({yr:'SY 2026–2027',closedYear:true,noAdd:true})+'<div class="stack"><div class="banner"><b>This school year is closed.</b> You can look at everything here, but nothing can change.</div>'+card(SCH.oldA)+'</div>';
+  }
+  if(st==='year'){
+    return head()+'<div class="stack"><div class="grp">Running now</div>'+card(SCH.open)+card(SCH.after)+'<div class="grp">Not published yet</div>'+card(SCH.draft)+'<div class="grp">Finished</div>'+row1(SCH.done,'Results Aug 10, 3,980 took the exam')+'</div>';
+  }
+  h=head()+'<div class="stack">'+card(SCH[st],st==='open')+'</div>';
+  if(DLG[st]){h+='<div class="dlgs-t">At this stage, these open from the page:</div><div class="dlgs">'+DLG[st]().join('')+'</div>'}
+  return h;
+}
+/* What changes and why */
+var FLOW=[
+ ['Every schedule says what comes next','Add a schedule and a small note says "Next: add exam slots", then it disappears. The row looks the same at every stage.','One plain sentence on each schedule, always there: "Next: add exam slots", "Next: publish it", "Next: import the test scores".','New staff know what to do without opening the guide. Nobody misses a step because a note faded.'],
+ ['The page keeps going after the exam','After the exam the status still says "Applications closed", forever. No button leads to scores or results. You must know to use the side menu.','Status follows the season: Exam done, then Results released. A button opens Import test scores, then Release results. Then it shows who still has to choose a program, and that the interview is announced on the official page.','This was the biggest dead end on the page, at the busiest time of the year.'],
+ ['Dates read as one line','Dates sit in separate columns, and the last day to pay is small grey text. On a phone, Results, Status and every button are off screen until you swipe the table.','The same season line as the new Dashboard, with the current stop marked. On a phone it runs top to bottom and nothing needs swiping. Exam times show too.','Anyone sees in one look where a schedule stands. It matches the Dashboard, so it feels like one product.'],
+ ['No grey Publish button','Publish is greyed out until slots exist. The reason is in a hover note, and a phone cannot hover.','Publish stays hidden until there are exam slots, and the Next sentence explains why.','Our own rule: a button that is not allowed is hidden or explained.'],
+ ['Publish checks and tells the truth','The message after publishing always says "Students can apply now", even when the opening day is weeks away or the close date has already passed.','The dialog shows what goes live: dates, exam, seats. Afterwards it says "Students can apply from Dec 6". If the close date has passed, it asks you to fix the dates first.','Staff will not tell students the wrong thing. A schedule cannot go live with its window already over.'],
+ ['Numbers that lead somewhere','Only "Applicants", and it cannot be tapped. Seats and "paid, no slot yet" are on other pages.','Applied, Paid, Seats taken and Paid with no slot yet. Each one opens its own filtered list.','The office can act on a number from where it sees it.'],
+ ['Close and Unpublish stop looking alike','Both sit in the same menu. Unpublish stays there even after results, and it removes the schedule from the Dashboard, Check-in and the cashier list.','Close is the normal way to stop new applications. Unpublish is only offered before the exam, and its dialog explains the difference.','A wrong tap after the exam can no longer hide a whole batch from the office pages.'],
+ ['Reopen only when it can work','Reopen shows even when another schedule is taking applications. Then the error says to pick a day before that schedule started, which is already past.','If reopening cannot work, the button is not offered, and one line says why.','No more error with no way out. Everything else about Reopen stays as you made it.'],
+ ['Postpone checks the whole picture','The exam can move to before the last day to pay. The planned results date stays behind and can end up before the exam. "More days" can quietly reopen closed applications. A campus with two batches a day cannot be postponed at all, and no message appears.','The last check lists every date that moves or stays, and who is told. Results move by the same days, as the first mockup said. Two batches work, and any problem shows a message.','Postponing happens in an emergency, under pressure. This is where a mistake costs the most.'],
+ ['The Edit page does what it says','"Report by" and "Exam starts" say "Printed on the permit", but the permit reads the times saved on each exam slot, so editing later changes nothing students see. "Move slot until" is asked even when that switch is off in Settings. A results date can be set before the exam.','Changing times updates the exam slots still on the old times (a second batch keeps its own) and says how many seated students will be told, as the plan requires. "Move slot until" shows only when the switch is on. Results must come after the last exam day.','Staff would think students were told a new time when they were not. That is the kind of mistake that leaves students at the gate.'],
+ ['A closed year says it is closed','Every button disappears with no word about why, and History is gone too.','One line, "This school year is closed", with Exam slots and History still there.','It looks broken today. The guide promises you can still view it.'],
+ ['Running schedules come first','Listed by number, so the oldest sits on top and the one running now can be at the bottom.','Running now, then Not published yet, then Finished, folded to one line.','The one the office needs is always first.'],
+ ['Show the true result state','Results say "Released" even after they are hidden from students.','Results show "Hidden from students" while hidden.','The office should not tell a student results are out when they cannot see them.'],
+ ['One word for one thing','"Registration" remains in the publish dialog, the empty page, Postpone and the guide. The guide and empty page also still say "Schedule 1", though schedules are now named by their dates.','"Applications" and dates everywhere.','These are the words you already chose.'],
+ ['Fewer things to read','"How this page works" takes space on every visit, and two links in each row go to the same Exam slots page.','The guide stays behind the Guide button. One Manage slots button.','Next sentences now do the guide\'s job, so the page stays calm.']
+];
+FLOW.splice(10,0,['The form shows how the schedule will read','You fill in dates with no picture of the whole, so a wrong date only shows after saving.','"How it will read" at the bottom follows what you type, on the same line as the list. After Add schedule, the page goes straight to the Next sentence: add exam slots.','Staff catch a wrong date before students do.']);
+var SLOTFLOW=[
+ ['Set up a whole exam on one page','You open the Add exam slot form again for every campus on every day. Six campuses over two days means 12 forms. "Save, then next campus" helps, but only for one day at a time.','After adding a schedule, one page: pick the days and times once, then see all campuses with rooms and seats filled in, and tick the days each campus uses. One button makes them all.','The longest job on this page becomes one screen, with the total shown before saving. The small Add exam slot form stays for one extra slot or a second batch.'],
+ ['Are the seats enough for each campus?','The page shows seats taken, but not how many students want that campus.','Each campus says "2,420 picked it first, 2,400 seats. 20 short", using the applications so far.','The office sees a shortage before a campus fills up, while there is still time to add rooms.'],
+ ['See each exam day at a glance','The list goes campus by campus. To know the total for Dec 6, you add it up yourself.','A short line per exam day above the list: campuses and seats taken.','Answers "how many on Sunday?" for printing, proctors and rooms.'],
+ ['Works on a phone without swiping','Each campus is a wide table, so on a phone you swipe sideways to reach the buttons.','Each slot stacks on a phone: day, building, seats, then the buttons.','The office can add seats from a phone during a rush.'],
+ ['Change a slot\'s times, and tell students','There is no way to change one slot\'s times once it is made. You can only delete it when empty. This is the same gap as the Edit form bug.','More, then Change times. It says how many seated students will be told. Moving to another day stays with Postpone.','Students get the right time on their permit. This is how the permit reads its times today.'],
+ ['Seat plan where you expect it','The Seat plan PDF is only in Reports, far from the slot.','More, then Seat plan, on each slot.','Testing staff print it per slot, right before exam day.'],
+ ['Next step after the slots','"Next: publish" shows only while unpublished, and the page guide still describes ticking rooms and day tabs that no longer exist.','Keep the Next sentence and fix the guide to match the page.','Staff following the guide should not get lost.']
+];
+var LOOK=[
+ ['Spacing and sizes','Look again at card spacing and the size of the season line once the flow is settled.'],
+ ['Status colours','Keep green for Applications open only, or give Exam done its own quiet colour.'],
+ ['Icons on buttons','Today most buttons carry an icon. This mockup has none. Decide once, for all admin pages.'],
+ ['Dialog polish','This mockup lays dialogs flat so a phone can read them. Real dialogs keep today\'s look.']
+];
+var KEEP=['Publish is still refused with no exam slot. The first mockup had "Publish anyway", and the app chose to refuse. This keeps the refusal.','Rooms and seats stay automatic. Nothing here asks staff to place people.','No separate page for each schedule. The line and numbers on the list are enough, so there is less to build.','Add, Edit and Postpone keep their own pages, and Exam slots stays as it is for now.'];
+var ASK=['Do most campuses use the same times on every exam day? The one-page setup assumes yes, and a different time means editing that slot afterwards.','Should Unpublish be allowed once anyone has applied? Close applications already covers that case. This mockup allows it until the exam.','When a schedule is postponed, should the planned results date move by itself? This mockup says yes, as the first mockup did. Today it does not move.','When postponing gives "more days", should that move only the last day to pay and leave applications closed? This mockup keeps them closed. Today both move.','Green button: this mockup keeps green on Add schedule at top right, as the rules say. The Next buttons stay plain. Would you rather have green follow the next step?'];
+document.getElementById('why').innerHTML='<h2>What changes and why</h2><p>Flow items are for now. Look items wait until later.</p>'+
+ '<h3>Manage slots</h3>'+SLOTFLOW.map(function(f,i){return '<div class="item"><h4><span>S'+(i+1)+'. '+f[0]+'</span><span class="tag">Flow</span></h4><dl><dt>Today</dt><dd>'+f[1]+'</dd><dt>Better</dt><dd>'+f[2]+'</dd><dt>Why</dt><dd>'+f[3]+'</dd></dl></div>'}).join('')+
+ '<h3>Exam schedules page</h3>'+FLOW.map(function(f,i){return '<div class="item"><h4><span>'+(i+1)+'. '+f[0]+'</span><span class="tag">Flow</span></h4><dl><dt>Today</dt><dd>'+f[1]+'</dd><dt>Better</dt><dd>'+f[2]+'</dd><dt>Why</dt><dd>'+f[3]+'</dd></dl></div>'}).join('')+
+ '<h3>Look: later</h3>'+LOOK.map(function(f){return '<div class="item"><h4><span>'+f[0]+'</span><span class="tag look">Look</span></h4><p>'+f[1]+'</p></div>'}).join('')+
+ '<h3>Staying as it is</h3><ul class="plain">'+KEEP.map(function(k){return '<li>'+k+'</li>'}).join('')+'</ul>'+
+ '<h3>Questions for you</h3><ol class="plain">'+ASK.map(function(k){return '<li>'+k+'</li>'}).join('')+'</ol>';
+/* Switches */
+var state={state:'slotsetup',view:'both',theme:null};
+function pressed(id,v){document.querySelectorAll('#'+id+' button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===v))})}
+function fit(){
+  var f=document.getElementById('lapFrame'),z=document.getElementById('lapZoom');
+  if(f.style.display==='none')return;
+  var w=f.querySelector('.shell').clientWidth;z.style.zoom=Math.min(1,w/1240);
+}
+function paint(){
+  var html=render(state.state);
+  document.getElementById('lapDash').innerHTML=html;
+  /* ids must stay unique across the two frames */
+  document.getElementById('phDash').innerHTML=html.replace(/id="ru"/g,'id="ru2"').replace(/for="ru"/g,'for="ru2"');
+  document.getElementById('stateNote').textContent=NOTE[state.state];
+  document.getElementById('lapFrame').style.display=state.view==='ph'?'none':'';
+  document.getElementById('phFrame').style.display=state.view==='lap'?'none':'';
+  pressed('stateSeg',state.state);pressed('viewSeg',state.view);
+  var t=state.theme||(document.documentElement.getAttribute('data-theme'))||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  pressed('themeSeg',t);fit();
+}
+function bind(id,key){document.getElementById(id).addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;state[key]=b.dataset.v;if(key==='theme')document.documentElement.setAttribute('data-theme',b.dataset.v);paint()})}
+bind('stateSeg','state');bind('viewSeg','view');bind('themeSeg','theme');
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a[href="#open"]');if(a)e.preventDefault();
+  var m=e.target.closest('.morebtn');if(!m)return;
+  var menu=m.closest('.next').nextElementSibling;
+  menu.hidden=!menu.hidden;m.setAttribute('aria-expanded',String(!menu.hidden));
+});
+addEventListener('resize',fit);
+paint();
+</script>
+</body>
+</html>
