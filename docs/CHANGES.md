@@ -1,3 +1,18 @@
+# Changes · Nov 2, 2026 (live)
+
+The system is live at sksu-tpt.com. Test data was cleared on Nov 2; setup, schedules and staff accounts were kept.
+
+## Added since Oct 29
+
+- ✅ **Student app on a laptop or desktop**: menu on the left, the page in the middle, "Your steps" on the right; the result shows the score beside the programs. Phones look the same as before.
+- ✅ **Install offer only on phones and tablets** (hidden on computers).
+- ✅ **Admin deletes a student account** from a Privacy support request, confirmed with a 4-digit code. Unpaid data is deleted; paid or examined records stay and the account is closed. The student gets an email listing both.
+- ✅ **Stop announcement emails** for one student (from their support request). Payment, slot and result emails still go out.
+- ✅ **Old unfinished drafts** (not touched for a year) are deleted automatically each night.
+- ✅ Walk-in payments respect the "Pause applications" switch.
+- ✅ Every promise on screen checked against the system (privacy, backups, school-year close wording).
+- ✅ Manual updated for all of the above.
+
 # Changes · Oct 29, 2026
 
 Everything changed in the mockups and docs today. ✅ = done.
