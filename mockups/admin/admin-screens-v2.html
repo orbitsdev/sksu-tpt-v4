@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPT Admin Screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Idea: every admin screen answers "what do I do next?" with one green button and thin lines on a light page.
+   The laptop frame is the real 1240px page zoomed to fit. Each frame lays out by its own width (container queries). */
+:root{
+  --page:#f6f7f6;--surface:#fff;--ink:#18181b;--text:#3f3f46;--muted:#71717a;--line:#e5e9e6;
+  --brand:#006b34;--on-brand:#fff;--track:#eef2ef;--top:#0b4d2c;--gold:#f2c230;
+  --warn:#92400e;--warn-bg:#fef3c7;--bad:#991b1b;--ok:#166534;--ok-bg:#dcfce7;
+  --sans:"Geist","Segoe UI",system-ui,sans-serif;color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#0d0f0e;--surface:#161918;--ink:#f4f4f5;--text:#d4d4d8;--muted:#a1a1aa;--line:#2a2f2c;
+  --brand:#5ccf8f;--on-brand:#06210f;--track:#232826;--top:#07321c;--gold:#d9ad2b;
+  --warn:#fcd34d;--warn-bg:#3b2a0a;--bad:#fca5a5;--ok:#86efac;--ok-bg:#12331f;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#0d0f0e;--surface:#161918;--ink:#f4f4f5;--text:#d4d4d8;--muted:#a1a1aa;--line:#2a2f2c;
+  --brand:#5ccf8f;--on-brand:#06210f;--track:#232826;--top:#07321c;--gold:#d9ad2b;
+  --warn:#fcd34d;--warn-bg:#3b2a0a;--bad:#fca5a5;--ok:#86efac;--ok-bg:#12331f;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--text);font:14px/1.5 var(--sans);padding:16px}
+button,select,input,textarea{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+a{color:var(--brand);text-decoration:none}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* Review controls */
+.intro{max-width:760px;margin:0 auto 12px}
+.intro h1{font-size:26px;font-weight:600;color:var(--ink);line-height:1.2;text-wrap:balance}
+.intro p{margin-top:6px;color:var(--muted)}
+.ctl{position:sticky;top:0;z-index:5;background:var(--page);padding:8px 0;display:flex;flex-direction:column;gap:8px;align-items:center}
+.chips{display:flex;gap:6px;overflow-x:auto;max-width:100%;padding:2px;scrollbar-width:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;min-height:34px;font-size:13px;cursor:pointer;color:var(--text)}
+.chips button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--on-brand);font-weight:500}
+.segs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:2px}
+.seg button{border:0;background:none;padding:5px 11px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);min-height:30px}
+.seg button[aria-pressed="true"]{background:var(--track);color:var(--ink);font-weight:500}
+.why{max-width:760px;margin:10px auto 0;font-size:14px}
+.why b{color:var(--ink);font-weight:600}
+.why ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+.frames{display:flex;flex-direction:column;gap:22px;align-items:center;margin-top:16px}
+.frame{width:100%;max-width:1240px}
+.frame.ph{max-width:390px}
+.frame-t{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.zoomer{overflow:hidden;border:1px solid var(--line);border-radius:12px;background:var(--page)}
+.lap .app{width:1240px;zoom:var(--z,1)}
+
+/* App frame */
+.top{background:var(--top);border-bottom:3px solid var(--gold);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:14px}
+.seal{width:28px;height:28px;border-radius:50%;background:var(--gold);flex:none;border:2px solid #fff}
+.top b{font-weight:600;white-space:nowrap}
+.top .area{opacity:.75;font-size:13px}
+.top .srch{flex:1;max-width:340px;margin-left:20px;background:rgba(255,255,255,.12);border-radius:8px;padding:6px 12px;font-size:13px;color:rgba(255,255,255,.85);white-space:nowrap;overflow:hidden}
+.top .r{margin-left:auto;display:flex;gap:14px;align-items:center;font-size:13px;white-space:nowrap}
+.bell{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;border-radius:99px;background:#fff;color:var(--top);font-size:12px;font-weight:600;padding:0 6px}
+.body{display:grid;grid-template-columns:216px minmax(0,1fr)}
+.side{border-right:1px solid var(--line);padding:14px 10px;font-size:14px}
+.side h5{margin:12px 8px 4px;font-size:12px;font-weight:500;color:var(--muted)}
+.side h5:first-child{margin-top:0}
+.side a{display:flex;justify-content:space-between;padding:6px 8px;border-radius:7px;color:var(--text)}
+.side a.on{background:var(--track);color:var(--ink);font-weight:600}
+.side a small{font-size:12px;color:var(--muted)}
+.pg{container-type:inline-size;padding:24px 28px 32px;min-width:0}
+.ph .body{grid-template-columns:minmax(0,1fr)}
+.ph .side,.ph .srch,.ph .area,.ph .who{display:none}
+.ph .pg{padding:18px 16px 24px}
+
+/* Shared parts */
+.ttl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.ttl h2{font-size:26px;font-weight:600;color:var(--ink);line-height:1.2;text-wrap:balance}
+.ttl p{font-size:13px;color:var(--muted);margin-top:2px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn.main{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.sm{min-height:32px;padding:4px 11px;font-size:13px}
+.link{color:var(--brand);font-size:13px;font-weight:500;white-space:nowrap}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:500;white-space:nowrap;background:var(--track);color:var(--text)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.tabs{display:flex;gap:18px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;margin-bottom:14px}
+.tabs span{flex:none;padding:8px 0;font-size:14px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs span.on{color:var(--ink);font-weight:600;border-color:var(--ink)}
+.tabs i{font-style:normal;font-size:13px;margin-left:4px;font-variant-numeric:tabular-nums}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.inp{height:38px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:0 11px;font-size:14px;color:var(--muted);display:flex;align-items:center;min-width:0}
+.inp.grow{flex:1 1 220px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
+.pad{padding:18px 20px}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 12px;font-size:13px}
+.h3{font-size:16px;font-weight:600;color:var(--ink);line-height:1.3}
+.sub{font-size:13px;color:var(--muted)}
+.rows>*{display:flex;gap:10px 14px;align-items:center;padding:12px 20px;border-bottom:1px solid var(--line);min-width:0}
+.rows>*:last-child{border-bottom:0}
+.rows .grow{flex:1;min-width:0}
+.rows .sel{background:var(--track)}
+.nm{font-weight:500;color:var(--ink);overflow-wrap:anywhere}
+.nums{display:flex;flex-wrap:wrap;gap:12px 36px}
+.nums b{display:block;font-size:20px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.3}
+.nums span{font-size:13px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:130px minmax(0,1fr);gap:7px 14px;font-size:14px}
+.kv span{color:var(--muted)}
+.kv b{font-weight:500;color:var(--ink);min-width:0;overflow-wrap:anywhere}
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;align-items:start}
+.split.two{grid-template-columns:minmax(0,8fr) minmax(0,4fr)}
+.stack{display:flex;flex-direction:column;gap:16px;min-width:0}
+.next{display:flex;gap:12px 20px;align-items:center;justify-content:space-between;font-size:15px}
+.next p{flex:1;min-width:0}.next b{color:var(--ink);font-weight:600}
+.fld{display:flex;flex-direction:column;gap:4px;min-width:0}
+.fld label{font-size:14px;font-weight:500;color:var(--ink)}
+.fld small{font-size:13px;color:var(--muted)}
+.ta{min-height:92px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:var(--surface);color:var(--ink);font-size:14px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opt{border:1px solid var(--line);border-radius:99px;padding:4px 11px;font-size:13px;color:var(--text)}
+.opt.on{border-color:var(--ink);color:var(--ink);font-weight:500}
+.foot{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+.photo{width:64px;height:64px;border-radius:10px;background:var(--track);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);flex:none}
+.rcpt{height:310px;border-radius:10px;background:var(--track);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;text-align:center;padding:16px}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:18px}
+.st{position:relative;padding:18px 10px 0 0;font-size:13px;color:var(--muted);min-width:0}
+.st::before{content:"";position:absolute;top:5px;left:0;right:0;height:2px;background:var(--line)}
+.st::after{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.st:last-child::before{display:none}
+.st.done::before,.st.done::after{background:var(--brand);border-color:var(--brand)}
+.st.now::after{border:3px solid var(--brand)}
+.st.now{color:var(--ink);font-weight:600}
+.bar{height:8px;background:var(--track);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:99px;opacity:.75}
+.tb{width:100%;border-collapse:collapse;font-size:14px}
+.tb th{text-align:left;font-size:13px;font-weight:500;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line)}
+.tb td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tb tr:last-child td{border-bottom:0}
+.tb .n{font-variant-numeric:tabular-nums}
+.tb td small{display:block;font-size:13px;color:var(--muted)}
+.tick{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);display:inline-block;flex:none;vertical-align:middle}
+.tick.on{background:var(--brand);border-color:var(--brand)}
+.msg{max-width:85%;border-radius:12px;padding:10px 13px;font-size:14px;background:var(--track);color:var(--ink)}
+.msg.me{margin-left:auto;background:var(--surface);border:1px solid var(--line)}
+.msg small{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.dlg{box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.cap{font-size:13px;font-weight:500;color:var(--muted);margin:22px 0 8px}
+.phone-only{display:none}
+@container (max-width:720px){
+  .ttl .acts{width:100%}.ttl .acts .btn{flex:1}
+  .split,.split.two{grid-template-columns:minmax(0,1fr)}
+  .rows>*{padding:12px 14px}
+  .pad{padding:16px}
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .st{padding:0 0 12px 24px}
+  .st::before{top:0;bottom:0;left:5px;right:auto;width:2px;height:auto}
+  .st::after{top:3px}
+  .next{flex-direction:column;align-items:stretch}
+  .kv{grid-template-columns:110px minmax(0,1fr)}
+  .laptop-only{display:none}
+  .phone-only{display:block}
+  .rcpt{height:220px}
+  .tb.flow,.tb.flow tbody,.tb.flow tr,.tb.flow td{display:block}
+  .tb.flow thead{display:none}
+  .tb.flow tr{padding:12px 14px;border-bottom:1px solid var(--line)}
+  .tb.flow tr:last-child{border-bottom:0}
+  .tb.flow td{padding:2px 0;border:0}
+  .wrap-row{flex-wrap:wrap}
+}
+
+/* Calm pass: room to breathe */
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 28px}
+.every{max-width:760px;margin:0 auto 14px;font-size:14px}
+.every b{color:var(--ink);font-weight:600}
+.every ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+.menu-btn{display:none;width:18px;height:12px;border-top:2px solid #fff;border-bottom:2px solid #fff;position:relative;flex:none}
+.menu-btn::after{content:"";position:absolute;left:0;right:0;top:3px;height:2px;background:#fff}
+.ph .menu-btn{display:block}
+.top{padding:12px 20px;background-image:linear-gradient(120deg,rgba(255,255,255,.05),rgba(255,255,255,0) 45%)}
+.seal{box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+.side{padding:20px 14px;border-right-color:transparent}
+.side h5{margin:20px 10px 6px}
+.side a{padding:7px 10px;border-radius:9px}
+.body{grid-template-columns:232px minmax(0,1fr)}
+.ph .body{grid-template-columns:minmax(0,1fr)}
+.pg{padding:36px 44px 56px}
+.ph .pg{padding:24px 18px 36px}
+.ttl{margin-bottom:28px;gap:14px 20px}
+.ttl p{margin-top:6px;font-size:14px}
+.tabs{gap:26px;margin-bottom:24px;border-bottom-color:transparent;box-shadow:inset 0 -1px 0 var(--line)}
+.tabs span{padding:10px 0}
+.tabs i{color:var(--muted);font-weight:400;margin-left:6px}
+.tools{gap:10px;margin-bottom:20px}
+.tools.flat{margin:0}
+.inp{height:42px;border-radius:10px;padding:0 14px}
+.btn{min-height:42px;padding:9px 18px;border-radius:10px}
+.btn.sm{min-height:36px;padding:6px 14px}
+.panel{border-radius:16px;border-color:color-mix(in srgb,var(--line) 70%,transparent)}
+.pad{padding:26px 28px}
+.stack{gap:22px}
+.split{gap:24px}
+.split.even{grid-template-columns:repeat(2,minmax(0,1fr))}
+.split.campus{grid-template-columns:minmax(0,3fr) minmax(0,8fr)}
+.spanall{grid-column:1/-1}
+.rows>*{padding:17px 24px;gap:12px 18px}
+.rows .sel{background:color-mix(in srgb,var(--track) 70%,transparent)}
+.rows .sub{margin-top:2px}
+.tb th{padding:14px 18px}.tb td{padding:16px 18px}
+.kv{gap:12px 18px}
+.nums{gap:16px 52px}
+.nums b{font-size:24px;font-weight:600}
+.nums span{display:block;margin-top:2px}
+.next{gap:16px 28px}
+.steps{margin-bottom:30px}
+.steps.flat{margin:0}
+.st.done::before,.st.done::after{opacity:.8}
+.bar{height:6px}
+.rcpt{height:340px;border-radius:12px}
+.msg{padding:12px 16px;border-radius:14px;line-height:1.55}
+.opts{gap:8px}.opt{padding:6px 14px}
+.ta{min-height:112px;border-radius:10px;padding:12px 14px}
+.fld{gap:6px}
+.cap2{font-size:12px;font-weight:500;color:var(--muted);padding:18px 24px 6px!important;border-bottom:0!important}
+.cut{width:76px;color:var(--ink);flex:none}.cut2{width:100px;color:var(--ink);flex:none}
+.phone-tabs{display:none}
+.dlg{box-shadow:0 12px 32px rgba(0,0,0,.05)}
+@container (max-width:720px){
+  .split,.split.even,.split.campus{grid-template-columns:minmax(0,1fr)}
+  .pad{padding:20px}
+  .rows>*{padding:15px 18px}
+  .phone-tabs{display:flex}
+  .prog>*:not(.cap2){flex-wrap:wrap}
+  .prog .grow{flex:1 1 calc(100% - 40px)}
+  .prog .cut{margin-left:36px}
+  .steps{margin-bottom:24px}
+  .steps.flat{margin:0}
+  .st:last-child{padding-bottom:0}
+  .tb.flow tr{padding:16px 18px}
+  .tb.flow td{padding:3px 0}
+  .nums{gap:14px 32px}
+  .rcpt{height:240px}
+}
+</style>
+</head>
+<body>
+<header class="intro">
+    <h1>Admin screens, new design</h1>
+    <p>The admin screens in flow order, in the same style as your approved Dashboard and Exam schedules. All names and numbers are samples. Each screen is shown as a laptop and as a phone.</p>
+</header>
+<section class="every"><b>Across every admin page</b><ul>
+<li>The dark Getting started bar shows on every page, even at "7 of 7 done". It moves to the Dashboard and goes away when done.</li>
+<li>Page titles match the menu, and description lines go away unless a page would confuse without them.</li>
+<li>Dropdowns, table headings and empty messages look the same on every page.</li>
+<li>More space: wider margins, taller rows, softer lines and fewer boxes.</li>
+</ul></section>
+<div class="ctl">
+    <div class="chips" id="chips" role="group" aria-label="Screen"></div>
+    <div class="segs">
+        <div class="seg" id="size" role="group" aria-label="Size"><button data-v="both" aria-pressed="true">Both</button><button data-v="lap" aria-pressed="false">Laptop</button><button data-v="ph" aria-pressed="false">Phone</button></div>
+        <div class="seg" id="theme" role="group" aria-label="Theme"><button data-v="light" aria-pressed="false">Light</button><button data-v="dark" aria-pressed="false">Dark</button></div>
+    </div>
+</div>
+<section class="why" id="why" aria-live="polite"></section>
+<div class="frames">
+    <div class="frame lap" id="f-lap"><div class="frame-t">On a laptop</div><div class="zoomer"><div class="app" data-app></div></div></div>
+    <div class="frame ph" id="f-ph"><div class="frame-t">On a phone</div><div class="zoomer"><div class="app" data-app></div></div></div>
+</div>
+
+<script>
+const NAV=[['Overview',['Dashboard']],['Daily work',['Receipts to check','Result lookup','Support tickets']],['Applicants',['Applications','Walk-ins|Off','Transferees|Off','Announcements']],['Exam',['Exam schedules','Check-in']],['Results',['Import test scores','Release results','Survey questions']],['Reports',['Statistics','Reports','Survey results']],['Setup',['School years','Campuses and programs']],['People',['Staff and roles']],['System',['Settings','System status','Server status','Activity logs']]];
+
+const S={};
+
+S.receipts={now:["The right side is an empty box saying \"Click View\", even on a phone.","The picture and the numbers to compare only show after opening one."],label:'Receipts',nav:'Receipts to check',why:['The list and the receipt sit side by side, so nobody opens and closes pages all day.','Amount and reference are next to the picture, ready to compare.','After Approve, the next receipt opens by itself.'],html:`
+<div class="ttl"><div><h2>Receipts to check</h2><p>38 waiting · oldest from yesterday, 4:12 PM</p></div></div>
+<div class="tabs"><span class="on">Waiting<i>38</i></span><span>Returned<i>6</i></span><span>Approved today<i>41</i></span></div>
+<div class="split">
+  <div class="stack">
+    <div class="inp">Name, code or reference no.</div>
+    <div class="panel rows">
+      <div class="sel"><div class="grow"><div class="nm">Maria Santos</div><div class="sub">BS Nursing · Yesterday, 4:12 PM</div></div><span class="pill">Open</span></div>
+      <div><div class="grow"><div class="nm">Juan Dela Cruz</div><div class="sub">BS Civil Engineering · Yesterday, 4:40 PM</div></div></div>
+      <div><div class="grow"><div class="nm">Ana Reyes</div><div class="sub">BEED · Yesterday, 5:03 PM</div></div><span class="pill warn">Check closely</span></div>
+      <div><div class="grow"><div class="nm">Carlo Mendoza</div><div class="sub">BS Criminology · Held by Liza</div></div></div>
+    </div>
+    <p class="sub">Showing 4 of 38 · <a class="link" href="#receipts">Next page</a></p>
+  </div>
+  <div class="panel pad stack">
+    <div><div class="h3">Maria Santos</div><div class="sub">TPT-27-004182 · BS Nursing, Isulan</div></div>
+    <div class="rcpt">Photo of the receipt<br>Tap to see it large</div>
+    <div class="kv"><span>Fee</span><b>₱275.00</b><span>Reference no.</span><b>1234 567 890</b><span>Paid on</span><b>Mon, Nov 1, 2026</b></div>
+    <div class="foot"><span class="btn">Return to student</span><span class="btn main">Approve</span></div>
+    <p class="sub">Approving gives Maria an examinee number and asks Maria to pick an exam slot.</p>
+  </div>
+</div>`};
+
+S.applications={now:["The schedule picker is long and sits apart from the other filters.","Rows hide the one action that fits the status inside a … menu."],label:'Applications',nav:'Applications',why:['Tabs follow the student\'s journey, with counts.','Each row has one action that fits its status, such as Remind to pay.','On a phone, the table becomes simple rows.'],html:`
+<div class="ttl"><div><h2>Applications</h2><p>Apr 25–26 exam · 1,284 applicants</p></div><div class="acts"><span class="btn">Select</span><span class="btn">Download Excel</span></div></div>
+<div class="tabs"><span>All<i>1,284</i></span><span class="on">Payment being checked<i>38</i></span><span>Needs a fix<i>6</i></span><span>Paid, no slot<i>24</i></span><span>Slot booked<i>1,102</i></span></div>
+<div class="tools"><div class="inp grow">Name, code, examinee no., OR no. or mobile</div><div class="inp">Any campus</div><div class="inp">Apr 25–26 exam</div></div>
+<div class="panel"><table class="tb flow"><thead><tr><th>Applicant</th><th>1st choice</th><th>Submitted</th><th>Status</th><th></th></tr></thead><tbody>
+<tr><td><span class="nm">Maria Santos</span><small>TPT-27-004182</small></td><td>BS Nursing<small>Isulan</small></td><td class="sub">Yesterday, 4:12 PM</td><td><span class="pill">Payment being checked</span></td><td style="text-align:right"><a class="link" href="#applications">Check receipt</a></td></tr>
+<tr><td><span class="nm">Juan Dela Cruz</span><small>TPT-27-004190</small></td><td>BS Civil Engineering<small>Tacurong</small></td><td class="sub">Yesterday, 4:40 PM</td><td><span class="pill warn">Needs a fix</span></td><td style="text-align:right"><a class="link" href="#applications">See remarks</a></td></tr>
+<tr><td><span class="nm">Ana Reyes</span><small>Examinee no. 104233</small></td><td>BEED<small>ACCESS</small></td><td class="sub">Nov 1, 9:15 AM</td><td><span class="pill ok">Slot booked</span></td><td style="text-align:right"><a class="link" href="#applications">Resend permit</a></td></tr>
+<tr><td><span class="nm">Carlo Mendoza</span><small>Examinee no. 104234</small></td><td>BS Criminology<small>Isulan</small></td><td class="sub">Nov 1, 10:02 AM</td><td><span class="pill">Paid, no slot</span></td><td style="text-align:right"><a class="link" href="#applications">Book a slot</a></td></tr>
+</tbody></table></div>
+<p class="sub" style="margin-top:10px">Showing 1–25 of 38 · <a class="link" href="#applications">Next page</a></p>`};
+
+S.applicant={now:["Nothing says what to do next, and four equal buttons sit at the top.","History repeats itself, for example \"Exam slot booked\" twice."],label:'One applicant',nav:'Applications',why:['The top says where the student is and what comes next.','Print permit, more days, move schedule and cancel stay under More.','Only details that help the admin decide are in view; history is below.'],html:`
+<div class="ttl"><div style="display:flex;gap:14px;align-items:center"><div class="photo">2×2</div><div><h2>Maria Santos</h2><p>TPT-27-004182 · <span class="pill">Payment being checked</span></p></div></div><div class="acts"><span class="btn">Send message</span><span class="btn">More</span></div></div>
+<div class="stack">
+  <div class="panel pad next"><p><b>Next: check the receipt.</b> Sent yesterday at 4:12 PM.</p><span class="btn main">Open receipt</span></div>
+  <div class="panel pad"><div class="steps flat"><div class="st done">Applied</div><div class="st now">Payment</div><div class="st">Exam slot</div><div class="st">Result</div><div class="st">Program</div></div></div>
+  <div class="split even">
+    <div class="panel pad stack"><div class="h3">Choices</div><div class="kv"><span>1st choice</span><b>BS Nursing, Isulan</b><span>2nd choice</span><b>BEED, ACCESS</b><span>3rd choice</span><b>BS Biology, ACCESS</b></div></div>
+    <div class="panel pad stack"><div class="h3">Exam slot and payment</div><div class="kv"><span>Exam slot</span><b>Not picked yet</b><span>Payment</span><b>₱275.00 · being checked</b><span>Reference no.</span><b>1234 567 890</b></div></div>
+    <div class="panel pad stack spanall"><div class="h3">Application</div><div class="kv"><span>Birth date</span><b>Mar 4, 2008</b><span>Mobile</span><b>0917 000 0000</b><span>Email</span><b>maria.sample@gmail.com</b><span>School</span><b>Sample National High School</b><span>Strand</span><b>STEM · GA 91</b></div><div class="foot"><span class="btn sm">Send back</span><span class="btn sm">Edit details</span></div></div>
+  </div>
+  <div class="panel pad stack"><div class="h3">History</div><div class="sub">Nov 1, 4:12 PM · Sent the receipt</div><div class="sub">Nov 1, 3:58 PM · Submitted the application</div></div>
+</div>`};
+
+S.support={now:["The page says \"Support\" but the menu says \"Support tickets\".","Replying means leaving the list, then coming back for the next one."],label:'Support',nav:'Support tickets',why:['Requests and the reply sit side by side, like receipts.','The student\'s status is beside the question, so no extra page is needed.','Ready replies sit right above the box.'],html:`
+<div class="ttl"><div><h2>Support tickets</h2><p>12 open · oldest waiting 3 hours</p></div></div>
+<div class="tabs"><span class="on">Mine<i>4</i></span><span>Not assigned<i>3</i></span><span>Open<i>12</i></span><span>All</span></div>
+<div class="split">
+  <div class="panel rows">
+    <div class="sel"><div class="grow"><div class="nm">My receipt was sent back</div><div class="sub">#1042 · Maria Santos · 3 hours ago</div></div></div>
+    <div><div class="grow"><div class="nm">Can I change my campus?</div><div class="sub">#1044 · Juan Dela Cruz · 2 hours ago</div></div></div>
+    <div><div class="grow"><div class="nm">Wrong birth date</div><div class="sub">#1047 · Ana Reyes · 40 minutes ago</div></div></div>
+  </div>
+  <div class="panel pad stack">
+    <div><div class="h3">My receipt was sent back</div><div class="sub">#1042 · Maria Santos · Needs a fix · <a class="link" href="#support">Open record</a></div></div>
+    <div class="msg">The photo is clear, why was it returned?<small>Student · 3 hours ago</small></div>
+    <div class="msg me">We can't read the reference number. Please take the photo again in good light.<small>Liza · 2 hours ago</small></div>
+    <div class="msg">Okay, I sent a new one. Please check again.<small>Student · 3 minutes ago</small></div>
+    <div class="opts"><span class="opt">Being checked</span><span class="opt">How to pay</span><span class="opt">Exam day</span></div>
+    <div class="ta">Write a reply. The student is told in the app and by email.</div>
+    <div class="foot" style="align-items:center"><span class="sub"><span class="tick"></span> Close after sending</span><span class="btn main">Send reply</span></div>
+  </div>
+</div>`};
+
+S.announcements={now:["The count reads \"1 students\", which is a wording bug.","There is no preview of what students will see."],label:'Announcements',nav:'Announcements',why:['The count of students updates as you choose who gets it.','A preview shows what students will see before sending.','The confirm step says how many students and how it goes out.'],html:`
+<div class="ttl"><div><h2>Announcements</h2></div></div>
+<div class="split two">
+  <div class="stack">
+    <div class="panel pad stack">
+      <div class="fld"><label>Start from</label><div class="opts"><span class="opt on">Interview schedule</span><span class="opt">Exam day reminder</span><span class="opt">Results are out</span><span class="opt">Write my own</span></div></div>
+      <div class="fld"><label>Title</label><div class="inp" style="color:var(--ink)">Interview schedule</div></div>
+      <div class="fld"><label>Message</label><div class="ta">Your interview is on Tue, May 18 at 8:00 AM. Please bring your printed result, report card and a valid ID.</div></div>
+      <div class="fld"><label>Who gets it</label><div class="tools" style="margin:0"><div class="inp grow">Apr 25–26 exam</div><div class="inp grow">Program chosen</div></div></div>
+      <div class="sub"><span class="tick on"></span> Also send by email</div>
+      <div class="next" style="border-top:1px solid var(--line);padding-top:14px"><p><b>842 students</b> will get this.</p><span class="btn main">Send announcement</span></div>
+    </div>
+    <div><div class="cap" style="margin-top:0">Sent</div><div class="panel rows"><div><div class="grow"><div class="nm">Exam day reminder</div><div class="sub">Apr 24, 6:00 PM · 1,102 students</div></div><span class="pill ok">Sent</span></div></div></div>
+  </div>
+  <div class="panel pad stack"><div class="sub">What students see</div><div class="msg" style="max-width:100%"><b style="font-weight:600">Interview schedule</b><br>Your interview is on Tue, May 18 at 8:00 AM. Please bring your printed result, report card and a valid ID.<small>From the Guidance and Testing Center</small></div></div>
+</div>`};
+
+S.checkin={now:["It works today. This is a lighter look, with the next students on top."],label:'Check-in',nav:'Check-in',why:['Three big numbers tell the proctor where the room stands.','Big Here buttons work with one thumb on a phone.','Students who are in already drop to the bottom.'],html:`
+<div class="ttl"><div><h2>Check-in</h2><p>Sat, Apr 25 · Isulan · Report by 7:30 AM</p></div></div>
+<div class="tools"><div class="inp grow">Room 4 · 22 of 40 here</div><div class="inp grow">Examinee no. or last name</div></div>
+<div class="panel pad" style="margin-bottom:14px"><div class="nums"><div><b>22</b><span>Here</span></div><div><b>18</b><span>Not yet</span></div><div><b>40</b><span>Expected</span></div></div><div class="bar" style="margin-top:12px"><i style="width:55%"></i></div></div>
+<div class="panel rows">
+  <div><div class="grow"><div class="nm">Seat 23 · Maria Santos</div><div class="sub">104233</div></div><span class="btn main">Here</span></div>
+  <div><div class="grow"><div class="nm">Seat 24 · Juan Dela Cruz</div><div class="sub">104234</div></div><span class="btn main">Here</span></div>
+  <div><div class="grow"><div class="nm">Seat 1 · Ana Reyes</div><div class="sub">104211 · 7:12 AM</div></div><span class="pill ok">Here</span></div>
+</div>
+<p class="sub" style="margin-top:10px">Information only. Who was absent comes from the score file.</p>`};
+
+S.scores={now:["When all is done it still shows the upload box and a pale button, with no pointer to the next step.","A tall step list takes a whole column."],label:'Import scores',nav:'Import test scores',why:['One line shows the five steps to results.','The check says what is ready and what needs a look, in plain words.','The admin can approve good rows now and fix the rest later.'],html:`
+<div class="ttl"><div><h2>Import test scores</h2></div><div class="acts"><div class="inp">Apr 25–26 exam</div><span class="btn">Excel template</span></div></div>
+<div class="steps"><div class="st done">Upload</div><div class="st done">Check</div><div class="st now">Approve</div><div class="st">Prepare PDFs</div><div class="st">Publish</div></div>
+<div class="stack">
+  <div class="panel pad stack">
+    <div class="h3">scores-apr-25.xlsx is checked</div>
+    <div class="nums"><div><b>1,060</b><span>Ready</span></div><div><b style="color:var(--warn)">3</b><span>Need a look</span></div><div><b>39</b><span>No score (absent)</span></div></div>
+    <div class="next" style="border-top:1px solid var(--line);padding-top:14px"><p>The 3 rows stay out. <b>You can approve the rest now.</b> Students see nothing until you publish.</p><div class="acts"><span class="btn">Discard file</span><span class="btn main">Approve 1,060 scores</span></div></div>
+  </div>
+  <div class="panel"><div class="pad" style="padding-bottom:6px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div class="h3">Needs a look · 3</div><a class="link" href="#scores">Download these rows</a></div>
+    <table class="tb flow"><thead><tr><th>Row</th><th>Examinee no.</th><th>Problem</th><th>What to do</th></tr></thead><tbody>
+    <tr><td class="sub">Row 214</td><td class="n">104999</td><td>Not registered</td><td class="sub">Check the number with the Testing Center</td></tr>
+    <tr><td class="sub">Row 388</td><td class="n">104233</td><td>Listed twice</td><td class="sub">Keep one row in the file</td></tr>
+    <tr><td class="sub">Row 702</td><td class="n">104511</td><td>Score out of range</td><td class="sub">Standard scores are 200–800</td></tr>
+    </tbody></table></div>
+</div>`};
+
+S.results={now:["Two half-empty cards and a step list compete, with no sentence saying what to do.","Three buttons on every row, and headings in capitals unlike other pages."],label:'Release results',nav:'Release results',why:['The top answers one question: can I publish now?','Progress runs by itself, and the next step lights up when ready.','Correct and Hide move under More on each row.'],html:`
+<div class="ttl"><div><h2>Release results</h2></div><div class="acts"><div class="inp">Apr 25–26 exam</div><span class="btn">Signatories</span></div></div>
+<div class="steps"><div class="st done">Upload</div><div class="st done">Check</div><div class="st done">Approve</div><div class="st done">Prepare PDFs</div><div class="st now">Publish</div></div>
+<div class="panel pad stack" style="margin-bottom:16px">
+  <div><div class="h3">All 1,060 result PDFs are ready</div><div class="bar" style="margin-top:8px"><i style="width:100%"></i></div></div>
+  <div class="nums"><div><b>1,060</b><span>Scored</span></div><div><b>39</b><span>Absent</span></div><div><b>648</b><span>Qualified for a choice</span></div></div>
+  <div class="next" style="border-top:1px solid var(--line);padding-top:14px"><p><b>Ready to publish.</b> Students are told in waves, in the app and by email.</p><div class="acts"><span class="btn">Preview one</span><span class="btn main">Publish results</span></div></div>
+</div>
+<div class="tabs"><span class="on">All scored<i>1,060</i></span><span>Qualified, 1st choice<i>512</i></span></div>
+<div class="tools"><div class="inp grow">Name, examinee no. or code</div><div class="inp">Any campus</div><span class="btn">Export (Excel)</span></div>
+<div class="panel"><table class="tb flow"><thead><tr><th>Examinee</th><th>1st choice</th><th class="n">Overall</th><th class="n">Stanine</th><th>Result PDF</th><th></th></tr></thead><tbody>
+<tr><td><span class="nm">Maria Santos</span><small>104233</small></td><td>BS Nursing</td><td class="n">612</td><td class="n">7</td><td><span class="pill ok">Ready</span></td><td style="text-align:right"><a class="link" href="#results">View</a> · <a class="link" href="#results">More</a></td></tr>
+<tr><td><span class="nm">Juan Dela Cruz</span><small>104234</small></td><td>BS Civil Engineering</td><td class="n">548</td><td class="n">5</td><td><span class="pill ok">Ready</span></td><td style="text-align:right"><a class="link" href="#results">View</a> · <a class="link" href="#results">More</a></td></tr>
+</tbody></table></div>`};
+
+S.campuses={now:["Transferee slots shows even with transferees off.","A big \"How this page works\" box pushes the list down."],label:'Programs',nav:'Campuses and programs',why:['The campus list stays, because 8 campuses need room. Programs sit under their college.','Rows show only offered, cut-off and score type. Transferee slots shows only when transferees are on.','Each change saves by itself, with no Save button.'],html:`
+<div class="ttl"><div><h2>Campuses and programs</h2><p>SY 2027–2028</p></div><div class="acts"><span class="btn">Rooms</span><span class="btn">Add program</span></div></div>
+<div class="split campus">
+  <div class="panel rows laptop-only">
+    <div class="sel"><div class="grow"><div class="nm">Isulan Campus</div><div class="sub">18 programs · 412 picks</div></div></div>
+    <div><div class="grow"><div class="nm">ACCESS Campus</div><div class="sub">12 programs · 530 picks</div></div></div>
+    <div><div class="grow"><div class="nm">Tacurong Campus</div><div class="sub">10 programs · 204 picks</div></div></div>
+    <div><div class="grow"><div class="nm">Kalamansig Campus</div><div class="sub">9 programs · 96 picks</div></div></div>
+    <div><a class="link" href="#campuses">Add campus</a></div>
+  </div>
+  <div class="stack">
+    <div class="tabs phone-tabs"><span class="on">Isulan<i>18</i></span><span>ACCESS<i>12</i></span><span>Tacurong<i>10</i></span><span>Kalamansig<i>9</i></span></div>
+    <div class="tools flat"><div class="inp grow">Search any program</div><span class="btn">Offer all 18</span></div>
+    <div class="panel rows prog">
+      <div class="cap2">Health Sciences</div>
+      <div><span class="tick on"></span><div class="grow"><div class="nm">BS Nursing</div><div class="sub">Board exam · 312 picks</div></div><span class="inp cut">650</span><span class="inp cut2">ESM</span></div>
+      <div class="cap2">Engineering</div>
+      <div><span class="tick on"></span><div class="grow"><div class="nm">BS Civil Engineering</div><div class="sub">Board exam · 188 picks</div></div><span class="inp cut">520</span><span class="inp cut2">ESM</span></div>
+      <div class="cap2">Criminal Justice</div>
+      <div><span class="tick on"></span><div class="grow"><div class="nm">BS Criminology</div><div class="sub">Board exam · 76 picks</div></div><span class="inp cut">450</span><span class="inp cut2">Overall</span></div>
+      <div><span class="tick"></span><div class="grow"><div class="nm">BS Industrial Security Management</div><div class="sub">Not offered</div></div></div>
+    </div>
+  </div>
+</div>`};
+
+S.staff={now:["The page says \"Staff\" but the menu says \"Staff and roles\"."],label:'Staff',nav:'Staff and roles',why:['Add staff is one short form and works right away.','The list says what each person does and where.','Last active shows who has actually started using it.'],html:`
+<div class="ttl"><div><h2>Staff and roles</h2><p>9 people</p></div><div class="acts"><span class="btn main">Add staff</span></div></div>
+<div class="tabs"><span class="on">People</span><span>What each role can do</span></div>
+<div class="tools"><div class="inp grow">Name or email</div></div>
+<div class="panel"><table class="tb flow"><thead><tr><th>Name</th><th>Jobs</th><th>Limited to</th><th>Last active</th><th></th></tr></thead><tbody>
+<tr><td><span class="nm">Liza Ramos</span><small>liza.sample@sksu.edu.ph</small></td><td>Receipt checker, Support desk</td><td class="sub">All campuses</td><td class="sub">5 minutes ago</td><td style="text-align:right"><a class="link" href="#staff">Edit</a></td></tr>
+<tr><td><span class="nm">Mark Tan</span><small>mark.sample@sksu.edu.ph</small></td><td>Proctor</td><td class="sub">Isulan</td><td class="sub">Has not signed in yet</td><td style="text-align:right"><a class="link" href="#staff">Edit</a></td></tr>
+</tbody></table></div>
+<div class="cap">When you tap Add staff</div>
+<div class="panel pad stack dlg" style="max-width:480px">
+  <div><div class="h3">Add staff</div><div class="sub">Their account works right away. They sign in with Google using this email.</div></div>
+  <div class="fld"><label>Name</label><div class="inp" style="color:var(--ink)">Jun Santos</div></div>
+  <div class="fld"><label>Email</label><div class="inp" style="color:var(--ink)">jun.sample@sksu.edu.ph</div></div>
+  <div class="fld"><label>Jobs (pick one or more)</label><div class="opts"><span class="opt on">Receipt checker</span><span class="opt">Support desk</span><span class="opt">Proctor</span></div></div>
+  <div class="foot"><span class="btn">Cancel</span><span class="btn main">Add staff</span></div>
+</div>`};
+
+const keys=Object.keys(S);
+const apps=[...document.querySelectorAll('[data-app]')];
+const chips=document.getElementById('chips');
+chips.innerHTML=keys.map(k=>`<button data-k="${k}" aria-pressed="false">${S[k].label}</button>`).join('');
+function side(active){return NAV.map(([g,items])=>`<h5>${g}</h5>`+items.map(i=>{const[t,off]=i.split('|');return `<a href="#${current}"${t===active?' class="on"':''}>${t}${off?`<small>${off}</small>`:''}</a>`}).join('')).join('')}
+let current=keys.includes(location.hash.slice(1))?location.hash.slice(1):keys[0];
+function render(){
+  const s=S[current];
+  const frame=`<div class="top"><span class="menu-btn" aria-hidden="true"></span><span class="seal" aria-hidden="true"></span><b>SKSU TPT</b><span class="area">Admin</span><span class="srch">Name, email, code, examinee or OR no.</span><span class="r"><span class="bell" aria-label="3 notices">3</span><span class="who">Demo Admin</span></span></div><div class="body"><nav class="side" aria-label="Sample menu">${side(s.nav)}</nav><div class="pg">${s.html}</div></div>`;
+  apps.forEach(a=>a.innerHTML=frame);
+  document.getElementById('why').innerHTML=`<div class="cmp"><div><b>Today</b><ul>${s.now.map(w=>`<li>${w}</li>`).join('')}</ul></div><div><b>In this design</b><ul>${s.why.map(w=>`<li>${w}</li>`).join('')}</ul></div></div>`;
+  chips.querySelectorAll('button').forEach(b=>{const on=b.dataset.k===current;b.setAttribute('aria-pressed',on);if(on)b.scrollIntoView({block:'nearest',inline:'center'})});
+  fit();
+}
+function fit(){const f=document.querySelector('#f-lap .zoomer');if(f&&f.clientWidth)document.querySelector('#f-lap .app').style.setProperty('--z',f.clientWidth/1240)}
+chips.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;current=k;try{history.replaceState(null,'','#'+k)}catch(_){location.hash=k}render()});
+function seg(id,fn){const el=document.getElementById(id);el.addEventListener('click',e=>{const v=e.target.dataset&&e.target.dataset.v;if(!v)return;el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===e.target));fn(v)})}
+seg('size',v=>{document.getElementById('f-lap').hidden=v==='ph';document.getElementById('f-ph').hidden=v==='lap';document.getElementById('f-lap').style.display=v==='ph'?'none':'';document.getElementById('f-ph').style.display=v==='lap'?'none':'';fit()});
+seg('theme',v=>document.documentElement.setAttribute('data-theme',v));
+addEventListener('resize',fit);
+addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(keys.includes(h)&&h!==current){current=h;render()}});
+render();
+</script>
+</body>
+</html>
