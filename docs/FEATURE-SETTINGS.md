@@ -19,6 +19,7 @@ Nov 1, 2026. Owner's direction after testing:
 | Paying | How students pay | **Upload the receipt when applying** | Or: pay at an SKSU cashier counter; or both (student picks) |
 | Paying | Cashier counters | **Off** | Counter screen, shifts, OR booklets, cashier accounts; walk-ins at the counter |
 | Paying | Walk-in applications (staff fill in the form) | **Off** | "New walk-in application" for staff |
+| Exam slot | More than one active exam schedule | **Off** | Off: one schedule runs at a time; the next is published after the active one's results are out (drafts can be prepared anytime). On: several run at once, for example transferees beside freshmen |
 | Exam slot | Students may change their exam slot | **Off** | They can move it until the schedule's "change slot until" day |
 | Results | Survey before the result | **On** | The short survey comes first, then the scores |
 
